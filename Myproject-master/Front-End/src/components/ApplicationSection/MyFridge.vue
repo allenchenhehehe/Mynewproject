@@ -6,9 +6,12 @@ const props = defineProps({ fridgeItems: Array })
 const categories = [
     { key: 'expiring', name: '即將過期' },
     { key: 'vegetable', name: '蔬菜' },
-    { key: 'protein', name: '蛋白質' },
+    { key: 'fruit', name: '水果' },
+    { key: 'meat', name: '肉類' },
+    { key: 'egg', name: '蛋類' },
     { key: 'seasoning', name: '調味料' },
     { key: 'oil', name: '油類' },
+    { key: 'seafood', name: '海鮮' },
 ]
 
 /*ingredients.value = {'蔬菜':[{id: '1',name: '洋蔥',quantity: 5。。。},{id: '4',name: '番茄',quantity: 5。。。}]}*/
@@ -16,9 +19,12 @@ const ingredients = ref(categorizeIngredients(props.fridgeItems))
 const expandedCategories = ref({
     expiring: false,
     vegetable: false,
-    protein: false,
+    fruit: false,
+    meat: false,
+    egg: false,
     seasoning: false,
     oil: false,
+    seafood: false
 })
 const isAddModalOpen = ref(false)
 const newIngredient = ref({

@@ -30,21 +30,21 @@ const mockFridgeData = [
         id: 2,
         ingredient_id: 2,
         name: '雞肉',
-        category: 'protein',
+        category: 'meat',
         quantity: 200,
         unit: '克',
         purchased_date: '2025-11-05',
-        expired_date: '2025-11-11',
+        expired_date: '2025-11-30',
     },
     {
         id: 3,
         ingredient_id: 3,
         name: '雞蛋',
-        category: 'protein',
-        quantity: 2,
+        category: 'egg',
+        quantity: 5,
         unit: '顆',
         purchased_date: '2025-11-08',
-        expired_date: '2025-11-12',
+        expired_date: '2025-11-30',
     },
     {
         id: 4,
@@ -63,6 +63,16 @@ const mockFridgeData = [
         category: 'vegetable',
         quantity: 3,
         unit: '個',
+        purchased_date: '2025-11-30',
+        expired_date: '2025-12-5',
+    },
+    {
+        id: 6,
+        ingredient_id: 101,
+        name: '蔥花',
+        category: 'vegetable',
+        quantity: 3,
+        unit: '匙',
         purchased_date: '2025-11-30',
         expired_date: '2025-12-5',
     },
@@ -149,7 +159,10 @@ const currentComponent = computed(() => pageComponents[currentPage.value] || Hom
                         ? {
                               fridgeItems: fridgeItems,
                           }
-                        : {}
+                        :  currentPage === 'Recipes'
+                            ? {
+                                fridgeItems: fridgeItems,  // 新增這一行
+                              }:{}
             "
             @gotorecipedetail="handledetail"
             @handlegoback="handleGoBackToRecipes"

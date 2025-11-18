@@ -1,6 +1,9 @@
 <script setup>
-import { ref, computed, defineEmits } from 'vue'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 const emit = defineEmits(['gotorecipedetail'])
+const props = defineProps({ 
+  fridgeItems: Array
+})
 const mockRecipes = [
     {
         id: 1,
@@ -329,26 +332,49 @@ const mockRecipes = [
 const recipes = ref(mockRecipes)
 const filterByMyIngredient = ref(false) //要不要根據我的食材篩選
 const selectByCookingTime = ref('all') //根據時長
+const fridgeIngredientMap = computed(() => {
+  const map = {}
+  if (props.fridgeItems) {
+    props.fridgeItems.forEach((item) => {
+      if (!map[item.ingredient_id]) {
+        map[item.ingredient_id] = 0
+      }
+      map[item.ingredient_id] += item.quantity
+    })
+  }
+  return map
+})
+function canMakeRecipe(recipe) {
+  return recipe.ingredients.every((ingredient) => {
+    const fridgeQuantity = fridgeIngredientMap.value[ingredient.ingredient_id] || 0
+    return fridgeQuantity >= ingredient.quantity
+  })
+}
 const filterRecipes = computed(() => {
-    if (selectByCookingTime.value === 'all') {
-        return recipes.value
-    } else if (selectByCookingTime.value === '15') {
-        return recipes.value.filter((recipe) => {
-            return recipe.coocking_time <= 15
-        })
-    } else if (selectByCookingTime.value === '30') {
-        return recipes.value.filter((recipe) => {
-            return recipe.coocking_time <= 30
-        })
-    } else if (selectByCookingTime.value === '60') {
-        return recipes.value.filter((recipe) => {
-            return recipe.coocking_time >= 60
-        })
-    }
+    let result = recipes.value
+
+  // 第一步：先按食材篩選
+  if (filterByMyIngredient.value) {
+    result = result.filter((recipe) => canMakeRecipe(recipe))
+  }
+
+  // 第二步：再按時間篩選
+  if (selectByCookingTime.value === 'all') {
+    // 保持所有食譜
+  } else if (selectByCookingTime.value === '15') {
+    result = result.filter((recipe) => recipe.coocking_time <= 15)
+  } else if (selectByCookingTime.value === '30') {
+    result = result.filter((recipe) => recipe.coocking_time <= 30)
+  } else if (selectByCookingTime.value === '60') {
+    result = result.filter((recipe) => recipe.coocking_time >= 60)
+  }
+
+  return result
 })
 function handleCookRecipe(recipe) {
     emit('gotorecipedetail', recipe)
 }
+
 </script>
 <template>
     <div class="mt-28 max-w-7xl mx-auto px-4">
