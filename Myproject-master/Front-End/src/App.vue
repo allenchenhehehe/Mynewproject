@@ -98,6 +98,11 @@ const handleGoBackToRecipes = () => {
     currentPage.value = 'Recipes'
 }
 
+const handleUpdateFridge = (updatedItems) => {
+    console.log('App.vue 收到 updateFridge，更新數據:', updatedItems)
+    // 在 script 區域中，必須使用 .value 來更新 ref
+    fridgeItems.value = updatedItems
+}
 const addToShoppingList = (items, recipeName = null, recipeId = null) => {
     if (Array.isArray(items)) {
         shoppingList.value.push({
@@ -132,17 +137,17 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
         <MyFridge 
             v-show="currentPage === 'My Fridge'"
             :fridgeItems="fridgeItems"
-            @updateFridge="(updatedItems) => (fridgeItems.value = updatedItems)"
+            @updateFridge="handleUpdateFridge"
         />
         <Recipes 
-            v-show="currentPage === 'Recipes'"
+            v-if="currentPage === 'Recipes'"
             :fridgeItems="fridgeItems"
             @gotorecipedetail="handledetail"
         />
         <RecipeDetail 
             v-show="currentPage === 'RecipeDetail'"
             :recipe="selectedRecipe"
-            :fridgeItems="fridgeItems"
+            :fridgeItems="fridgeItems"          
             @handlegoback="handleGoBackToRecipes"
             @addToShopping="(items, recipeName, recipeId) => addToShoppingList(items, recipeName, recipeId)"
         />

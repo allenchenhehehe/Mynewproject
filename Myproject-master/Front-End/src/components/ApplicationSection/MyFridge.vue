@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue'
+import { ref, defineProps, defineEmits, watchEffect} from 'vue'
 
 const props = defineProps({ fridgeItems: Array })
 const emit = defineEmits(['updateFridge'])
@@ -18,13 +18,10 @@ const categories = [
 const ingredients = ref(categorizeIngredients(props.fridgeItems))
 
 // ✅ 監聽 props 變化
-watch(
-    () => props.fridgeItems,
-    (newFridgeItems) => {
-        ingredients.value = categorizeIngredients(newFridgeItems)
-    },
-    { deep: true }
-)
+watchEffect(() => {
+    console.log('Recipes watchEffect 觸發，fridgeItems:', props.fridgeItems)
+})
+
 
 const expandedCategories = ref({
     expiring: false,
@@ -168,6 +165,7 @@ function getUpdatedFridgeItems() {
             result.push(...categoryItems)
         }
     })
+    console.log('getUpdatedFridgeItems 返回:', result)
     return result
 }
 
