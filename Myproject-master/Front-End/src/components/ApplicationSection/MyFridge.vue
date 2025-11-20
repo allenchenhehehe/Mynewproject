@@ -1,7 +1,7 @@
 <script setup>
-import { ref, defineProps } from 'vue'
+import { ref, defineProps,defineEmits } from 'vue'
 const props = defineProps({ fridgeItems: Array })
-
+const emit = defineEmits(['updateFridge'])
 /*定義了所有可能的分類及其顯示名稱*/
 const categories = [
     { key: 'expiring', name: '即將過期' },
@@ -78,9 +78,23 @@ function openEditModal(ingredient) {
     editIngredient.value = ingredient
     isEditModalOpen.value = true
 }
+function openAddModal() {
+    isAddModalOpen.value = true
+    newIngredient.value = {
+    name: '',
+    category: 'vegetable',
+    quantity: 1,
+    unit: '個',
+    purchased_date: new Date().toISOString().split('T')[0],
+    expired_date: '',
+}
+}
 function closeEditModal() {
     editIngredient.value = null
     isEditModalOpen.value = false
+}
+function closeAddModal() {
+    isAddModalOpen.value = false
 }
 function saveEdit(updatedData) {
     if (new Date(updatedData.purchased_date) > new Date(updatedData.expired_date)) {
@@ -100,6 +114,29 @@ function saveEdit(updatedData) {
 
     // 關閉 Modal
     closeEditModal()
+}
+function addIngredient(){
+    if(!newIngredient.value.name){
+        alert('請輸入食材名稱!')
+        return
+    }
+    if(!newIngredient.value.expired_date){
+        alert('請輸入過期日期!')
+        return
+    }
+    if(newIngredient.value.purchased_date>newIngredient.value.expired_date){
+        alert('購買日期不得晚於過期日期!')
+        return
+    }
+
+    const ingredient = {
+        name: newIngredient.value.name,
+        category: newIngredient.value.category,
+        quantity: newIngredient.value.quantity,
+        unit: newIngredient.value.unit,
+        purchased_date: newIngredient.value.purchased_date,
+        expired_date: newIngredient.value.expired_date,
+    }
 }
 function groupByName(data) {
     const grouped = {}

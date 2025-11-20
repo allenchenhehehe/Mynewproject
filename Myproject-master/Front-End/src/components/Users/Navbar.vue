@@ -5,7 +5,7 @@ import AccountMenu from './AccountMenu.vue'
 
 const emit = defineEmits(['change-page'])
 const currentPage = ref('Home')
-const navLinks = ref([{ name: 'Home' }, { name: 'My Fridge' }, { name: 'Recipes' }, { name: 'Shopping List' }, { name: 'Comment' }])
+const navLinks = ref([{ name: 'Home' }, { name: 'My Fridge' }, { name: 'Recipes' }, { name: 'Shopping List' }, ])
 
 const isActive = (pageName) => {
     return currentPage.value === pageName
