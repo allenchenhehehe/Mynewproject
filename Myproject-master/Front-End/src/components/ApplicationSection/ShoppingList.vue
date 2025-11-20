@@ -25,8 +25,6 @@ function addItem() {
         return
     }
     const newItem = {
-        id: Date.now() + Math.floor(Math.random() * 1000),
-        ingredient_id: null,
         ingredient_name: itemName.value,
         quantity: itemQuantity.value,
         unit: itemUnit.value,
@@ -47,7 +45,7 @@ function addItem() {
             <div class="space-y-3">
                 <input v-model="itemName" type="text" placeholder="食材名稱" class="w-full border p-2 rounded" />
                 <div class="flex gap-3">
-                    <input v-model="itemQuantity" type="number" placeholder="數量" class="flex-1 border p-2 rounded" />
+                    <input v-model.number="itemQuantity" type="number" placeholder="數量" class="flex-1 border p-2 rounded" />
                     <select v-model="itemUnit" class="flex-1 border p-2 rounded">
                         <option>個</option>
                         <option>克</option>
@@ -79,4 +77,3 @@ function addItem() {
     </div>
 </template>
 
-```

@@ -1,8 +1,9 @@
 <script setup>
-import { ref, defineProps,defineEmits } from 'vue'
+import { ref, defineProps, defineEmits, watch } from 'vue'
+
 const props = defineProps({ fridgeItems: Array })
 const emit = defineEmits(['updateFridge'])
-/*定義了所有可能的分類及其顯示名稱*/
+
 const categories = [
     { key: 'expiring', name: '即將過期' },
     { key: 'vegetable', name: '蔬菜' },
@@ -14,8 +15,17 @@ const categories = [
     { key: 'seafood', name: '海鮮' },
 ]
 
-/*ingredients.value = {'蔬菜':[{id: '1',name: '洋蔥',quantity: 5。。。},{id: '4',name: '番茄',quantity: 5。。。}]}*/
 const ingredients = ref(categorizeIngredients(props.fridgeItems))
+
+// ✅ 監聽 props 變化
+watch(
+    () => props.fridgeItems,
+    (newFridgeItems) => {
+        ingredients.value = categorizeIngredients(newFridgeItems)
+    },
+    { deep: true }
+)
+
 const expandedCategories = ref({
     expiring: false,
     vegetable: false,
@@ -26,41 +36,30 @@ const expandedCategories = ref({
     oil: false,
     seafood: false
 })
+
 const isAddModalOpen = ref(false)
 const newIngredient = ref({
     name: '',
     category: 'vegetable',
     quantity: 1,
     unit: '個',
-    purchased_date: '',
+    purchased_date: new Date().toISOString().split('T')[0],
     expired_date: '',
 })
+
 const isEditModalOpen = ref(false)
 const editIngredient = ref(null)
-/*輸入
-[
-  { name: '洋蔥', category: 'vegetable' },
-  { name: '雞肉', category: 'protein' },
-  { name: '雞蛋', category: 'protein' },
-  { name: '番茄', category: 'vegetable' }
-]
 
-輸出
-{
-  vegetable: [{ name: '洋蔥' }, { name: '番茄' }],
-  protein: [{ name: '雞肉' }, { name: '雞蛋' }]
-}*/
 function categorizeIngredients(data) {
-    const categorized = {} // 步驟 A：建立空物件
+    const categorized = {}
     data.forEach((item) => {
         const category = isExpired(item.expired_date) ? 'expiring' : item.category
-        // 步驟 D：檢查這個分類是否已經存在
         if (categorized[category] === undefined) {
-            categorized[category] = [] // 步驟 E：不存在就建立空陣列
+            categorized[category] = []
         }
-        categorized[category].push(item) // 步驟 F：把食材加到對應分類的陣列
+        categorized[category].push(item)
     })
-    return categorized // 步驟 G：回傳轉換後的物件
+    return categorized
 }
 
 function toggleCategory(key) {
@@ -72,35 +71,43 @@ function deleteIngredient(ingredientId) {
         Object.keys(ingredients.value).forEach((category) => {
             ingredients.value[category] = ingredients.value[category].filter((item) => item.id !== ingredientId)
         })
+        // ✅ 新增這行
+        emit('updateFridge', getUpdatedFridgeItems())
     }
 }
+
 function openEditModal(ingredient) {
-    editIngredient.value = ingredient
+    editIngredient.value = { ...ingredient }
     isEditModalOpen.value = true
 }
+
 function openAddModal() {
     isAddModalOpen.value = true
     newIngredient.value = {
-    name: '',
-    category: 'vegetable',
-    quantity: 1,
-    unit: '個',
-    purchased_date: new Date().toISOString().split('T')[0],
-    expired_date: '',
+        name: '',
+        category: 'vegetable',
+        quantity: 1,
+        unit: '個',
+        purchased_date: new Date().toISOString().split('T')[0],
+        expired_date: '',
+    }
 }
-}
+
 function closeEditModal() {
     editIngredient.value = null
     isEditModalOpen.value = false
 }
+
 function closeAddModal() {
     isAddModalOpen.value = false
 }
+
 function saveEdit(updatedData) {
-    if (new Date(updatedData.purchased_date) > new Date(updatedData.expired_date)) {
+    if (updatedData.purchased_date > updatedData.expired_date) {
         alert('購買日期不能晚於過期日期')
         return
     }
+    
     // 找到要更新的食材，並更新它
     Object.keys(ingredients.value).forEach((category) => {
         ingredients.value[category] = ingredients.value[category].filter((item) => item.id !== editIngredient.value.id)
@@ -112,24 +119,29 @@ function saveEdit(updatedData) {
     }
     ingredients.value[category].push(updatedData)
 
-    // 關閉 Modal
     closeEditModal()
+    // ✅ 新增這行
+    emit('updateFridge', getUpdatedFridgeItems())
 }
-function addIngredient(){
-    if(!newIngredient.value.name){
+
+function addIngredient() {
+    if (!newIngredient.value.name) {
         alert('請輸入食材名稱!')
         return
     }
-    if(!newIngredient.value.expired_date){
+    if (!newIngredient.value.expired_date) {
         alert('請輸入過期日期!')
         return
     }
-    if(newIngredient.value.purchased_date>newIngredient.value.expired_date){
+    if (newIngredient.value.purchased_date > newIngredient.value.expired_date) {
         alert('購買日期不得晚於過期日期!')
         return
     }
 
+    // ✅ 完整新增邏輯
     const ingredient = {
+        id: Math.max(...props.fridgeItems.map(i => i.id), 0) + 1,
+        ingredient_id: Math.max(...props.fridgeItems.map(i => i.ingredient_id), 0) + 1,
         name: newIngredient.value.name,
         category: newIngredient.value.category,
         quantity: newIngredient.value.quantity,
@@ -137,7 +149,28 @@ function addIngredient(){
         purchased_date: newIngredient.value.purchased_date,
         expired_date: newIngredient.value.expired_date,
     }
+
+    const category = isExpired(ingredient.expired_date) ? 'expiring' : ingredient.category
+    if (!ingredients.value[category]) {
+        ingredients.value[category] = []
+    }
+    ingredients.value[category].push(ingredient)
+
+    emit('updateFridge', getUpdatedFridgeItems())
+    closeAddModal()
 }
+
+// ✅ 新增這個函數
+function getUpdatedFridgeItems() {
+    const result = []
+    Object.values(ingredients.value).forEach((categoryItems) => {
+        if (Array.isArray(categoryItems)) {
+            result.push(...categoryItems)
+        }
+    })
+    return result
+}
+
 function groupByName(data) {
     const grouped = {}
     data.forEach((item) => {
@@ -148,6 +181,7 @@ function groupByName(data) {
     })
     return grouped
 }
+
 function calculateDaysLeft(expiredDate) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -162,10 +196,18 @@ function isExpired(expiredDate) {
     return calculateDaysLeft(expiredDate) < 0
 }
 </script>
+
 <template>
     <div class="mt-28 max-w-4xl mx-auto px-4">
-        <div class="flex justify-center items-center">
-            <h1 class="text-4xl font-bold text-gray-800 mb-8">我的冰箱</h1>
+        <!-- ✅ 改成 flex 排列，h1 靠左，按鈕靠右 -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">我的冰箱</h1>
+            <button 
+                @click="openAddModal"
+                class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-amber-600 transition"
+            >
+                + 新增食材
+            </button>
         </div>
 
         <div class="space-y-4">
@@ -203,41 +245,134 @@ function isExpired(expiredDate) {
                 </div>
             </div>
         </div>
-    </div>
-    <!-- 編輯 Modal -->
-    <div
-        v-if="isEditModalOpen"
-        class="fixed inset-0 bg-opacity-30 flex items-center justify-center z-50"
-        style="background-color: rgba(0, 0, 0, 0.2)"
-    >
-        <div class="bg-white rounded-lg p-6 w-96">
-            <h2 class="text-2xl font-bold mb-4">編輯食材</h2>
+        <!-- 新增食材 Modal -->
+        <div
+            v-if="isAddModalOpen"
+            class="fixed inset-0 bg-opacity-30 flex items-center justify-center z-50"
+            style="background-color: rgba(0, 0, 0, 0.2)"
+        >
+            <div class="bg-white rounded-lg p-6 w-96">
+                <h2 class="text-2xl font-bold mb-4">新增食材</h2>
 
-            <div v-if="editIngredient" class="space-y-4">
-                <div>
-                    <label class="block font-bold mb-2">食材名稱</label>
-                    <input type="text" :value="editIngredient.name" disabled class="w-full border p-2 bg-gray-100" />
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-bold mb-2">食材名稱 *</label>
+                        <input 
+                            v-model="newIngredient.name" 
+                            type="text" 
+                            placeholder="例如：番茄、雞蛋"
+                            class="w-full border p-2 rounded"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold mb-2">分類 *</label>
+                        <select v-model="newIngredient.category" class="w-full border p-2 rounded">
+                            <option value="vegetable">蔬菜</option>
+                            <option value="fruit">水果</option>
+                            <option value="meat">肉類</option>
+                            <option value="egg">蛋類</option>
+                            <option value="seasoning">調味料</option>
+                            <option value="oil">油類</option>
+                            <option value="seafood">海鮮</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block font-bold mb-2">數量 *</label>
+                            <input 
+                                v-model.number="newIngredient.quantity" 
+                                type="number" 
+                                min="1"
+                                class="w-full border p-2 rounded"
+                            />
+                        </div>
+                        <div class="flex-1">
+                            <label class="block font-bold mb-2">單位 *</label>
+                            <select v-model="newIngredient.unit" class="w-full border p-2 rounded">
+                                <option value="個">個</option>
+                                <option value="克">克</option>
+                                <option value="毫升">毫升</option>
+                                <option value="瓶">瓶</option>
+                                <option value="盒">盒</option>
+                                <option value="匙">匙</option>
+                                <option value="斤">斤</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold mb-2">購買日期 *</label>
+                        <input 
+                            v-model="newIngredient.purchased_date" 
+                            type="date" 
+                            class="w-full border p-2 rounded"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold mb-2">過期日期 *</label>
+                        <input 
+                            v-model="newIngredient.expired_date" 
+                            type="date" 
+                            class="w-full border p-2 rounded"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block font-bold mb-2">數量</label>
-                    <input type="number" v-model.number="editIngredient.quantity" class="w-full border p-2" />
-                </div>
-
-                <div>
-                    <label class="block font-bold mb-2">購買日期</label>
-                    <input type="date" v-model="editIngredient.purchased_date" class="w-full border p-2" />
-                </div>
-
-                <div>
-                    <label class="block font-bold mb-2">過期日期</label>
-                    <input type="date" v-model="editIngredient.expired_date" class="w-full border p-2" />
+                <div class="flex gap-2 mt-6">
+                    <button 
+                        @click="addIngredient" 
+                        class="flex-1 bg-amber-500 text-white px-4 py-2 rounded font-semibold hover:bg-amber-600"
+                    >
+                        新增
+                    </button>
+                    <button 
+                        @click="closeAddModal" 
+                        class="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-semibold hover:bg-gray-600"
+                    >
+                        取消
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div class="flex gap-2 mt-6">
-                <button @click="saveEdit(editIngredient)" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded">確認</button>
-                <button @click="closeEditModal()" class="flex-1 bg-gray-500 text-white px-4 py-2 rounded">取消</button>
+        <!-- 編輯 Modal -->
+        <div
+            v-if="isEditModalOpen"
+            class="fixed inset-0 bg-opacity-30 flex items-center justify-center z-50"
+            style="background-color: rgba(0, 0, 0, 0.2)"
+        >
+            <div class="bg-white rounded-lg p-6 w-96">
+                <h2 class="text-2xl font-bold mb-4">編輯食材</h2>
+
+                <div v-if="editIngredient" class="space-y-4">
+                    <div>
+                        <label class="block font-bold mb-2">食材名稱</label>
+                        <input type="text" :value="editIngredient.name" disabled class="w-full border p-2 bg-gray-100" />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold mb-2">數量</label>
+                        <input type="number" v-model.number="editIngredient.quantity" class="w-full border p-2" />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold mb-2">購買日期</label>
+                        <input type="date" v-model="editIngredient.purchased_date" class="w-full border p-2" />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold mb-2">過期日期</label>
+                        <input type="date" v-model="editIngredient.expired_date" class="w-full border p-2" />
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-6">
+                    <button @click="saveEdit(editIngredient)" class="flex-1 bg-blue-500 text-white px-4 py-2 rounded">確認</button>
+                    <button @click="closeEditModal()" class="flex-1 bg-gray-500 text-white px-4 py-2 rounded">取消</button>
+                </div>
             </div>
         </div>
     </div>

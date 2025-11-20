@@ -1,19 +1,22 @@
 <script setup>
-import { ref } from 'vue'
+import { ref,defineEmits,defineProps } from 'vue'
 import Searchbar from './Searchbar.vue'
 import AccountMenu from './AccountMenu.vue'
-
+const props = defineProps({
+    currentPage: String  // ✅ 從 App.vue 接收
+})
 const emit = defineEmits(['change-page'])
 const currentPage = ref('Home')
 const navLinks = ref([{ name: 'Home' }, { name: 'My Fridge' }, { name: 'Recipes' }, { name: 'Shopping List' }, ])
 
 const isActive = (pageName) => {
-    return currentPage.value === pageName
+   return props.currentPage === pageName
 } //控制哪個按鈕要顯示橘色
 
 const handlePageChange = (pageName) => {
     currentPage.value = pageName
-    emit('change-page', pageName)
+    console.log('Navbar emit:', pageName)
+    emit('change-page', pageName) 
 } //通知App.vue切換畫面
 </script>
 

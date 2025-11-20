@@ -99,7 +99,6 @@ const handleGoBackToRecipes = () => {
 }
 
 const addToShoppingList = (items, recipeName = null, recipeId = null) => {
-    // 如果是陣列（從 RecipeDetail 加入）
     if (Array.isArray(items)) {
         shoppingList.value.push({
             recipeId: recipeId,
@@ -107,8 +106,6 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
             items: items,
         })
     } else {
-        // 如果是單個項目（手動新增）
-        // 找到「手動新增」分組，加進去
         let manualGroup = shoppingList.value.find((g) => g.recipeName === '手動新增')
         if (!manualGroup) {
             manualGroup = {
@@ -121,17 +118,6 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
         manualGroup.items.push(items)
     }
 }
-
-// 對應頁面名稱和組件的映射
-const pageComponents = {
-    Home: Home,
-    'My Fridge': MyFridge,
-    Recipes: Recipes,
-    RecipeDetail: RecipeDetail,
-    'Shopping List': ShoppingList,
-}
-
-const currentComponent = computed(() => pageComponents[currentPage.value] || Home)
 </script>
 
 <template>
@@ -140,33 +126,29 @@ const currentComponent = computed(() => pageComponents[currentPage.value] || Hom
     <ForgetPassword @login="gotoLogin" v-if="status == STATUS_FORGET_PASSWORD" />
 
     <div v-if="status == STATUS_APP" class="min-h-screen bg-[#fefae0] text-gray-800 overflow-x-hidden">
-        <Navbar @change-page="handlePageChange" />
+        <Navbar :currentPage="currentPage" @change-page="handlePageChange" />
 
-        <component
-            :is="currentComponent"
-            :key="currentPage"
-            v-bind="
-                currentPage === 'RecipeDetail'
-                    ? {
-                          recipe: selectedRecipe,
-                          fridgeItems: fridgeItems,
-                      }
-                    : currentPage === 'Shopping List'
-                      ? {
-                            items: shoppingList,
-                        }
-                      : currentPage === 'My Fridge'
-                        ? {
-                              fridgeItems: fridgeItems,
-                          }
-                        :  currentPage === 'Recipes'
-                            ? {
-                                fridgeItems: fridgeItems,  // 新增這一行
-                              }:{}
-            "
+        <Home v-show="currentPage === 'Home'" />
+        <MyFridge 
+            v-show="currentPage === 'My Fridge'"
+            :fridgeItems="fridgeItems"
+            @updateFridge="(updatedItems) => (fridgeItems.value = updatedItems)"
+        />
+        <Recipes 
+            v-show="currentPage === 'Recipes'"
+            :fridgeItems="fridgeItems"
             @gotorecipedetail="handledetail"
+        />
+        <RecipeDetail 
+            v-show="currentPage === 'RecipeDetail'"
+            :recipe="selectedRecipe"
+            :fridgeItems="fridgeItems"
             @handlegoback="handleGoBackToRecipes"
             @addToShopping="(items, recipeName, recipeId) => addToShoppingList(items, recipeName, recipeId)"
+        />
+        <ShoppingList 
+            v-show="currentPage === 'Shopping List'"
+            :items="shoppingList"
             @add-item="addToShoppingList"
         />
     </div>
