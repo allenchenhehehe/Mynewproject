@@ -198,13 +198,13 @@ function isExpired(expiredDate) {
 <template>
     <div class="mt-28 max-w-4xl mx-auto px-4">
         <!-- ✅ 改成 flex 排列，h1 靠左，按鈕靠右 -->
-        <div class="flex justify-between items-center mb-8">
+        <div class="flex justify-center items-center relative mb-8">
             <h1 class="text-4xl font-bold text-gray-800">我的冰箱</h1>
             <button 
                 @click="openAddModal"
-                class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-amber-600 transition"
+                class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer absolute right-0"
             >
-                + 新增食材
+                新增食材
             </button>
         </div>
 

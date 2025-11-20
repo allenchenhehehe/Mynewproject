@@ -337,7 +337,6 @@ const selectByDifficulty = ref('all') //根據時長
 
 const fridgeIngredientMap = computed(() => {
   const map = {}
-  console.log('Recipes.vue 正在計算 Map, 收到 props:', props.fridgeItems)
   if (props.fridgeItems && props.fridgeItems.length > 0) {
     props.fridgeItems.forEach((item) => {
       if (!map[item.ingredient_id]) {
@@ -346,7 +345,6 @@ const fridgeIngredientMap = computed(() => {
       map[item.ingredient_id] += item.quantity
     })
   }
-  console.log('最終 map:', map)
   return map
 })
 function canMakeRecipe(recipe) {
@@ -356,11 +354,7 @@ function canMakeRecipe(recipe) {
   })
 }
 const filterRecipes = computed(() => {
-    console.log('filterRecipes 重新計算')
-    console.log('fridgeIngredientMap.value:', fridgeIngredientMap.value)
-    console.log('filterByMyIngredient:', filterByMyIngredient.value)
     let result = recipes.value
-
   // 第一步：先按食材篩選
 if (filterByMyIngredient.value) {
     // 如果冰箱是空的 (Map key 數量為 0)，直接回傳空陣列，不用再跑 filter
@@ -391,7 +385,6 @@ if (filterByMyIngredient.value) {
   } else if (selectByDifficulty.value === 'hard') {
     result = result.filter((recipe) => recipe.difficulty >= 4)
   } 
-
   return result
 })
 

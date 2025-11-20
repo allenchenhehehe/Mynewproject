@@ -59,7 +59,7 @@ function addItem() {
                         <option>袋</option>
                         <option>片</option>
                     </select>
-                    <button @click="addItem" class="bg-blue-500 text-white px-6 py-2 rounded">新增</button>
+                    <button @click="addItem" class="bg-amber-500 text-white px-6 py-2 rounded cursor-pointer">新增</button>
                 </div>
             </div>
         </div>
