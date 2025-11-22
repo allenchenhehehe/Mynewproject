@@ -133,14 +133,18 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
     <div v-if="status == STATUS_APP" class="min-h-screen bg-[#fefae0] text-gray-800 overflow-x-hidden">
         <Navbar :currentPage="currentPage" @change-page="handlePageChange" />
 
-        <Home v-show="currentPage === 'Home'" />
+        <Home 
+            v-show="currentPage === 'Home'"
+            :fridgeItems="fridgeItems"
+            :shoppingList="shoppingList"
+        />
         <MyFridge 
             v-show="currentPage === 'My Fridge'"
             :fridgeItems="fridgeItems"
             @updateFridge="handleUpdateFridge"
         />
         <Recipes 
-            v-if="currentPage === 'Recipes'"
+            v-show="currentPage === 'Recipes'"
             :fridgeItems="fridgeItems"
             @gotorecipedetail="handledetail"
         />

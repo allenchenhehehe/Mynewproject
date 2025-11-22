@@ -68,7 +68,6 @@ function deleteIngredient(ingredientId) {
         Object.keys(ingredients.value).forEach((category) => {
             ingredients.value[category] = ingredients.value[category].filter((item) => item.id !== ingredientId)
         })
-        // ✅ 新增這行
         emit('updateFridge', getUpdatedFridgeItems())
     }
 }
@@ -295,13 +294,19 @@ function isExpired(expiredDate) {
                         <div class="flex-1">
                             <label class="block font-bold mb-2">單位 *</label>
                             <select v-model="newIngredient.unit" class="w-full border p-2 rounded">
-                                <option value="個">個</option>
-                                <option value="克">克</option>
-                                <option value="毫升">毫升</option>
-                                <option value="瓶">瓶</option>
-                                <option value="盒">盒</option>
-                                <option value="匙">匙</option>
-                                <option value="斤">斤</option>
+                                <option>個</option>
+                                <option>顆</option>
+                                <option>克</option>
+                                <option>公斤</option>
+                                <option>毫升</option>
+                                <option>公升</option>
+                                <option>盒</option>
+                                <option>包</option>
+                                <option>瓶</option>
+                                <option>罐</option>
+                                <option>袋</option>
+                                <option>片</option>
+                                <option>匙</option>
                             </select>
                         </div>
                     </div>

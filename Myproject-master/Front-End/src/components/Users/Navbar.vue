@@ -17,6 +17,7 @@ const handlePageChange = (pageName) => {
     currentPage.value = pageName
     console.log('Navbar emit:', pageName)
     emit('change-page', pageName) 
+    isMenuOpen.value = false 
 } //通知App.vue切換畫面
 </script>
 
@@ -49,7 +50,7 @@ const handlePageChange = (pageName) => {
         <!-- 桌面版：Logo + 導航 + 工具 -->
         <div class="hidden md:flex items-center justify-between">
             <div class="text-2xl font-bold text-orange-500 whitespace-nowrap">
-                Pantry Pilot
+                Stock & Stove
             </div>
             <nav class="flex items-center space-x-6 flex-1 justify-center">
                 <a

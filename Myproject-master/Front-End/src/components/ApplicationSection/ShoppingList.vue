@@ -48,6 +48,7 @@ function addItem() {
                     <input v-model.number="itemQuantity" type="number" placeholder="數量" class="flex-1 border p-2 rounded" />
                     <select v-model="itemUnit" class="flex-1 border p-2 rounded">
                         <option>個</option>
+                        <option>顆</option>
                         <option>克</option>
                         <option>公斤</option>
                         <option>毫升</option>
@@ -58,6 +59,7 @@ function addItem() {
                         <option>罐</option>
                         <option>袋</option>
                         <option>片</option>
+                        <option>匙</option>
                     </select>
                     <button @click="addItem" class="bg-amber-500 text-white px-6 py-2 rounded cursor-pointer">新增</button>
                 </div>

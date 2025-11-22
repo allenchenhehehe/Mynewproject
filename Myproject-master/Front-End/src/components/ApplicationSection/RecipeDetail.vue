@@ -1,5 +1,8 @@
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue'
+import { toast } from 'vue3-toastify'; // 引用
+import 'vue3-toastify/dist/index.css'; // 官方
+
 const recipe = ref(null)
 const emit = defineEmits(['handlegoback', 'addToShopping'])
 const props = defineProps({
@@ -20,6 +23,9 @@ function addAllToShoppingList() {
         is_purchased: false,
     }))
     emit('addToShopping', itemsToAdd, props.recipe.title, props.recipe.id) // 一次發出整個陣列
+    toast.success(`已將 ${itemsToAdd.length} 項食材添加到購物清單！`, {
+        autoClose: 1000,
+    })
 }
 function getMissingIngredients() {
     return props.recipe.ingredients.filter((recipeIng) => {
@@ -64,7 +70,7 @@ function getMissingIngredientsText() {
                     </div>
                     <div class="flex flex-col md:flex-row gap-4 items-center">
                         <div class="flex-1">
-                            <p class="text-red-600" break-words>
+                            <p class="text-red-600 wrap-break-word" >
                                 缺少食材:&nbsp;
                                 <span class="font-semibold">
                                     {{ getMissingIngredientsText() }}
