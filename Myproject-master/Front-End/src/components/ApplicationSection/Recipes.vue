@@ -494,7 +494,7 @@ function handleCookRecipe(recipe) {
             <div
                 v-for="recipe in filterRecipes"
                 :key="recipe.id"
-                class="bg-white rounded-lg overflow-hidden shadow-md w-[calc(50%-12px)] shrink-0 flex"
+                class="bg-white rounded-lg overflow-hidden shadow-md w-full md:w-[calc(50%-12px)] shrink-0 flex"
             >
                 <img :src="recipe.image_url" :alt="recipe.title" class="w-1/3 object-cover h-48" />
                 <div class="flex flex-col justify-between flex-1 p-4">

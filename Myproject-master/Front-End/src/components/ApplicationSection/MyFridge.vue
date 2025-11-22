@@ -104,6 +104,10 @@ function saveEdit(updatedData) {
         alert('購買日期不能晚於過期日期')
         return
     }
+    if (updatedData.quantity <= 0) { 
+        alert('數量必須大於 0!')
+        return
+    }
     
     // 找到要更新的食材，並更新它
     Object.keys(ingredients.value).forEach((category) => {
@@ -126,6 +130,10 @@ function addIngredient() {
         alert('請輸入食材名稱!')
         return
     }
+    if (newIngredient.value.quantity <= 0) {
+        alert('數量必須大於 0!')
+        return
+    }
     if (!newIngredient.value.expired_date) {
         alert('請輸入過期日期!')
         return
@@ -137,8 +145,6 @@ function addIngredient() {
 
     // ✅ 完整新增邏輯
     const ingredient = {
-        id: Math.max(...props.fridgeItems.map(i => i.id), 0) + 1,
-        ingredient_id: Math.max(...props.fridgeItems.map(i => i.ingredient_id), 0) + 1,
         name: newIngredient.value.name,
         category: newIngredient.value.category,
         quantity: newIngredient.value.quantity,
@@ -348,12 +354,12 @@ function isExpired(expiredDate) {
                 <div v-if="editIngredient" class="space-y-4">
                     <div>
                         <label class="block font-bold mb-2">食材名稱</label>
-                        <input type="text" :value="editIngredient.name" disabled class="w-full border p-2 bg-gray-100" />
+                        <input type="text" v-model="editIngredient.name"  class="w-full border p-2 bg-gray-100" />
                     </div>
 
                     <div>
                         <label class="block font-bold mb-2">數量</label>
-                        <input type="number" v-model.number="editIngredient.quantity" class="w-full border p-2" />
+                        <input type="number" v-model.number = "editIngredient.quantity" min="1" class="w-full border p-2" />
                     </div>
 
                     <div>
