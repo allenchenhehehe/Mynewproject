@@ -37,14 +37,14 @@ function getMissingIngredientsText() {
 <template>
     <div class="mt-28 max-w-7xl mx-auto px-4">
         <div class="flex justify-center items-center relative">
-            <h1 class="mb-8 text-4xl">食譜詳情</h1>
+            <h1 class="mb-8 text-4xl font-bold">食譜詳情</h1>
             <button @click="handleGoBack" class="mb-6 px-4 py-2 bg-gray-300 text-gray-700 rounded font-semibold absolute right-0 cursor-pointer">
                 返回列表
             </button>
         </div>
 
-        <div v-if="props.recipe" class="bg-white rounded-b-lg p-6 gap-6 flex shadow-md">
-            <img :src="props.recipe.image_url" :alt="props.recipe.title" class="w-1/3 object-cover" />
+        <div v-if="props.recipe" class="bg-white rounded-b-lg p-4 md:p-6 gap-6 flex flex-col md:flex-row shadow-md">
+            <img :src="props.recipe.image_url" :alt="props.recipe.title" class="w-full md:w-1/3 object-cover rounded md:rounded-none  h-80 md:h-auto" />
             <div class="flex flex-col flex-1 gap-6">
                 <div class="text-gray-500 border-b border-gray-200 pb-4">
                     <h2 class="mb-6 text-4xl font-bold">{{ props.recipe.title }}</h2>
@@ -62,16 +62,16 @@ function getMissingIngredientsText() {
                             <span>{{ ingredient.quantity }}{{ ingredient.unit }}</span>
                         </div>
                     </div>
-                    <div class="flex gap-4 items-center">
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
                         <div class="flex-1">
-                            <p class="text-red-600">
+                            <p class="text-red-600" break-words>
                                 缺少食材:&nbsp;
                                 <span class="font-semibold">
                                     {{ getMissingIngredientsText() }}
                                 </span>
                             </p>
                         </div>
-                        <button @click="addAllToShoppingList" class="w-1/3 mt-4 bg-gray-500 text-white py-2 rounded cursor-pointer">
+                        <button @click="addAllToShoppingList" class="w-full md:w-1/3 bg-gray-500 text-white py-2 px-3 rounded text-sm md:text-base  whitespace-nowrap cursor-pointer">
                             加入購物清單
                         </button>
                     </div>
