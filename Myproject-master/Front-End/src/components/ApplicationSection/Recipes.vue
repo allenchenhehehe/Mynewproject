@@ -198,142 +198,13 @@ const mockRecipes = [
             { ingredient_id: 37, ingredient_name: '大蔥白', quantity: 1, unit: '根' },
         ],
     },
-    {
-        id: 13,
-        title: '地三鮮',
-        description: '東北名菜，茄子軟糯，土豆香甜，青椒清脆，三種蔬菜風味完美結合。',
-        difficulty: 4,
-        coocking_time: 20,
-        step: '1. 油炸處理：將土豆、茄子和青椒分別切塊。先將土豆塊放入熱油中炸至金黃軟熟，撈出；接著炸茄子塊至變軟上色，撈出；最後將青椒塊稍微過油即可。\n\n2. 調製醬汁：用生抽、老抽、糖、鹽和水澱粉混合均勻，製成濃稠的醬汁。\n\n3. 爆香：鍋中留少量底油，放入蒜末爆香。\n\n4. 混合翻炒：將炸好的三種蔬菜一同倒入鍋中，快速翻炒。\n\n5. 淋醬收汁：倒入調好的醬汁，大火快速翻炒，讓醬汁均勻包裹在所有食材上，湯汁收濃即可關火出鍋。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 38, ingredient_name: '土豆', quantity: 1, unit: '個' },
-            { ingredient_id: 39, ingredient_name: '茄子', quantity: 1, unit: '條' },
-            { ingredient_id: 40, ingredient_name: '青椒', quantity: 1, unit: '個' },
-        ],
-    },
-    {
-        id: 14,
-        title: '白灼蝦',
-        description: '粵菜中常見的烹飪手法，最大限度地保留食材的原汁原味和鮮甜。',
-        difficulty: 2,
-        coocking_time: 10,
-        step: '1. 處理鮮蝦：將活蝦或鮮蝦清洗乾淨，剪去蝦鬚，挑去蝦線（可省略），確保蝦身無雜質。\n\n2. 準備灼水：鍋中倒入足量的清水，加入薑片、蔥段和少許料酒，大火煮沸，這能有效去除蝦的腥味。\n\n3. 快速灼燙：將蝦倒入沸水中，轉中小火，煮約2-3分鐘，看到蝦身捲曲、顏色變紅即可立即撈出，過度烹煮會導致蝦肉變老。\n\n4. 準備蘸料：將生抽、薑末、少許醋和麻油混合，製成簡單的蘸醬。\n\n5. 擺盤：將灼好的蝦瀝乾水分，整齊地擺放在盤中，搭配蘸醬食用，享受蝦肉本身的鮮甜Q彈。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 41, ingredient_name: '鮮蝦', quantity: 300, unit: '克' },
-            { ingredient_id: 42, ingredient_name: '蔥薑料酒', quantity: 50, unit: '克' },
-            { ingredient_id: 43, ingredient_name: '生抽', quantity: 2, unit: '匙' },
-        ],
-    },
-    {
-        id: 15,
-        title: '揚州炒飯',
-        description: '經典淮揚菜，米飯粒粒分明，配料豐富，色、香、味俱全。',
-        difficulty: 3,
-        coocking_time: 20,
-        step: '1. 準備配料：將火腿丁、蝦仁、雞丁、胡蘿蔔丁、玉米粒等配料切好，雞蛋打散備用，最好使用隔夜飯。\n\n2. 炒雞蛋：鍋中放油燒熱，倒入蛋液快速炒成雞蛋碎，盛出備用。\n\n3. 炒香配料：利用底油，先放入蝦仁、雞丁等不易熟的配料炒熟，再加入火腿丁、胡蘿蔔丁和玉米粒翻炒均勻。\n\n4. 下米飯：將隔夜飯倒入鍋中，轉大火快速翻炒，將米飯撥散，炒至粒粒分明。\n\n5. 混合調味：加入炒好的雞蛋碎和所有配料，撒入鹽和少許胡椒粉調味，快速翻炒均勻，最後撒上蔥花即可出鍋。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 44, ingredient_name: '隔夜飯', quantity: 300, unit: '克' },
-            { ingredient_id: 45, ingredient_name: '雞蛋', quantity: 2, unit: '個' },
-            { ingredient_id: 46, ingredient_name: '蝦仁/火腿/蔬菜丁', quantity: 150, unit: '克' },
-        ],
-    },
-    {
-        id: 16,
-        title: '糖醋排骨',
-        description: '酸甜口的江浙菜代表，排骨色澤紅亮，外酥內嫩，酸甜適口。',
-        difficulty: 5,
-        coocking_time: 45,
-        step: '1. 排骨處理：將排骨切塊，冷水下鍋，加入薑片和料酒汆燙，煮沸後撇去浮沫，撈出洗淨瀝乾。\n\n2. 油炸鎖汁：排骨瀝乾後，放入燒熱的油鍋中，炸至表面金黃微焦，撈出瀝油。\n\n3. 調製糖醋汁：按照1:2:3:4:5的比例（酒:醋:糖:醬油:水）調製糖醋汁，這是萬能比例。\n\n4. 燒煮入味：鍋中留底油，倒入排骨，隨即倒入調好的糖醋汁，大火煮沸後轉小火，蓋上鍋蓋燜煮30分鐘。\n\n5. 大火收汁：待排骨軟爛後，開大火將湯汁收濃，湯汁會變得濃稠且呈現焦糖色，均勻地包裹在排骨上，最後撒上白芝麻即可。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 47, ingredient_name: '豬肋排', quantity: 500, unit: '克' },
-            { ingredient_id: 48, ingredient_name: '陳醋', quantity: 3, unit: '匙' },
-            { ingredient_id: 49, ingredient_name: '白砂糖', quantity: 4, unit: '匙' },
-        ],
-    },
-    {
-        id: 17,
-        title: '麻油雞',
-        description: '台灣或客家傳統滋補湯品，酒香麻油香濃郁，雞肉鮮嫩，溫暖滋補。',
-        difficulty: 3,
-        coocking_time: 40,
-        step: '1. 炒香薑片：鍋中倒入麻油，用中小火慢慢煸炒老薑片，直到薑片邊緣捲曲、顏色變深，但不要炒焦，讓麻油充分吸收薑的香氣。\n\n2. 炒雞肉：將切塊的雞肉（建議用雞腿肉）倒入鍋中，轉大火快速翻炒至雞肉變色，鎖住肉汁。\n\n3. 米酒入味：倒入全米酒（或米酒與水1:1混合），水量需淹沒雞肉，大火煮沸，讓酒精揮發。\n\n4. 燜煮入味：煮沸後轉小火，蓋上鍋蓋燜煮20-30分鐘，直到雞肉軟爛入味。\n\n5. 調味：最後加入少許鹽調味即可。這道菜的重點在於米酒的香氣和麻油的溫潤，適合冬天或產後滋補。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 50, ingredient_name: '帶骨雞肉塊', quantity: 500, unit: '克' },
-            { ingredient_id: 51, ingredient_name: '老薑片', quantity: 10, unit: '片' },
-            { ingredient_id: 52, ingredient_name: '麻油', quantity: 50, unit: '毫升' },
-            { ingredient_id: 53, ingredient_name: '米酒', quantity: 500, unit: '毫升' },
-        ],
-    },
-    {
-        id: 18,
-        title: '蔥油拌麵',
-        description: '上海經典小吃，麵條滑順，蔥油香氣濃郁，製作簡單卻回味無窮。',
-        difficulty: 2,
-        coocking_time: 15,
-        step: '1. 製作蔥油：鍋中倒入多量油，放入切好的蔥白和蔥綠（蔥白多一點），小火慢熬，直到蔥段變黃變乾，將蔥段撈出備用，製成的油即為蔥油。\n\n2. 調製醬汁：在蔥油中加入生抽、老抽和少許糖，小火加熱至糖融化，製成蔥油醬汁。\n\n3. 煮麵：水燒開後，放入麵條煮熟，煮好後立即撈出，瀝乾水分。\n\n4. 拌麵：將煮好的麵條放入碗中，淋上適量的蔥油醬汁，再放上炸好的蔥段。\n\n5. 均勻攪拌：迅速將麵條和醬汁攪拌均勻，讓麵條完全裹上濃郁的蔥油和醬汁，趁熱食用風味最佳。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 54, ingredient_name: '麵條', quantity: 200, unit: '克' },
-            { ingredient_id: 55, ingredient_name: '小蔥/大蔥', quantity: 1, unit: '把' },
-            { ingredient_id: 56, ingredient_name: '醬油', quantity: 3, unit: '匙' },
-        ],
-    },
-    {
-        id: 19,
-        title: '蒜蓉粉絲蒸扇貝',
-        description: '海鮮與蒜蓉的完美結合，粉絲吸收了鮮美的湯汁，口感豐富。',
-        difficulty: 4,
-        coocking_time: 15,
-        step: '1. 處理扇貝：將新鮮扇貝打開，取出肉清洗乾淨，只保留半邊殼，粉絲用溫水泡軟。\n\n2. 製作蒜蓉醬：大量大蒜切成蓉，一半用熱油炒至金黃（熟蒜蓉），一半保持生蒜蓉，將兩者混合，加入生抽、鹽和蠔油調味。\n\n3. 鋪盤：在扇貝殼上先鋪一層泡軟的粉絲，再放上扇貝肉，最後在扇貝肉上鋪滿調好的蒜蓉醬。\n\n4. 蒸煮：將扇貝放入燒開水的蒸鍋中，大火蒸約6-8分鐘，時間不宜過長，以保持扇貝肉的鮮嫩。\n\n5. 熱油激香：出鍋後，在每個扇貝上撒上蔥花，燒熱少許油，將熱油均勻地潑在蔥花上，激發出香氣即可。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 57, ingredient_name: '新鮮扇貝', quantity: 6, unit: '個' },
-            { ingredient_id: 58, ingredient_name: '粉絲', quantity: 50, unit: '克' },
-            { ingredient_id: 59, ingredient_name: '大蒜', quantity: 1, unit: '頭' },
-        ],
-    },
-    {
-        id: 20,
-        title: '水煮肉片',
-        description: '川菜經典，麻辣鮮香，肉片滑嫩，湯汁紅亮，是超級下飯的重口味菜。',
-        difficulty: 5,
-        coocking_time: 30,
-        step: '1. 肉片醃製：將豬里脊肉切成大薄片，加入鹽、料酒、蛋清和大量澱粉抓勻，再加入少許油鎖住水分，醃製15分鐘。\n\n2. 準備底菜：將豆芽、大白菜等蔬菜放入鍋中用熱水或少量油炒熟，鋪在大碗底部備用。\n\n3. 炒底料：鍋中熱油，放入豆瓣醬、乾辣椒段和花椒，小火炒出紅油和香氣，加入適量清水或高湯煮沸。\n\n4. 滑肉片：將湯中的辣椒段和花椒撈出（可保留部分），轉小火，將醃好的肉片一片一片放入湯中，煮至肉片變色即可關火。\n\n5. 潑熱油：將肉片和湯汁一起倒入鋪好底菜的大碗中，在肉片上鋪滿蒜末、辣椒粉和花椒粒，最後燒熱大量的油，將熱油均勻地潑在調料上，激發出麻辣香氣即可。',
-        creator_id: 'system',
-        is_public: true,
-        image_url: '/TomatoEgg.webp',
-        ingredients: [
-            { ingredient_id: 60, ingredient_name: '豬里脊肉', quantity: 300, unit: '克' },
-            { ingredient_id: 61, ingredient_name: '豆瓣醬', quantity: 2, unit: '匙' },
-            { ingredient_id: 62, ingredient_name: '豆芽/白菜', quantity: 200, unit: '克' },
-            { ingredient_id: 63, ingredient_name: '乾辣椒/花椒', quantity: 20, unit: '克' },
-        ],
-    },
 ]
 
 const recipes = ref(mockRecipes)
-const filterByMyIngredient = ref(false) //要不要根據我的食材篩選
-const selectByCookingTime = ref('all') //根據時長
-const selectByDifficulty = ref('all') //根據時長
+const filterByMyIngredient = ref(false)
+const selectByCookingTime = ref('all')
+const selectByDifficulty = ref('all')
+const searchQuery = ref('')
 
 const fridgeIngredientMap = computed(() => {
   const map = {}
@@ -347,24 +218,34 @@ const fridgeIngredientMap = computed(() => {
   }
   return map
 })
+
 function canMakeRecipe(recipe) {
   return recipe.ingredients.every((ingredient) => {
     const fridgeQuantity = fridgeIngredientMap.value[ingredient.ingredient_id] || 0
     return fridgeQuantity >= ingredient.quantity
   })
 }
+
 const filterRecipes = computed(() => {
     let result = recipes.value
-  // 第一步：先按食材篩選
-if (filterByMyIngredient.value) {
-    // 如果冰箱是空的 (Map key 數量為 0)，直接回傳空陣列，不用再跑 filter
+  
+  // 按搜尋篩選
+  if (searchQuery.value.trim()) {
+    result = result.filter((recipe) => 
+      recipe.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      recipe.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  }
+
+  // 按食材篩選
+  if (filterByMyIngredient.value) {
     if (Object.keys(fridgeIngredientMap.value).length === 0) {
       return []
     }
     result = result.filter((recipe) => canMakeRecipe(recipe))
   }
 
-  // 第二步：再按時間篩選
+  // 按時間篩選
   if (selectByCookingTime.value === 'all') {
     // 保持所有食譜
   } else if (selectByCookingTime.value === '15') {
@@ -374,11 +255,11 @@ if (filterByMyIngredient.value) {
   } else if (selectByCookingTime.value === '60') {
     result = result.filter((recipe) => recipe.coocking_time >= 60)
   }
-//第三步:困難度篩選
+
+  // 按難度篩選
   if (selectByDifficulty.value === 'all') {
     // 保持所有食譜
-  }
-  else if (selectByDifficulty.value === 'easy') {
+  } else if (selectByDifficulty.value === 'easy') {
     result = result.filter((recipe) => recipe.difficulty == 1)
   } else if (selectByDifficulty.value === 'medium') {
     result = result.filter((recipe) => recipe.difficulty >= 2 && recipe.difficulty <= 3)
@@ -391,122 +272,155 @@ if (filterByMyIngredient.value) {
 function handleCookRecipe(recipe) {
     emit('gotorecipedetail', recipe)
 }
-
 </script>
+
 <template>
-    <div class="mt-28 max-w-7xl mx-auto px-4">
-        <div class="flex justify-center items-center"><h1 class="mb-8 text-4xl font-bold">想做些甚麼料理嗎!</h1></div>
+    <div class="mt-28 max-w-7xl mx-auto px-6 pb-20 font-sans text-black">
+        
+        <!-- 標題 -->
+        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+            <h1 class="text-5xl font-black uppercase tracking-tighter relative inline-block">
+                WHAT TO COOK?
+                <span class="absolute -top-4 -right-8 bg-orange-300 text-black text-xs font-bold px-2 py-1 border-2 border-black rotate-12 shadow-[2px_2px_0px_0px_black]">
+                    LET'S COOK!
+                </span>
+            </h1>
+        </div>
 
-        <div class="bg-white p-4 rounded-lg mb-4 shadow-md flex flex-col items-center justify-center space-y-6">
-            <div>
-                <h3 class="text-lg font-bold text-gray-500">食譜類型</h3>
-            </div>
+        <!-- 篩選區塊 -->
+        <div class="border-2 border-black bg-white shadow-[4px_4px_0px_0px_black] mb-8 p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- 左側：篩選選項 -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- 食譜類型 -->
+                    <div class = "text-lg">
+                        <h3 class="font-black uppercase mb-3 tracking-wide">食譜類型</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button
+                                @click="filterByMyIngredient = false"
+                                :class="!filterByMyIngredient ? 'bg-black text-white border-black' : 'bg-gray-100 text-black border-gray-400'"
+                                class="border-2 font-bold px-4 py-2 cursor-pointer hover:shadow-[2px_2px_0px_0px_black] transition-all"
+                            >
+                                所有食譜
+                            </button>
+                            <button
+                                @click="filterByMyIngredient = true"
+                                :class="filterByMyIngredient ? 'bg-black text-white border-black' : 'bg-gray-100 text-black border-gray-400'"
+                                class="border-2 font-bold px-4 py-2 cursor-pointer hover:shadow-[2px_2px_0px_0px_black] transition-all"
+                            >
+                                根據我的食材
+                            </button>
+                        </div>
+                    </div>
 
-            <div class="flex gap-3">
-                <button
-                    @click="filterByMyIngredient = false"
-                    :class="!filterByMyIngredient ? 'text-white bg-amber-500' : 'text-gray-200 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-2 cursor-pointer"
-                >
-                    所有食譜
-                </button>
-                <button
-                    @click="filterByMyIngredient = true"
-                    :class="filterByMyIngredient ? 'text-white bg-amber-500' : 'text-gray-200 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-2 cursor-pointer"
-                >
-                    根據我的食材
-                </button>
-            </div>
+                    <!-- 烹飪時間 -->
+                    <div class = "text-lg">
+                        <h3 class="font-black uppercase mb-3 tracking-wide">烹飪時間</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button
+                                v-for="time in ['all', '15', '30', '60']"
+                                :key="time"
+                                @click="selectByCookingTime = time"
+                                :class="selectByCookingTime == time ? 'bg-black text-white border-black' : 'bg-gray-100 text-black border-gray-400'"
+                                class="border-2 font-bold px-3 py-1 cursor-pointer hover:shadow-[2px_2px_0px_0px_black] transition-all"
+                            >
+                                {{ time === 'all' ? '所有' : time === '15' ? '< 15分' : time === '30' ? '< 30分' : '> 60分' }}
+                            </button>
+                        </div>
+                    </div>
 
-            <div>
-                <h3 class="text-lg font-bold text-gray-500">烹飪時間</h3>
-            </div>
+                    <!-- 難易程度 -->
+                    <div class = "text-lg">
+                        <h3 class="font-black uppercase mb-3 tracking-wide">難易程度</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button
+                                v-for="level in ['all', 'easy', 'medium', 'hard']"
+                                :key="level"
+                                @click="selectByDifficulty = level"
+                                :class="selectByDifficulty == level ? 'bg-black text-white border-black' : 'bg-gray-100 text-black border-gray-400'"
+                                class="border-2 font-bold px-3 py-1 cursor-pointer hover:shadow-[2px_2px_0px_0px_black] transition-all"
+                            >
+                                {{ level === 'all' ? '所有' : level === 'easy' ? '簡易' : level === 'medium' ? '中等' : '困難' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="flex gap-2">
-                <button
-                    @click="selectByCookingTime = 'all'"
-                    :class="selectByCookingTime == 'all' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    所有
-                </button>
-                <button
-                    @click="selectByCookingTime = '15'"
-                    :class="selectByCookingTime == '15' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    小於15分鐘
-                </button>
-                <button
-                    @click="selectByCookingTime = '30'"
-                    :class="selectByCookingTime == '30' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    小於30分鐘
-                </button>
-                <button
-                    @click="selectByCookingTime = '60'"
-                    :class="selectByCookingTime == '60' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    60分鐘以上
-                </button>
-            </div>
+                <!-- 右側：搜尋 + 統計 -->
+                <div class="lg:col-span-1 space-y-4">
+                    <!-- 搜尋欄 -->
+                    <div class = "text-lg">
+                        <h3 class="font-black uppercase mb-3 tracking-wide">搜尋食譜</h3>
+                        <div class="relative">
+                            <input 
+                                v-model="searchQuery"
+                                type="text" 
+                                placeholder="輸入食譜名稱..."
+                                class="w-full border-2 border-black px-4 py-2 font-bold bg-yellow-50 focus:bg-yellow-100 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all pr-10 mb-3"
+                            />
+                            <button
+                                v-if="searchQuery"
+                                @click="searchQuery = ''"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 font-black text-lg text-gray-500 hover:text-black transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </div>
 
-            <div>
-                <h3 class="text-lg font-bold text-gray-500">難易程度</h3>
-            </div>
+                    <!-- 統計卡片 -->
+                    <div class="text-lg border-2 border-black bg-linear-to-br from-orange-100 to-yellow-100 p-4 space-y-2">
+                        <div class="flex justify-between items-center pb-2 border-b-2 border-dashed border-black">
+                            <span class="font-bold ">總食譜</span>
+                            <span class="font-black">{{ recipes.length }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b-2 border-dashed border-black">
+                            <span class="font-bold">符合條件</span>
+                            <span class="font-black">{{ filterRecipes.length }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold">配對度</span>
+                            <span class="font-black">
+                                {{ recipes.length > 0 ? Math.round((filterRecipes.length / recipes.length) * 100) : 0 }}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="flex gap-2">
-                <button
-                    @click="selectByDifficulty = 'all'"
-                    :class="selectByDifficulty == 'all' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    所有
-                </button>
-                <button
-                    @click="selectByDifficulty = 'easy'"
-                    :class="selectByDifficulty == 'easy' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    簡易
-                </button>
-                <button
-                    @click="selectByDifficulty = 'medium'"
-                    :class="selectByDifficulty == 'medium' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    中等
-                </button>
-                <button
-                    @click="selectByDifficulty = 'hard'"
-                    :class="selectByDifficulty == 'hard' ? 'text-white bg-amber-500' : 'text-gray-300 bg-gray-700'"
-                    class="rounded font-semibold px-3 py-1 cursor-pointer"
-                >
-                    困難
-                </button>
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-6 mt-8">
+        <!-- 食譜卡片 -->
+        <div class="text-lg grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
                 v-for="recipe in filterRecipes"
                 :key="recipe.id"
-                class="bg-white rounded-lg overflow-hidden shadow-md w-full md:w-[calc(50%-12px)] shrink-0 flex"
+                class="border-2 border-black bg-white shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] transition-all overflow-hidden group"
             >
-                <img :src="recipe.image_url" :alt="recipe.title" class="w-1/3 object-cover h-48" />
-                <div class="flex flex-col justify-between flex-1 p-4">
+                <!-- 食譜圖片 -->
+                <div class="relative overflow-hidden h-48 border-b-2 border-black bg-gray-200">
+                    <img 
+                        :src="recipe.image_url" 
+                        :alt="recipe.title" 
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div class="absolute top-2 right-2 bg-black text-white border-2 border-white px-3 py-1 font-bold ">
+                        {{ recipe.coocking_time }} MIN
+                    </div>
+                </div>
+
+                <!-- 內容 -->
+                <div class="text-lg p-4 space-y-3">
+                    <!-- 標題 -->
                     <div>
-                        <h3 class="font-bold text-xl mb-2">{{ recipe.title }}</h3>
-                        <p class="text-sm text-gray-500 mb-4">{{ recipe.description }}</p>
+                        <h3 class="font-black text-xl uppercase mb-1">{{ recipe.title }}</h3>
+                        <p class=" text-gray-600 line-clamp-2">{{ recipe.description }}</p>
                     </div>
 
-                    <div class="flex justify-between mb-3">
-
-                    <div class="flex items-center gap-1">
-                        <span class="text-sm">難度:</span>
+                    <!-- 難度評分 -->
+                    <div class="flex items-center gap-2 py-2 border-t-2 border-b-2 border-dashed border-gray-300">
+                        <span class="font-bold uppercase tracking-wide">難度:</span>
                         <div class="flex gap-0.5">
                             <Icon 
                                 v-for="n in recipe.difficulty" 
@@ -514,23 +428,34 @@ function handleCookRecipe(recipe) {
                                 icon="mdi:star"
                                 class="text-sm text-amber-400"
                             />
-                            <Icon 
-                                v-for="n in (5 - recipe.difficulty)" 
-                                :key="'empty-' + n"
-                                icon="mdi:star-outline"
-                                class="text-sm text-gray-300"
-                            />
                         </div>
                     </div>
-                    <span class="text-sm">大約:&nbsp;&nbsp;{{ recipe.coocking_time }}分</span>
-                    </div>
-                    <div class="flex gap-2">
-                            <button @click="handleCookRecipe(recipe)" class="w-full bg-amber-300 text-black text-sm px-3 py-2 rounded cursor-pointer">
-                                我要做!
-                            </button>
-                    </div>
+
+                    <!-- 按鈕 -->
+                    <button 
+                        @click="handleCookRecipe(recipe)"
+                        class="w-full bg-amber-400 text-black border-2 border-black font-black py-3 uppercase tracking-wide hover:shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer"
+                    >
+                        我要做!
+                    </button>
                 </div>
             </div>
         </div>
+
+        <!-- 沒有食譜提示 -->
+        <div v-if="filterRecipes.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
+            <p class="font-black text-2xl mb-2">沒有符合的食譜</p>
+            <p class="text-gray-700 font-semibold">試試調整你的篩選條件吧！</p>
+        </div>
     </div>
 </template>
+
+<style scoped>
+/* 隱藏超過2行的描述 */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
