@@ -81,136 +81,111 @@ const todayDateString = computed(() => {
 </script>
 
 <template>
-    <div class="pt-24 max-w-6xl mx-auto px-6 pb-12 text-slate-800">
+    <div class="pt-24 max-w-6xl mx-auto px-6 pb-16 font-sans text-black">
         
-        <div class="mb-10">
-            <p class="text-slate-500 font-medium tracking-wide mb-1 opacity-80">{{ todayDateString }}</p>
-            <h2 class="text-4xl font-extrabold tracking-tight text-slate-900">
-                早安，<span class="text-orange-600">大廚</span>
-            </h2>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
+            <div>
+                <div class="bg-black text-[#fefae0] px-3 py-1 inline-block font-bold text-sm mb-2 rotate-2">TODAY: {{ todayDateString }}</div>
+                <h1 class="text-5xl md:text-6xl font-black tracking-tighter uppercase transform -skew-x-6">
+                    STOCK & <span class="text-orange-500">STOVE</span>
+                </h1>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <div class="lg:col-span-8 flex flex-col gap-6">
-                
-                <div class="bg-white rounded-3xl p-1 shadow-sm border border-orange-100/50 grid grid-cols-3 divide-x divide-slate-100 gap-2">
-                    <div @click="navigateTo('My Fridge')" class="bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-6 border-l-4 border-blue-500 cursor-pointer">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">冰箱食材</p>
-                        <p class="text-4xl font-black text-slate-800 group-hover:text-orange-600 transition-colors">
-                            {{ stats.uniqueIngredients }}<span class="text-lg font-medium text-slate-400 ml-1">種</span>
-                        </p>
-                    </div>
-                    <div @click="navigateTo('My Fridge')" class="bg-linear-to-r from-green-50 to-green-100 rounded-lg p-6 border-l-4 border-green-500 cursor-pointer">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">總庫存</p>
-                        <p class="text-4xl font-black text-slate-800 group-hover:text-orange-600 transition-colors">
-                            {{ stats.totalItems }}<span class="text-lg font-medium text-slate-400 ml-1">項</span>
-                        </p>
-                    </div>
-                    <div @click="navigateTo('Shopping List')" class="bg-linear-to-r from-orange-50 to-orange-100 rounded-lg p-6 border-l-4 border-orange-500 cursor-pointer">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">待購清單</p>
-                        <p class="text-4xl font-black text-slate-800 group-hover:text-green-600 transition-colors">
-                            {{ stats.shoppingCount }}<span class="text-lg font-medium text-slate-400 ml-1">項</span>
-                        </p>
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div @click="navigateTo('My Fridge')" 
+                 class="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer">
+                <h3 class="font-black text-xl mb-2 bg-blue-200 inline-block px-2">FRIDGE</h3>
+                <div class="flex justify-between items-end">
+                    <span class="text-5xl font-black">{{ stats.uniqueIngredients }}</span>
+                    <span class="font-bold text-sm">TYPES</span>
                 </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-orange-100/50 overflow-hidden flex flex-col h-full min-h-[300px]">
-                    <div class="p-6 border-b border-slate-50 flex justify-between items-end">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-800">庫存動態</h3>
-                            <p class="text-slate-500 text-sm mt-1">
-                                {{ expiredItems.length > 0 ? '請盡快處理過期食材' : '食材狀況保持良好' }}
-                            </p>
-                        </div>
-                        <div v-if="expiredItems.length === 0 && expiringItems.length === 0" class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
-                            全數新鮮
-                        </div>
-                        <div v-else class="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
-                            需要注意
-                        </div>
-                    </div>
-
-                    <div class="p-6 grow flex flex-col justify-center">
-                        <div v-if="expiredItems.length > 0" class="mb-6">
-                            <p class="text-xs font-bold text-red-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                已過期
-                            </p>
-                            <div class="flex flex-wrap gap-3">
-                                <div v-for="item in expiredItems" :key="item.id" 
-                                     class="bg-red-50 border border-red-100 text-red-900 px-4 py-3 rounded-xl flex flex-col min-w-[140px]">
-                                    <span class="font-bold text-lg leading-tight">{{ item.name }}</span>
-                                    <span class="text-xs text-red-400 mt-1">過期 {{ Math.abs(daysUntilExpiry(item.expired_date)) }} 天</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="expiringItems.length > 0">
-                            <p class="text-xs font-bold text-orange-500 uppercase tracking-wider mb-3">7天內建議食用</p>
-                            <div class="space-y-3">
-                                <div v-for="item in expiringItems" :key="item.id" 
-                                     class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-orange-200 transition-colors group">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-slate-700 text-lg">{{ item.name }}</span>
-                                        <span class="text-xs text-slate-400">{{ item.quantity }}{{ item.unit }} · {{ formatDate(item.expired_date) }} 到期</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="block text-2xl font-bold text-orange-500 group-hover:scale-110 transition-transform">
-                                            {{ daysUntilExpiry(item.expired_date) }}
-                                            <span class="text-xs font-normal text-slate-400 align-middle">天</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="expiredItems.length === 0 && expiringItems.length === 0" class="flex flex-col items-center justify-center py-8 text-center opacity-60">
-                            <span class="text-6xl mb-2">🥗</span>
-                            <h4 class="text-lg font-bold text-slate-700">冰箱很健康</h4>
-                            <p class="text-slate-500 text-sm">沒有即將過期的食材，盡情享受料理吧！</p>
-                        </div>
-                    </div>
+            </div>
+            
+            <div @click="navigateTo('Shopping List')"
+                 class="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer">
+                <h3 class="font-black text-xl mb-2 bg-green-200 inline-block px-2">SHOPPING</h3>
+                <div class="flex justify-between items-end">
+                    <span class="text-5xl font-black">{{ stats.shoppingCount }}</span>
+                    <span class="font-bold text-sm">ITEMS</span>
                 </div>
             </div>
 
-            <div class="lg:col-span-4 flex flex-col gap-6">
+            <div class="bg-orange-400 border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                <h3 class="font-black text-xl mb-2 bg-white inline-block px-2">TOTAL</h3>
+                <div class="flex justify-between items-end">
+                    <span class="text-5xl font-black text-white">{{ stats.totalItems }}</span>
+                    <span class="font-bold text-sm">IN STOCK</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <div class="flex justify-between items-center mb-6 border-b-2 border-black pb-4">
+                    <h2 class="text-3xl font-black uppercase">Alerts</h2>
+                    <div v-if="expiredItems.length > 0" class="bg-red-500 text-white font-bold px-3 py-1 animate-pulse">
+                        ! EXPIRED !
+                    </div>
+                </div>
+
+                <div v-if="expiredItems.length > 0" class="mb-6 space-y-2">
+                     <div v-for="item in expiredItems" :key="item.id" class="bg-red-100 border-2 border-red-500 p-2 flex justify-between font-bold">
+                        <span>{{ item.name }}</span>
+                        <span>{{ formatDate(item.expired_date) }}</span>
+                     </div>
+                </div>
+
+                <div v-if="expiringItems.length > 0" class="space-y-3">
+                    <p class="font-bold text-sm bg-yellow-200 inline-block px-2 border border-black">EXPIRING SOON</p>
+                    <div v-for="item in expiringItems" :key="item.id" class="flex justify-between items-center border-b-2 border-dashed border-gray-300 pb-2">
+                        <span class="font-bold text-lg">{{ item.name }}</span>
+                        <div class="text-right">
+                            <span class="block font-black text-orange-500">{{ daysUntilExpiry(item.expired_date) }} DAYS LEFT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="expiredItems.length === 0 && expiringItems.length === 0" class="text-center py-10">
+                    <p class="text-2xl font-black text-gray-300">ALL GOOD</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <button @click="navigateTo('Recipes')" 
+                        class="group relative bg-[#9b87f5] h-full min-h-[200px] border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 transition-all overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-10 group-hover:scale-150 transition-transform duration-700">
+                        <span class="text-9xl font-black">?</span>
+                    </div>
+                    <div class="relative z-10 p-8 flex flex-col items-start h-full justify-between">
+                        <h2 class="text-4xl font-black text-white text-stroke-black leading-none">
+                            WHAT'S FOR<br>DINNER?
+                        </h2>
+                        <div class="bg-white border-2 border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition-colors">
+                            COOK NOW ->
+                        </div>
+                    </div>
+                </button>
                 
-                <div class="bg-slate-700 text-white rounded-3xl p-8 shadow-xl shadow-orange-900/10 relative overflow-hidden flex flex-col justify-between min-h-80">
-                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-orange-500 rounded-full blur-3xl opacity-20"></div>
-                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-10"></div>
-                    
-                    <div class="relative z-10">
-                        <h3 class="text-2xl font-bold mb-3">靈感枯竭嗎？</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
-                            我們可以用這 <span class="text-orange-400 font-bold text-lg">{{ stats.uniqueIngredients }}</span> 種食材幫你變出美味晚餐，不再煩惱今晚吃什麼。
-                        </p>
-                    </div>
-
-                    <button @click="navigateTo('Recipes')" 
-                            class="relative z-10 w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                        開始探索食譜 
-                    </button>
+                <div class="grid grid-cols-2 gap-4">
+                     <button @click="navigateTo('My Fridge')" 
+                             class="bg-[#a7f3d0] border-2 border-black p-4 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                        ADD ITEM +
+                     </button>
+                     <button @click="navigateTo('Shopping List')"
+                             class="bg-[#fecaca] border-2 border-black p-4 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                        CHECK LIST
+                     </button>
                 </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-orange-100/50 p-6">
-                    <h3 class="text-lg font-bold text-slate-800 mb-4">捷徑</h3>
-                    <div class="space-y-3">
-                        <button @click="navigateTo('My Fridge')" 
-                                class="w-full group flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all bg-slate-50">
-                            <span class="font-semibold text-slate-600 group-hover:text-blue-700">管理冰箱</span>
-                            <span class="text-xl leading-none text-slate-300 group-hover:text-blue-500">+</span>
-                        </button>
-                        
-                        <button @click="navigateTo('Shopping List')"
-                                class="w-full group flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-green-300 hover:bg-green-50 transition-all bg-slate-50">
-                            <span class="font-semibold text-slate-600 group-hover:text-green-700">購物清單</span>
-                            <span class="text-xl leading-none text-slate-300 group-hover:text-green-500">→</span>
-                        </button>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+/* 增加文字描邊效果 */
+.text-stroke-black {
+  -webkit-text-stroke: 1.5px black;
+  text-shadow: 2px 2px 0px black;
+}
+</style>

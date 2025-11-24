@@ -28,7 +28,7 @@ const handlePageChange = (pageName) => {
         <!-- 手機版：Logo + 漢堡按鈕 -->
         <div class="flex md:hidden items-center justify-between">
             <div class="text-2xl font-bold text-orange-500 whitespace-nowrap">
-                Pantry Pilot
+                Stock & Stove
             </div>
             <button
                 @click="isMenuOpen = !isMenuOpen"
