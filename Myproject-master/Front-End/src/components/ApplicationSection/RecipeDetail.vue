@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits, computed} from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
@@ -8,36 +8,52 @@ const emit = defineEmits(['handlegoback', 'addToShopping'])
 const props = defineProps({
     recipe: Object,
     fridgeItems: Array,
+    favoriteRecipes: Array,
+    allComments: Array,
 })
+const pageTop = ref(null)
 
-const isFavorited = ref(false)
+const isFavorited = computed({
+    get() {
+        return props.favoriteRecipes.some(fav => fav.id === props.recipe.id)
+    },
+    set(value) {
+        if (value) {
+            // 如果還沒有就添加
+            if (!props.favoriteRecipes.some(fav => fav.id === props.recipe.id)) {
+                props.favoriteRecipes.push(props.recipe)
+            }
+        } else {
+            // 移除收藏
+            const index = props.favoriteRecipes.findIndex(fav => fav.id === props.recipe.id)
+            if (index > -1) {
+                props.favoriteRecipes.splice(index, 1)
+            }
+        }
+    }
+})
 const userRating = ref(0)
 const commentText = ref('')
-const comments = ref([
-    {
-        id: 1,
-        author: '使用者A',
-        rating: 5,
-        text: '超級好吃！強烈推薦！',
-        date: '2024-11-20'
-    },
-    {
-        id: 2,
-        author: '使用者B',
-        rating: 4,
-        text: '味道不錯，但有點辣',
-        date: '2024-11-19'
+const comments = computed(() => {
+    if (!props.allComments || !props.recipe) {
+        return []
     }
-])
-
+    return props.allComments.filter(comment => comment.recipeId === props.recipe.id)
+})
+const recipeChanged = computed(() => {
+    if (props.recipe) {
+        window.scrollTo(0, 0)
+    }
+    return props.recipe?.id
+})
 function handleGoBack() {
     emit('handlegoback')
 }
 
 function toggleFavorite() {
     isFavorited.value = !isFavorited.value
-    toast.success(isFavorited.value ? '✅ 已收藏食譜！' : '❌ 已取消收藏', {
-        autoClose: 1500,
+    toast.success(isFavorited.value ? '已收藏食譜！' : '已取消收藏', {
+        autoClose: 1000,
     })
 }
 
@@ -52,8 +68,8 @@ function addAllToShoppingList() {
         is_purchased: false,
     }))
     emit('addToShopping', itemsToAdd, props.recipe.title, props.recipe.id)
-    toast.success(`✅ 已將 ${itemsToAdd.length} 項食材添加到購物清單！`, {
-        autoClose: 2000,
+    toast.success(`已將 ${itemsToAdd.length} 項食材添加到購物清單！`, {
+        autoClose: 1000,
     })
 }
 
@@ -78,25 +94,29 @@ function getHavingIngredients() {
 function submitComment() {
     if (!commentText.value.trim() || userRating.value === 0) {
         toast.error('請輸入評論並選擇評分！', {
-            autoClose: 1500,
+            autoClose: 1000,
         })
         return
     }
 
     const newComment = {
-        id: comments.value.length + 1,
+        id: Date.now(),
+        recipeId: props.recipe.id,
+        recipeTitle: props.recipe.title,  // 添加這一行
         author: '你',
         rating: userRating.value,
         text: commentText.value,
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString().split('T')[0],  // 添加這一行
+        likes: 0  // 添加這一行
     }
 
-    comments.value.unshift(newComment)
+    props.allComments.push(newComment)
     commentText.value = ''
     userRating.value = 0
 
-    toast.success('✅ 評論已發佈！', {
-        autoClose: 1500,
+    toast.success('評論已發佈！', {
+        autoClose: 1000,
     })
 }
 
@@ -108,7 +128,7 @@ function getAverageRating() {
 </script>
 
 <template>
-    <div class="mt-28 max-w-6xl mx-auto px-6 pb-20 font-sans text-black">
+    <div :key="recipeChanged" class="mt-28 max-w-6xl mx-auto px-6 pb-20 font-sans text-black">
         
         <!-- 標題區 -->
         <div class="flex flex-col md:flex-row justify-between items-start mb-10 gap-4">
@@ -180,7 +200,7 @@ function getAverageRating() {
                             :class="isFavorited ? 'bg-red-400 text-white' : 'bg-white text-black'"
                             class="w-full border-2 border-black font-black py-3 px-4 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] transition-all cursor-pointer"
                         >
-                            {{ isFavorited ? '❤️ 已收藏' : '🤍 收藏' }}
+                            {{ isFavorited ? '已收藏' : '收藏' }}
                         </button>
 
                         <!-- 評分區 -->
@@ -257,7 +277,7 @@ function getAverageRating() {
 
             <!-- 詳細步驟 -->
             <div class="border-2 border-black bg-yellow-50 shadow-[4px_4px_0px_0px_black] p-6 space-y-4">
-                <h3 class="text-2xl font-black uppercase tracking-wide mb-6">📝 詳細步驟</h3>
+                <h3 class="text-2xl font-black uppercase tracking-wide mb-6"> 詳細步驟</h3>
                 <div class="space-y-4">
                     <div 
                         v-for="(step, index) in props.recipe.step.split('\n\n')"

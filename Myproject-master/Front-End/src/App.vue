@@ -9,12 +9,16 @@ import MyFridge from './components/ApplicationSection/MyFridge.vue'
 import Recipes from './components/ApplicationSection/Recipes.vue'
 import RecipeDetail from './components/ApplicationSection/RecipeDetail.vue'
 import ShoppingList from './components/ApplicationSection/ShoppingList.vue'
+import Favorites from './components/ApplicationSection/Favorites.vue'
+import MyComments from './components/ApplicationSection/MyComments.vue'
 import { STATUS_LOGIN, STATUS_SIGNUP, STATUS_APP, STATUS_FORGET_PASSWORD } from './libs/constants'
 
 const status = ref(STATUS_LOGIN)
 const currentPage = ref('Home')
 const selectedRecipe = ref(null)
 const shoppingList = ref([])
+const favoriteRecipes = ref([])
+const allComments = ref([])
 const mockFridgeData = [
     {
         id: 1,
@@ -100,9 +104,9 @@ const handleGoBackToRecipes = () => {
 
 const handleUpdateFridge = (updatedItems) => {
     console.log('App.vue 收到 updateFridge，更新數據:', updatedItems)
-    // 在 script 區域中，必須使用 .value 來更新 ref
     fridgeItems.value = updatedItems
 }
+
 const addToShoppingList = (items, recipeName = null, recipeId = null) => {
     if (Array.isArray(items)) {
         shoppingList.value.push({
@@ -152,7 +156,9 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
         <RecipeDetail 
             v-show="currentPage === 'RecipeDetail'"
             :recipe="selectedRecipe"
-            :fridgeItems="fridgeItems"          
+            :fridgeItems="fridgeItems"    
+            :favoriteRecipes="favoriteRecipes" 
+            :allComments="allComments"     
             @handlegoback="handleGoBackToRecipes"
             @addToShopping="(items, recipeName, recipeId) => addToShoppingList(items, recipeName, recipeId)"
         />
@@ -160,6 +166,16 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
             v-show="currentPage === 'Shopping List'"
             :items="shoppingList"
             @add-item="addToShoppingList"
+        />
+        <Favorites 
+            v-show="currentPage === 'Favorites'"
+            :favoriteRecipes="favoriteRecipes"
+            @change-page="handlePageChange"
+            @gotorecipedetail="handledetail"
+        />
+        <MyComments 
+            v-show="currentPage === 'MyComments'"
+            :allComments="allComments"
         />
     </div>
 </template>
