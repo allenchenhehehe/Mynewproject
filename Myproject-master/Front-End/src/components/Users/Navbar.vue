@@ -58,7 +58,7 @@ const handlePageChange = (pageName) => {
                     v-for="link in navLinks"
                     :key="link.name"
                     :class="[
-                        'px-6 py-2.5 rounded-full cursor-pointer transition-all duration-200 whitespace-nowrap text-2xl font-semibold',
+                        'px-6 py-2.5 rounded-full cursor-pointer transition-all duration-200 whitespace-nowrap text-lg font-semibold',
                         isActive(link.name)
                             ? 'bg-orange-100 text-orange-500 shadow-lg scale-110 border-b-4 border-orange-500'
                             : 'text-gray-500 hover:text-orange-500 '

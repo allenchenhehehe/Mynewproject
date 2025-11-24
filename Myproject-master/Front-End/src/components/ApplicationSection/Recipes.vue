@@ -41,7 +41,7 @@ const mockRecipes = [
     {
         id: 3,
         title: '宮保雞丁',
-        description: '川菜經典名菜，雞肉鮮嫩，花生米酥脆，味道鹹甜酸辣適中，層次豐富。',
+        description: '川菜經典名菜，雞肉鮮嫩，花生米酥脆，味道鹹甜酸辣適中。',
         difficulty: 5,
         coocking_time: 20,
         step: '1. 醃製雞丁：將雞胸肉或雞腿肉切成小丁，加入少許鹽、料酒、蛋清和澱粉，抓勻後醃製10分鐘備用。\n\n2. 調製醬汁：將醋、糖、生抽、老抽、料酒、水澱粉和少量清水混合，攪拌均勻製成宮保汁。\n\n3. 炒香配料：鍋中放油燒熱，先將乾辣椒段和花椒粒小火煸炒出香味，隨後放入蔥段和薑片爆香。\n\n4. 滑炒雞丁：將醃好的雞丁倒入鍋中，快速滑炒至變色，然後加入事先炸酥的花生米。\n\n5. 淋醬收尾：將調好的宮保汁沿鍋邊倒入，迅速翻炒，讓醬汁均勻地包裹住雞丁和花生米，湯汁變得濃稠後即可出鍋，保持雞丁的嫩滑和花生米的酥脆。',
@@ -434,7 +434,7 @@ function handleCookRecipe(recipe) {
                     <!-- 按鈕 -->
                     <button 
                         @click="handleCookRecipe(recipe)"
-                        class="w-full bg-amber-400 text-black border-2 border-black font-black py-3 uppercase tracking-wide hover:shadow-[4px_4px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer"
+                       class="w-full bg-amber-300 text-black border-2 border-black font-black py-3 uppercase tracking-wide shadow-[4px_4px_0px_0px_black]  hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer"
                     >
                         我要做!
                     </button>
