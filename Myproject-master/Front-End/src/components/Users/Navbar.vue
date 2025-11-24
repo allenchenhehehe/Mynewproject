@@ -69,9 +69,9 @@ const handlePageChange = (pageName) => {
                 </a>
             </nav>
             <!-- 右側工具位置 -->
-            <div class="flex items-center space-x-4 w-32">
+            <div class="flex items-center space-x-4 ">
                 <!-- <Searchbar /> -->
-                <!-- <AccountMenu /> -->
+                <AccountMenu />
             </div>
         </div>
     </div>

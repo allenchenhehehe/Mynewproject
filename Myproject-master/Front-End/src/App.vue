@@ -137,6 +137,7 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
             v-show="currentPage === 'Home'"
             :fridgeItems="fridgeItems"
             :shoppingList="shoppingList"
+            @change-page="handlePageChange"
         />
         <MyFridge 
             v-show="currentPage === 'My Fridge'"
