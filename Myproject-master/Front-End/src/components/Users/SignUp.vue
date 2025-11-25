@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+
 const emits = defineEmits(['login'])
 const email = ref('')
 const username = ref('')
 const password = ref('')
+
 async function signup() {
     const isSignUpSuccessful = true
     if (isSignUpSuccessful) {
@@ -12,53 +14,104 @@ async function signup() {
     }
 }
 </script>
+
 <template>
-    <div class="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style="background-image: url('/public/chef.webp')">
-        <div class="max-w-md w-full p-9 flex flex-col justify-center bg-white/70 backdrop-blur-[20px] rounded-xl shadow-2xl border border-white/40">
-            <h2 class="text-black text-3xl font-semibold text-center mb-8">Sign Up</h2>
-
-            <form class="space-y-8">
-                <div class="flex items-center space-x-5">
-                    <Icon icon="mdi:account-plus" class="text-3xl text-black" />
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        class="w-full px-4 py-3 rounded-lg border border-white/50 text-black placeholder-black transition focus:border-black focus:ring-2 focus:ring-black focus:ring-opacity-50 focus:outline-none bg-black/30"
-                    />
-                </div>
-                <div class="flex items-center space-x-5">
-                    <Icon icon="mdi:email" class="text-3xl text-black" />
-                    <input
-                        type="text"
-                        placeholder="Email"
-                        class="w-full px-4 py-3 rounded-lg border border-white/50 text-black placeholder-black transition focus:border-black focus:ring-2 focus:ring-black focus:ring-opacity-50 focus:outline-none bg-black/30"
-                    />
+    <div class="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style="background-image: url('/chef.webp')">
+        <div class="max-w-lg w-full">
+            <!-- 主容器 -->
+            <div class="border-4 border-black bg-white shadow-[8px_8px_0px_0px_black] p-8 space-y-6">
+                <!-- 標題 -->
+                <div class="text-center mb-4">
+                    <h1 class="text-5xl font-black uppercase tracking-tighter mb-2">SIGN UP</h1>
+                    <p class="text-sm text-gray-600 font-bold uppercase tracking-wide">加入 Stock & Stove 社區</p>
                 </div>
 
-                <div class="flex items-center space-x-5">
-                    <Icon icon="mdi:lock" class="text-3xl text-black" />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        class="space-y-1 w-full px-4 py-3 rounded-lg border border-white/50 text-black placeholder-black transition focus:border-black focus:ring-2 focus:ring-black focus:ring-opacity-50 focus:outline-none bg-black/30"
-                    />
-                </div>
-                <div>
+                <!-- 表單 -->
+                <form class="space-y-6">
+                    <!-- Username 欄位 -->
+                    <div class="space-y-2">
+                        <label class="text-md font-black uppercase tracking-wide text-gray-600 block">Username</label>
+                        <div class="border-2 border-black bg-green-50 flex items-center px-4 py-3 focus-within:bg-green-100 transition-all space-x-4">
+                            <Icon icon="mdi:account-plus" class="text-3xl text-black" />
+                            <input
+                                v-model="username"
+                                type="text"
+                                placeholder="你的使用者名稱..."
+                                class="flex-1 bg-transparent outline-none font-bold text-black placeholder-gray-500"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Email 欄位 -->
+                    <div class="space-y-2">
+                        <label class="text-md font-black uppercase tracking-wide text-gray-600 block">Email</label>
+                        <div class="border-2 border-black bg-yellow-50 flex items-center px-4 py-3 focus-within:bg-yellow-100 transition-all space-x-4">
+                            <Icon icon="mdi:email" class="text-3xl text-black" />
+                            <input
+                                v-model="email"
+                                type="email"
+                                placeholder="你的 Email..."
+                                class="flex-1 bg-transparent outline-none font-bold text-black placeholder-gray-500"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Password 欄位 -->
+                    <div class="space-y-2">
+                        <label class="text-md font-black uppercase tracking-wide text-gray-600 block">Password</label>
+                        <div class="border-2 border-black bg-pink-50 flex items-center px-4 py-3 focus-within:bg-pink-100 transition-all space-x-4">
+                            <Icon icon="mdi:lock" class="text-3xl text-black" />
+                            <input
+                                v-model="password"
+                                type="password"
+                                placeholder="設定密碼..."
+                                class="flex-1 bg-transparent outline-none font-bold text-black placeholder-gray-500"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- 提交按鈕 -->
                     <button
                         type="submit"
                         @click.prevent="signup"
-                        class="w-full py-3 bg-black rounded-lg text-white font-semibold transition cursor-pointer"
+                        class="w-full border-2 border-black bg-orange-400 text-black font-black py-4 px-6 uppercase tracking-wide shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-lg cursor-pointer mt-2"
                     >
-                        Submit
+                        立即註冊
+                    </button>
+                </form>
+
+                <!-- 分隔線 -->
+                <div class="relative">
+                    <div class="border-t-2 border-black"></div>
+                    <div class="absolute inset-x-0 top-0 flex justify-center">
+                        <span class="bg-white px-4 font-black text-gray-600 uppercase text-xs tracking-wide">或</span>
+                    </div>
+                </div>
+
+                <!-- 已有帳戶 -->
+                <div class="border-2 border-black bg-purple-100 p-4 text-center">
+                    <p class="font-bold text-md mb-2">已經有帳戶？</p>
+                    <button
+                        @click.prevent="$emit('login')"
+                        class="w-full border-2 border-black bg-purple-400 text-black font-black py-3 px-4 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-md cursor-pointer"
+                    >
+                        回到登入
                     </button>
                 </div>
-                <div class="mt-6 text-black text-center">
-                    <span class="mr-5 text-sm">Already have acount ?</span>
-                    <button class="px-3 py-0.5 rounded-full transition inline-flex items-center text-sm hover:bg-white">
-                        <a href="#" @click.prevent="$emit('login')" class="font-bold text-black text-xs">Login</a>
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+/* 去除瀏覽器默認的 input 樣式 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+</style>

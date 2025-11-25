@@ -167,7 +167,7 @@ function getAverageRating() {
                         
                         <!-- 標題 + 創作者（頂部並排） -->
                         <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-2">
-                            <h2 class="text-4xl font-black uppercase tracking-tighter break-words flex-1">{{ props.recipe.title }}</h2>
+                            <h2 class="text-4xl font-black uppercase tracking-tighter wrap-break-word flex-1">{{ props.recipe.title }}</h2>
                             <div class="border-2 border-black bg-blue-50 p-3 whitespace-nowrap">
                                 <span class="text-xs font-black uppercase tracking-wide text-gray-600 block">創作者</span>
                                 <div class="font-black text-lg">{{ props.recipe.creator_id }}</div>
@@ -252,7 +252,7 @@ function getAverageRating() {
                     <!-- 已有食材 -->
                     <div v-if="getHavingIngredients().length > 0" class="border-2 border-green-400 bg-green-100 p-6 shadow-[4px_4px_0px_0px_black]">
                         <div class="font-black text-green-700 uppercase mb-3 text-lg">已有食材</div>
-                        <p class="font-bold text-gray-700 break-words">
+                        <p class="font-bold text-gray-700 wrap-break-word">
                             {{ getHavingIngredients().map(ing => ing.ingredient_name).join('、') }}
                         </p>
                     </div>
@@ -260,7 +260,7 @@ function getAverageRating() {
                     <!-- 缺少的食材 -->
                     <div v-if="getMissingIngredients().length > 0" class="border-2 border-red-400 bg-red-100 p-6 shadow-[4px_4px_0px_0px_black]">
                         <div class="font-black text-red-700 uppercase mb-3 text-lg">缺少食材</div>
-                        <p class="font-bold text-gray-700 break-words">
+                        <p class="font-bold text-gray-700 wrap-break-word">
                             {{ getMissingIngredientsText() }}
                         </p>
                     </div>
