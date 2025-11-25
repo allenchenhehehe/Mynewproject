@@ -127,6 +127,22 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
         manualGroup.items.push(items)
     }
 }
+const handleAddTofridge = (purchasedItems) => {
+    console.log('添加食材到冰箱:', purchasedItems)
+    purchasedItems.forEach((item) => {
+        fridgeItems.value.push({
+            id: Date.now() + Math.random(),
+            ingredient_id: item.ingredient_id || null,
+            name: item.ingredient_name,
+            category: item.category||'other',
+            quantity: item.quantity,
+            unit: item.unit,
+            purchased_date: new Date().toISOString().split('T')[0],
+            expired_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        })
+    })
+    console.log('冰箱現在有:', fridgeItems.value.length, '項食材')
+}
 </script>
 
 <template>
@@ -166,6 +182,7 @@ const addToShoppingList = (items, recipeName = null, recipeId = null) => {
             v-show="currentPage === 'Shopping List'"
             :items="shoppingList"
             @add-item="addToShoppingList"
+            @update-fridge="handleAddTofridge"
         />
         <Favorites 
             v-show="currentPage === 'Favorites'"

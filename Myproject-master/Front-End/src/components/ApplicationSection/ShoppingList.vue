@@ -1,10 +1,23 @@
 <script setup>
 import { ref, defineEmits, computed } from 'vue'
 const props = defineProps({ items: Array })
-const emit = defineEmits(['add-item'])
+const emit = defineEmits(['add-item','update-fridge'])
 const itemName = ref('')
 const itemQuantity = ref(1)
 const itemUnit = ref('個')
+const itemCategory = ref('vegetable')  // ← 加上這個
+
+// 分類選項
+const categories = [
+    { key: 'vegetable', name: '蔬菜' },
+    { key: 'fruit', name: '水果' },
+    { key: 'meat', name: '肉類' },
+    { key: 'egg', name: '蛋類' },
+    { key: 'seasoning', name: '調味料' },
+    { key: 'oil', name: '油類' },
+    { key: 'seafood', name: '海鮮' },
+    { key: 'other', name: '其他' },
+]
 
 const filteredItems = computed(() => {
     return props.items.filter((group) => group.items.length > 0)
@@ -54,15 +67,26 @@ function addItem() {
         ingredient_name: itemName.value,
         quantity: itemQuantity.value,
         unit: itemUnit.value,
+        category: itemCategory.value,  // ← 加上這個
         is_purchased: false,
     }
     emit('add-item', newItem)
     itemName.value = ''
     itemQuantity.value = 1
     itemUnit.value = '個'
+    itemCategory.value = 'vegetable'  // ← 重置為預設值
 }
 
 function clearPurchased() {
+    const purchasedItems = []
+    props.items.forEach((group) => {
+        group.items.forEach((item) => {
+            if (item.is_purchased) {
+                purchasedItems.push(item)
+            }
+        })
+    })
+    emit('update-fridge', purchasedItems)
     props.items.forEach((group) => {
         group.items = group.items.filter((item) => !item.is_purchased)
     })
@@ -127,38 +151,48 @@ function clearPurchased() {
                     placeholder="食材名稱..."
                     class="w-full border-2 border-black px-4 py-3 font-bold bg-yellow-50 focus:bg-yellow-100 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all"
                 />
-                <div class="grid grid-cols-3 gap-3">
-                    <input 
-                        v-model.number="itemQuantity" 
-                        type="number" 
-                        placeholder="數量"
-                        class="border-2 border-black px-4 py-3 font-bold bg-white focus:bg-yellow-50 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all"
-                    />
+                <div class="grid grid-cols-2 gap-3">
                     <select 
-                        v-model="itemUnit"
+                        v-model="itemCategory"
                         class="border-2 border-black px-4 py-3 font-bold bg-white focus:bg-yellow-50 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all appearance-none cursor-pointer"
                     >
-                        <option>個</option>
-                        <option>顆</option>
-                        <option>克</option>
-                        <option>公斤</option>
-                        <option>毫升</option>
-                        <option>公升</option>
-                        <option>盒</option>
-                        <option>包</option>
-                        <option>瓶</option>
-                        <option>罐</option>
-                        <option>袋</option>
-                        <option>片</option>
-                        <option>匙</option>
+                        <option v-for="cat in categories" :key="cat.key" :value="cat.key">
+                            {{ cat.name }}
+                        </option>
                     </select>
-                    <button 
-                        @click="addItem"
-                        class="border-2 border-black bg-green-400 text-black font-black py-3 px-4 uppercase tracking-wide shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
-                    >
-                        新增
-                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input 
+                            v-model.number="itemQuantity" 
+                            type="number" 
+                            placeholder="數量"
+                            class="border-2 border-black px-4 py-3 font-bold bg-white focus:bg-yellow-50 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all"
+                        />
+                        <select 
+                            v-model="itemUnit"
+                            class="border-2 border-black px-4 py-3 font-bold bg-white focus:bg-yellow-50 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all appearance-none cursor-pointer"
+                        >
+                            <option>個</option>
+                            <option>顆</option>
+                            <option>克</option>
+                            <option>公斤</option>
+                            <option>毫升</option>
+                            <option>公升</option>
+                            <option>盒</option>
+                            <option>包</option>
+                            <option>瓶</option>
+                            <option>罐</option>
+                            <option>袋</option>
+                            <option>片</option>
+                            <option>匙</option>
+                        </select>
+                    </div>
                 </div>
+                <button 
+                    @click="addItem"
+                    class="w-full border-2 border-black bg-green-400 text-black font-black py-3 px-4 uppercase tracking-wide shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
+                >
+                    新增
+                </button>
             </div>
         </div>
 

@@ -10,9 +10,11 @@ const categories = [
     { key: 'fruit', name: '水果', color: 'bg-pink-100' },
     { key: 'meat', name: '肉類', color: 'bg-red-200' },
     { key: 'egg', name: '蛋類', color: 'bg-yellow-100' },
+    { key: 'bean', name: '豆類', color: 'bg-purple-100' },
     { key: 'seasoning', name: '調味料', color: 'bg-gray-100' },
     { key: 'oil', name: '油類', color: 'bg-orange-100' },
     { key: 'seafood', name: '海鮮', color: 'bg-blue-100' },
+    { key: 'other', name: '其他', color: 'bg-gray-200' },
 ]
 
 const ingredients = ref(categorizeIngredients(props.fridgeItems || []))
@@ -29,9 +31,11 @@ const expandedCategories = ref({
     fruit: false,
     meat: false,
     egg: false,
+    bean: false,
     seasoning: false,
     oil: false,
-    seafood: false
+    seafood: false,
+    other: false,
 })
 
 const isAddModalOpen = ref(false)

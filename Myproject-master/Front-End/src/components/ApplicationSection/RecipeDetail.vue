@@ -63,6 +63,7 @@ function addAllToShoppingList() {
         id: timestamp + index,
         ingredient_id: null,
         ingredient_name: ingredient.ingredient_name,
+        category: ingredient.category || 'other',
         quantity: ingredient.quantity,
         unit: ingredient.unit,
         is_purchased: false,

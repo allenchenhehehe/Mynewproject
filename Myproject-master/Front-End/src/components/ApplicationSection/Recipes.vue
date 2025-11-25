@@ -17,9 +17,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 4, ingredient_name: '番茄', quantity: 2, unit: '個' },
-            { ingredient_id: 3, ingredient_name: '雞蛋', quantity: 3, unit: '個' },
-            { ingredient_id: 101, ingredient_name: '蔥花', quantity: 1, unit: '匙' },
+            { ingredient_id: 4, ingredient_name: '番茄', quantity: 2, unit: '個',category: 'vegetable' },
+            { ingredient_id: 3, ingredient_name: '雞蛋', quantity: 3, unit: '個',category: 'egg' },
+            { ingredient_id: 101, ingredient_name: '蔥花', quantity: 1, unit: '匙',category: 'vegetable' },
         ],
     },
     {
@@ -33,9 +33,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 5, ingredient_name: '五花肉', quantity: 500, unit: '克' },
-            { ingredient_id: 6, ingredient_name: '冰糖', quantity: 30, unit: '克' },
-            { ingredient_id: 7, ingredient_name: '醬油（老抽/生抽）', quantity: 3, unit: '匙' },
+            { ingredient_id: 5, ingredient_name: '五花肉', quantity: 500, unit: '克',category: 'meat' },
+            { ingredient_id: 6, ingredient_name: '冰糖', quantity: 30, unit: '克', category: 'seasoning' },
+            { ingredient_id: 7, ingredient_name: '醬油（老抽/生抽）', quantity: 3, unit: '匙', category: 'seasoning' },
         ],
     },
     {
@@ -49,9 +49,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 8, ingredient_name: '雞胸肉', quantity: 300, unit: '克' },
-            { ingredient_id: 9, ingredient_name: '花生米', quantity: 50, unit: '克' },
-            { ingredient_id: 10, ingredient_name: '乾辣椒/花椒', quantity: 10, unit: '克' },
+            { ingredient_id: 8, ingredient_name: '雞胸肉', quantity: 300, unit: '克', category: 'meat' },
+            { ingredient_id: 9, ingredient_name: '花生米', quantity: 50, unit: '克', category: 'seasoning' },
+            { ingredient_id: 10, ingredient_name: '乾辣椒/花椒', quantity: 10, unit: '克', category: 'seasoning' },
         ],
     },
     {
@@ -65,9 +65,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 11, ingredient_name: '嫩豆腐', quantity: 1, unit: '塊' },
-            { ingredient_id: 12, ingredient_name: '牛肉/豬肉末', quantity: 100, unit: '克' },
-            { ingredient_id: 13, ingredient_name: '豆瓣醬', quantity: 2, unit: '匙' },
+            { ingredient_id: 11, ingredient_name: '嫩豆腐', quantity: 1, unit: '塊', category: 'bean'},
+            { ingredient_id: 12, ingredient_name: '牛肉/豬肉末', quantity: 100, unit: '克', category: 'meat'},
+            { ingredient_id: 13, ingredient_name: '豆瓣醬', quantity: 2, unit: '匙', category: 'seasoning'},
         ],
     },
     {
@@ -81,9 +81,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 14, ingredient_name: '豬里脊肉', quantity: 250, unit: '克' },
-            { ingredient_id: 15, ingredient_name: '木耳/筍絲', quantity: 100, unit: '克' },
-            { ingredient_id: 16, ingredient_name: '泡椒/豆瓣醬', quantity: 1, unit: '匙' },
+            { ingredient_id: 14, ingredient_name: '豬里脊肉', quantity: 250, unit: '克', category: 'meat' },
+            { ingredient_id: 15, ingredient_name: '木耳/筍絲', quantity: 100, unit: '克', category: 'vegetable' },
+            { ingredient_id: 16, ingredient_name: '泡椒/豆瓣醬', quantity: 1, unit: '匙', category: 'seasoning' },
         ],
     },
     {
@@ -97,9 +97,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 17, ingredient_name: '時令蔬菜', quantity: 500, unit: '克' },
-            { ingredient_id: 18, ingredient_name: '大蒜', quantity: 3, unit: '瓣' },
-            { ingredient_id: 19, ingredient_name: '鹽', quantity: 1, unit: '茶匙' },
+            { ingredient_id: 17, ingredient_name: '時令蔬菜', quantity: 500, unit: '克', category: 'vegetable' },
+            { ingredient_id: 18, ingredient_name: '大蒜', quantity: 3, unit: '瓣', category: 'vegetable'},
+            { ingredient_id: 19, ingredient_name: '鹽', quantity: 1, unit: '茶匙', category: 'seasoning'},
         ],
     },
     {
@@ -113,9 +113,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 20, ingredient_name: '雞中翅', quantity: 8, unit: '個' },
-            { ingredient_id: 21, ingredient_name: '可樂', quantity: 300, unit: '毫升' },
-            { ingredient_id: 22, ingredient_name: '醬油', quantity: 2, unit: '匙' },
+            { ingredient_id: 20, ingredient_name: '雞中翅', quantity: 8, unit: '個', category: 'meat'},
+            { ingredient_id: 21, ingredient_name: '可樂', quantity: 300, unit: '毫升', category: 'other' },
+            { ingredient_id: 22, ingredient_name: '醬油', quantity: 2, unit: '匙', category: 'seasoning' },
         ],
     },
     {
@@ -129,9 +129,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 23, ingredient_name: '新鮮活魚', quantity: 500, unit: '克' },
-            { ingredient_id: 24, ingredient_name: '蔥薑絲', quantity: 50, unit: '克' },
-            { ingredient_id: 25, ingredient_name: '蒸魚豉油', quantity: 3, unit: '匙' },
+            { ingredient_id: 23, ingredient_name: '新鮮活魚', quantity: 500, unit: '克', category: 'seafood' },
+            { ingredient_id: 24, ingredient_name: '蔥薑絲', quantity: 50, unit: '克', category: 'seasoning' },
+            { ingredient_id: 25, ingredient_name: '蒸魚豉油', quantity: 3, unit: '匙', category: 'seasoning' },
         ],
     },
     {
@@ -145,9 +145,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 26, ingredient_name: '土豆', quantity: 2, unit: '個' },
-            { ingredient_id: 27, ingredient_name: '白醋', quantity: 3, unit: '匙' },
-            { ingredient_id: 28, ingredient_name: '乾辣椒', quantity: 5, unit: '個' },
+            { ingredient_id: 26, ingredient_name: '土豆', quantity: 2, unit: '個', category: 'vegetable'},
+            { ingredient_id: 27, ingredient_name: '白醋', quantity: 3, unit: '匙', category: 'seasoning' },
+            { ingredient_id: 28, ingredient_name: '乾辣椒', quantity: 5, unit: '個', category: 'seasoning' },
         ],
     },
     {
@@ -161,9 +161,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 29, ingredient_name: '豬肉片', quantity: 150, unit: '克' },
-            { ingredient_id: 30, ingredient_name: '雞蛋', quantity: 2, unit: '個' },
-            { ingredient_id: 31, ingredient_name: '木耳/黃瓜', quantity: 100, unit: '克' },
+            { ingredient_id: 29, ingredient_name: '豬肉片', quantity: 150, unit: '克', category: 'meat' },
+            { ingredient_id: 30, ingredient_name: '雞蛋', quantity: 2, unit: '個', category: 'egg' },
+            { ingredient_id: 31, ingredient_name: '木耳/黃瓜', quantity: 100, unit: '克', category: 'vegetable' },
         ],
     },
     {
@@ -177,9 +177,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 32, ingredient_name: '豬後腿肉', quantity: 250, unit: '克' },
-            { ingredient_id: 33, ingredient_name: '甜麵醬/黃豆醬', quantity: 3, unit: '匙' },
-            { ingredient_id: 34, ingredient_name: '青椒', quantity: 1, unit: '個' },
+            { ingredient_id: 32, ingredient_name: '豬後腿肉', quantity: 250, unit: '克', category: 'meat' },
+            { ingredient_id: 33, ingredient_name: '甜麵醬/黃豆醬', quantity: 3, unit: '匙', category: 'seasoning' },
+            { ingredient_id: 34, ingredient_name: '青椒', quantity: 1, unit: '個', category: 'vegetable' },
         ],
     },
     {
@@ -193,9 +193,9 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 35, ingredient_name: '豬里脊肉', quantity: 250, unit: '克' },
-            { ingredient_id: 36, ingredient_name: '甜麵醬', quantity: 4, unit: '匙' },
-            { ingredient_id: 37, ingredient_name: '大蔥白', quantity: 1, unit: '根' },
+            { ingredient_id: 35, ingredient_name: '豬里脊肉', quantity: 250, unit: '克', category: 'meat' },
+            { ingredient_id: 36, ingredient_name: '甜麵醬', quantity: 4, unit: '匙', category: 'seasoning' },
+            { ingredient_id: 37, ingredient_name: '大蔥白', quantity: 1, unit: '根', category: 'vegetable' },
         ],
     },
 ]
@@ -208,20 +208,19 @@ const searchQuery = ref('')
 
 const fridgeIngredientMap = computed(() => {
   const map = {}
-  if (props.fridgeItems && props.fridgeItems.length > 0) {
-    props.fridgeItems.forEach((item) => {
-      if (!map[item.ingredient_id]) {
-        map[item.ingredient_id] = 0
-      }
-      map[item.ingredient_id] += item.quantity
-    })
-  }
+  props.fridgeItems.forEach((item) => {
+    const key = item.name  // ← 改用名稱而不是ID
+    if (!map[key]) {
+      map[key] = 0
+    }
+    map[key] += item.quantity
+  })
   return map
 })
 
 function canMakeRecipe(recipe) {
   return recipe.ingredients.every((ingredient) => {
-    const fridgeQuantity = fridgeIngredientMap.value[ingredient.ingredient_id] || 0
+    const fridgeQuantity = fridgeIngredientMap.value[ingredient.ingredient_name] || 0
     return fridgeQuantity >= ingredient.quantity
   })
 }
