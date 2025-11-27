@@ -1,19 +1,18 @@
 <script setup>
-import { ref, computed, defineProps } from 'vue'
-const props = defineProps({
-    allComments: Array,
-})
-const comments = computed(() => {
-    return props.allComments || []
-})
+import { ref, computed } from 'vue'
+import { useUserStore } from '@/stores'
+
+// 使用 userStore
+const userStore = useUserStore()
 
 const sortBy = ref('recent') // recent, rating, likes
 const editingId = ref(null)
 const editText = ref('')
+
 const sortedComments = computed(() => {
-    if (!props.allComments) return []
+    if (!userStore.allComments || userStore.allComments.length === 0) return []
     
-    let sorted = [...props.allComments]
+    let sorted = [...userStore.allComments]
     
     switch(sortBy.value) {
         case 'recent':
@@ -31,7 +30,7 @@ const sortedComments = computed(() => {
 })
 
 const stats = computed(() => {
-    if (!props.allComments || props.allComments.length === 0) {
+    if (!userStore.allComments || userStore.allComments.length === 0) {
         return {
             total: 0,
             avgRating: 0,
@@ -39,11 +38,12 @@ const stats = computed(() => {
         }
     }
     return {
-        total: props.allComments.length,
-        avgRating: (props.allComments.reduce((sum, c) => sum + c.rating, 0) / props.allComments.length).toFixed(1),
-        totalLikes: props.allComments.reduce((sum, c) => sum + (c.likes || 0), 0)
+        total: userStore.allComments.length,
+        avgRating: (userStore.allComments.reduce((sum, c) => sum + c.rating, 0) / userStore.allComments.length).toFixed(1),
+        totalLikes: userStore.allComments.reduce((sum, c) => sum + (c.likes || 0), 0)
     }
 })
+
 function startEdit(comment) {
     editingId.value = comment.id
     editText.value = comment.text
@@ -55,18 +55,13 @@ function cancelEdit() {
 }
 
 function saveEdit(id) {
-    const comment = comments.value.find(c => c.id === id)
-    if (comment) {
-        comment.text = editText.value
-        cancelEdit()
-    }
+    userStore.updateComment(id, editText.value)
+    cancelEdit()
 }
+
 function deleteComment(id) {
     if (confirm('確定要刪除這則評論嗎？')) {
-        const index = comments.value.findIndex(item => item.id === id)
-        if (index > -1) {
-            comments.value.splice(index, 1)
-        }
+        userStore.deleteComment(id)
     }
 }
 </script>
@@ -205,7 +200,7 @@ function deleteComment(id) {
         </div>
 
         <!-- 空狀態 -->
-        <div v-if="comments.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
+        <div v-if="userStore.allComments.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
             <p class="font-black text-2xl mb-2">還沒有任何評論</p>
             <p class="text-gray-700 font-semibold">快去食譜頁面分享你的想法吧！</p>
         </div>

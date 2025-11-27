@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import Login from './components/Users/Login.vue'
 import SignUp from './components/Users/SignUp.vue'
 import Navbar from './components/Users/Navbar.vue'
@@ -11,188 +11,78 @@ import RecipeDetail from './components/ApplicationSection/RecipeDetail.vue'
 import ShoppingList from './components/ApplicationSection/ShoppingList.vue'
 import Favorites from './components/ApplicationSection/Favorites.vue'
 import MyComments from './components/ApplicationSection/MyComments.vue'
-import { STATUS_LOGIN, STATUS_SIGNUP, STATUS_APP, STATUS_FORGET_PASSWORD } from './libs/constants'
 
-const status = ref(STATUS_LOGIN)
-const currentPage = ref('Home')
-const selectedRecipe = ref(null)
-const shoppingList = ref([])
-const favoriteRecipes = ref([])
-const allComments = ref([])
-const mockFridgeData = [
-    {
-        id: 1,
-        ingredient_id: 1,
-        name: '洋蔥',
-        category: 'vegetable',
-        quantity: 5,
-        unit: '個',
-        purchased_date: '2025-11-03',
-        expired_date: '2025-11-12',
-    },
-    {
-        id: 2,
-        ingredient_id: 2,
-        name: '雞肉',
-        category: 'meat',
-        quantity: 200,
-        unit: '克',
-        purchased_date: '2025-11-05',
-        expired_date: '2025-11-30',
-    },
-    {
-        id: 3,
-        ingredient_id: 3,
-        name: '雞蛋',
-        category: 'egg',
-        quantity: 5,
-        unit: '顆',
-        purchased_date: '2025-11-08',
-        expired_date: '2025-11-30',
-    },
-    {
-        id: 4,
-        ingredient_id: 4,
-        name: '番茄',
-        category: 'vegetable',
-        quantity: 5,
-        unit: '個',
-        purchased_date: '2025-11-03',
-        expired_date: '2025-11-30',
-    },
-    {
-        id: 5,
-        ingredient_id: 4,
-        name: '番茄',
-        category: 'vegetable',
-        quantity: 3,
-        unit: '個',
-        purchased_date: '2025-11-30',
-        expired_date: '2025-12-5',
-    },
-    {
-        id: 6,
-        ingredient_id: 101,
-        name: '蔥花',
-        category: 'vegetable',
-        quantity: 3,
-        unit: '匙',
-        purchased_date: '2025-11-30',
-        expired_date: '2025-12-5',
-    },
-]
+// 導入所有 stores
+import {
+  useAuthStore,
+  STATUS_LOGIN,
+  STATUS_SIGNUP,
+  STATUS_APP,
+  STATUS_FORGET_PASSWORD
+} from './stores'
+import { useNavigationStore } from './stores'
+import { useFridgeStore } from './stores'
+import { useShoppingStore } from './stores'
+import { useUserStore } from './stores'
 
-const fridgeItems = ref(mockFridgeData)
+// 初始化所有 stores
+const authStore = useAuthStore()
+const navStore = useNavigationStore()
+const fridgeStore = useFridgeStore()
+const shoppingStore = useShoppingStore()
+const userStore = useUserStore()
 
-const gotoSignup = () => (status.value = STATUS_SIGNUP)
-const gotoLogin = () => (status.value = STATUS_LOGIN)
-const gotoApp = () => (status.value = STATUS_APP)
-const gotoForget = () => (status.value = STATUS_FORGET_PASSWORD)
-
-const handlePageChange = (pageName) => {
-    currentPage.value = pageName
-}
-
-const handledetail = (recipe) => {
-    selectedRecipe.value = recipe
-    currentPage.value = 'RecipeDetail'
-}
-
-const handleGoBackToRecipes = () => {
-    currentPage.value = 'Recipes'
-}
-
-const handleUpdateFridge = (updatedItems) => {
-    console.log('App.vue 收到 updateFridge，更新數據:', updatedItems)
-    fridgeItems.value = updatedItems
-}
-
-const addToShoppingList = (items, recipeName = null, recipeId = null) => {
-    if (Array.isArray(items)) {
-        shoppingList.value.push({
-            recipeId: recipeId,
-            recipeName: recipeName || '未命名食譜',
-            items: items,
-        })
-    } else {
-        let manualGroup = shoppingList.value.find((g) => g.recipeName === '手動新增')
-        if (!manualGroup) {
-            manualGroup = {
-                recipeId: null,
-                recipeName: '手動新增',
-                items: [],
-            }
-            shoppingList.value.push(manualGroup)
-        }
-        manualGroup.items.push(items)
-    }
-}
-const handleAddTofridge = (purchasedItems) => {
-    console.log('添加食材到冰箱:', purchasedItems)
-    purchasedItems.forEach((item) => {
-        fridgeItems.value.push({
-            id: Date.now() + Math.random(),
-            ingredient_id: item.ingredient_id || null,
-            name: item.ingredient_name,
-            category: item.category||'other',
-            quantity: item.quantity,
-            unit: item.unit,
-            purchased_date: new Date().toISOString().split('T')[0],
-            expired_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        })
-    })
-    console.log('冰箱現在有:', fridgeItems.value.length, '項食材')
-}
+// ==================== 認證相關 ====================
+const gotoSignup = () => authStore.setAuthStatus(STATUS_SIGNUP)
+const gotoLogin = () => authStore.setAuthStatus(STATUS_LOGIN)
+const gotoApp = () => authStore.setAuthStatus(STATUS_APP)
+const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
 </script>
 
 <template>
-    <Login @signup="gotoSignup" @navbar="gotoApp" @forgetpassword="gotoForget" v-if="status == STATUS_LOGIN" />
-    <SignUp @login="gotoLogin" v-if="status == STATUS_SIGNUP" />
-    <ForgetPassword @login="gotoLogin" v-if="status == STATUS_FORGET_PASSWORD" />
-
-    <div v-if="status == STATUS_APP" class="min-h-screen bg-[#fefae0] text-gray-800 overflow-x-hidden">
-        <Navbar :currentPage="currentPage" @change-page="handlePageChange" />
-
-        <Home 
-            v-show="currentPage === 'Home'"
-            :fridgeItems="fridgeItems"
-            :shoppingList="shoppingList"
-            @change-page="handlePageChange"
-        />
-        <MyFridge 
-            v-show="currentPage === 'My Fridge'"
-            :fridgeItems="fridgeItems"
-            @updateFridge="handleUpdateFridge"
-        />
-        <Recipes 
-            v-show="currentPage === 'Recipes'"
-            :fridgeItems="fridgeItems"
-            @gotorecipedetail="handledetail"
-        />
-        <RecipeDetail 
-            v-show="currentPage === 'RecipeDetail'"
-            :recipe="selectedRecipe"
-            :fridgeItems="fridgeItems"    
-            :favoriteRecipes="favoriteRecipes" 
-            :allComments="allComments"     
-            @handlegoback="handleGoBackToRecipes"
-            @addToShopping="(items, recipeName, recipeId) => addToShoppingList(items, recipeName, recipeId)"
-        />
-        <ShoppingList 
-            v-show="currentPage === 'Shopping List'"
-            :items="shoppingList"
-            @add-item="addToShoppingList"
-            @update-fridge="handleAddTofridge"
-        />
-        <Favorites 
-            v-show="currentPage === 'Favorites'"
-            :favoriteRecipes="favoriteRecipes"
-            @change-page="handlePageChange"
-            @gotorecipedetail="handledetail"
-        />
-        <MyComments 
-            v-show="currentPage === 'MyComments'"
-            :allComments="allComments"
-        />
-    </div>
+  <Login 
+    v-if="authStore.status === STATUS_LOGIN"
+    @signup="gotoSignup" 
+    @navbar="gotoApp" 
+    @forgetpassword="gotoForget" 
+  />
+  <SignUp 
+    v-if="authStore.status === STATUS_SIGNUP"
+    @login="gotoLogin" 
+  />
+  <ForgetPassword 
+    v-if="authStore.status === STATUS_FORGET_PASSWORD"
+    @login="gotoLogin" 
+  />
+  <div v-if="authStore.status === STATUS_APP" class="min-h-screen bg-[#fefae0] text-gray-800 overflow-x-hidden">
+    <Navbar />
+    <!-- 首頁 -->
+    <Home 
+      v-show="navStore.currentPage === 'Home'"
+    />
+    <!-- 冰箱 -->
+    <MyFridge 
+      v-show="navStore.currentPage === 'MyFridge'"
+    />
+    <!-- 食譜列表 -->
+    <Recipes 
+      v-show="navStore.currentPage === 'Recipes'"
+    />
+    <!-- 食譜詳情 -->
+    <RecipeDetail 
+      v-show="navStore.currentPage === 'RecipeDetail'"    
+    />
+    <!-- 購物清單 -->
+    <ShoppingList 
+      v-show="navStore.currentPage === 'ShoppingList'"
+    />
+    <!-- 收藏食譜 -->
+    <Favorites 
+      v-show="navStore.currentPage === 'Favorites'"
+    />
+    <!-- 我的評論 -->
+    <MyComments 
+      v-show="navStore.currentPage === 'MyComments'"
+    />
+  </div>
 </template>

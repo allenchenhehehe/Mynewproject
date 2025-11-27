@@ -1,15 +1,16 @@
 <script setup>
-import { ref, computed, defineEmits, defineProps } from 'vue'
-const emit = defineEmits(['gotorecipedetail'])
-const props = defineProps({favoriteRecipes: Array,})
-const favorites = computed(() => {
-    return props.favoriteRecipes || []
-})
+import { ref, computed } from 'vue'
+import { useUserStore } from '@/stores'
+import { useNavigationStore } from '@/stores'
+
+// 使用 stores
+const userStore = useUserStore()
+const navStore = useNavigationStore()
 
 const sortBy = ref('recent') // recent, name, difficulty
 
 const sortedFavorites = computed(() => {
-    let sorted = [...favorites.value]
+    let sorted = [...userStore.favoriteRecipes]
     
     switch(sortBy.value) {
         case 'recent':
@@ -25,15 +26,14 @@ const sortedFavorites = computed(() => {
     
     return sorted
 })
+
 function viewRecipe(recipe) {
-    emit('gotorecipedetail', recipe)
+    navStore.goToRecipeDetail(recipe)
 }
+
 function removeFavorite(id) {
     if (confirm('確定要取消收藏嗎？')) {
-        const index = favorites.value.findIndex(item => item.id === id)
-        if (index > -1) {
-            favorites.value.splice(index, 1)
-        }
+        userStore.removeFavorite(id)
     }
 }
 </script>
@@ -104,7 +104,7 @@ function removeFavorite(id) {
                     <div class="grid grid-cols-2 gap-2 py-2 border-t-2 border-b-2 border-dashed border-gray-300">
                         <div class="text-xs font-bold">
                             <span class="text-gray-600">烹飪時間</span>
-                            <div class="font-black text-lg">{{ recipe.coocking_time }}分</div>
+                            <div class="font-black text-lg">{{ recipe.cooking_time }}分</div>
                         </div>
                         <div class="text-xs font-bold">
                             <span class="text-gray-600">難度</span>
@@ -122,8 +122,8 @@ function removeFavorite(id) {
                     <!-- 按鈕 -->
                     <div class="flex gap-2">
                         <button 
-                        @click="viewRecipe(recipe)"
-                        class="flex-1 bg-blue-400 text-black border-2 border-black font-black py-2 px-3 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-sm"
+                            @click="viewRecipe(recipe)"
+                            class="flex-1 bg-blue-400 text-black border-2 border-black font-black py-2 px-3 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-sm"
                         >
                             查看食譜
                         </button>
@@ -139,7 +139,7 @@ function removeFavorite(id) {
         </div>
 
         <!-- 空狀態 -->
-        <div v-if="favorites.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
+        <div v-if="userStore.favoriteRecipes.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
             <p class="font-black text-2xl mb-2">還沒有收藏任何食譜</p>
             <p class="text-gray-700 font-semibold">快去食譜頁面收藏你喜歡的食譜吧！</p>
         </div>

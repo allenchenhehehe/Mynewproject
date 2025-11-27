@@ -1,37 +1,36 @@
 <script setup>
 import { computed } from 'vue'
-import { defineProps, defineEmits } from 'vue'
+import { useFridgeStore } from '@/stores'
+import { useShoppingStore } from '@/stores'
+import { useNavigationStore } from '@/stores'
 
-const props = defineProps({
-    fridgeItems: Array,
-    shoppingList: Array,
-})
-
-// 定義事件，讓 Home 可以通知 App.vue 切換頁面
-const emit = defineEmits(['change-page'])
+// 使用 stores
+const fridgeStore = useFridgeStore()
+const shoppingStore = useShoppingStore()
+const navStore = useNavigationStore()
 
 // 導航函數
 const navigateTo = (pageName) => {
-    emit('change-page', pageName)
+    navStore.goToPage(pageName)
 }
 
 // --- 統計邏輯 ---
 
 // 統計資料
 const stats = computed(() => {
-    const items = props.fridgeItems || []
+    const items = fridgeStore.fridgeItems || []
     return {
         totalItems: items.length,
         // 計算不重複的 ingredient_id
         uniqueIngredients: [...new Set(items.map(item => item.ingredient_id))].length,
         // 計算購物清單內的總品項數 (因為 shoppingList 是分組的)
-        shoppingCount: props.shoppingList ? props.shoppingList.reduce((sum, group) => sum + group.items.length, 0) : 0
+        shoppingCount: shoppingStore.shoppingList ? shoppingStore.shoppingList.reduce((sum, group) => sum + group.items.length, 0) : 0
     }
 })
 
 // 即將過期的食材（7天內，且未過期）
 const expiringItems = computed(() => {
-    const items = props.fridgeItems || []
+    const items = fridgeStore.fridgeItems || []
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
@@ -45,7 +44,7 @@ const expiringItems = computed(() => {
 
 // 已過期的食材
 const expiredItems = computed(() => {
-    const items = props.fridgeItems || []
+    const items = fridgeStore.fridgeItems || []
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
@@ -93,7 +92,7 @@ const todayDateString = computed(() => {
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div @click="navigateTo('My Fridge')" 
+            <div @click="navigateTo('MyFridge')" 
                  class="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer">
                 <h3 class="font-black text-xl mb-2 bg-blue-200 inline-block px-2">FRIDGE</h3>
                 <div class="flex justify-between items-end">
@@ -102,7 +101,7 @@ const todayDateString = computed(() => {
                 </div>
             </div>
             
-            <div @click="navigateTo('Shopping List')"
+            <div @click="navigateTo('ShoppingList')"
                  class="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer">
                 <h3 class="font-black text-xl mb-2 bg-green-200 inline-block px-2">SHOPPING</h3>
                 <div class="flex justify-between items-end">
@@ -168,11 +167,11 @@ const todayDateString = computed(() => {
                 </button>
                 
                 <div class="grid grid-cols-2 gap-4">
-                     <button @click="navigateTo('My Fridge')" 
+                     <button @click="navigateTo('MyFridge')" 
                              class="bg-[#a7f3d0] border-2 border-black p-4 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
                         ADD ITEM +
                      </button>
-                     <button @click="navigateTo('Shopping List')"
+                     <button @click="navigateTo('ShoppingList')"
                              class="bg-[#fecaca] border-2 border-black p-4 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
                         CHECK LIST
                      </button>
@@ -183,7 +182,6 @@ const todayDateString = computed(() => {
 </template>
 
 <style scoped>
-/* 增加文字描邊效果 */
 .text-stroke-black {
   -webkit-text-stroke: 1.5px black;
   text-shadow: 2px 2px 0px black;

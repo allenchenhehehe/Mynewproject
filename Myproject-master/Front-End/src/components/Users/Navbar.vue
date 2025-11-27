@@ -1,36 +1,34 @@
 <script setup>
 import { ref } from 'vue'
-import { defineEmits, defineProps } from 'vue'
 import AccountMenu from './AccountMenu.vue'
+import { useNavigationStore } from '@/stores'
 
-const props = defineProps({
-    currentPage: String
-})
+// 使用 navigationStore
+const navStore = useNavigationStore()
 
-const emit = defineEmits(['change-page'])
-const currentPage = ref('Home')
 const navLinks = ref([
     { name: 'Home' },
-    { name: 'My Fridge' },
+    { name: 'MyFridge' },
     { name: 'Recipes' },
-    { name: 'Shopping List' },
+    { name: 'ShoppingList' },
 ])
 const isMenuOpen = ref(false)
 
+// 檢查當前頁面是否激活
 const isActive = (pageName) => {
-    return props.currentPage === pageName
+    return navStore.currentPage === pageName
 }
 
+// 處理頁面切換
 const handlePageChange = (pageName) => {
-    currentPage.value = pageName
-    console.log('Navbar emit:', pageName)
-    emit('change-page', pageName)
+    navStore.goToPage(pageName)
+    console.log('Navbar 導航到:', pageName)
     isMenuOpen.value = false
 }
 
 // 接收 AccountMenu 的導航事件
 const handleAccountMenuNavigate = (page) => {
-    console.log('AccountMenu navigate to:', page)
+    console.log('AccountMenu 導航到:', page)
     handlePageChange(page)
 }
 </script>

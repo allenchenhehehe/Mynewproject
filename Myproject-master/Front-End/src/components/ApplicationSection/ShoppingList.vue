@@ -1,11 +1,16 @@
 <script setup>
-import { ref, defineEmits, computed } from 'vue'
-const props = defineProps({ items: Array })
-const emit = defineEmits(['add-item','update-fridge'])
+import { ref, computed } from 'vue'
+import { useShoppingStore } from '@/stores'
+import { useFridgeStore } from '@/stores'
+
+// 使用 stores
+const shoppingStore = useShoppingStore()
+const fridgeStore = useFridgeStore()
+
 const itemName = ref('')
 const itemQuantity = ref(1)
 const itemUnit = ref('個')
-const itemCategory = ref('vegetable')  // ← 加上這個
+const itemCategory = ref('vegetable')
 
 // 分類選項
 const categories = [
@@ -20,13 +25,13 @@ const categories = [
 ]
 
 const filteredItems = computed(() => {
-    return props.items.filter((group) => group.items.length > 0)
+    return shoppingStore.shoppingList.filter((group) => group.items.length > 0)
 })
 
 const stats = computed(() => {
     let total = 0
     let purchased = 0
-    props.items.forEach((group) => {
+    shoppingStore.shoppingList.forEach((group) => {
         group.items.forEach((item) => {
             total++
             if (item.is_purchased) purchased++
@@ -40,22 +45,33 @@ const stats = computed(() => {
     }
 })
 
-function deleteItem(itemId) {
-    props.items.forEach((group) => {
-        const index = group.items.findIndex((item) => item.id === itemId)
-        if (index > -1) {
-            group.items.splice(index, 1)
-        }
+// 只計算食材（不含調味料、油類等）
+const foodStats = computed(() => {
+    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'other']
+    let total = 0
+    let purchased = 0
+    shoppingStore.shoppingList.forEach((group) => {
+        group.items.forEach((item) => {
+            if (foodCategories.includes(item.category)) {
+                total++
+                if (item.is_purchased) purchased++
+            }
+        })
     })
+    return {
+        total,
+        purchased,
+        remaining: total - purchased,
+        percentage: total > 0 ? Math.round((purchased / total) * 100) : 0
+    }
+})
+
+function deleteItem(itemId) {
+    shoppingStore.deleteItem(itemId)
 }
 
 function togglePurchased(itemId) {
-    props.items.forEach((group) => {
-        const item = group.items.find((item) => item.id === itemId)
-        if (item) {
-            item.is_purchased = !item.is_purchased
-        }
-    })
+    shoppingStore.togglePurchased(itemId)
 }
 
 function addItem() {
@@ -67,28 +83,31 @@ function addItem() {
         ingredient_name: itemName.value,
         quantity: itemQuantity.value,
         unit: itemUnit.value,
-        category: itemCategory.value,  // ← 加上這個
+        category: itemCategory.value,
         is_purchased: false,
     }
-    emit('add-item', newItem)
+    shoppingStore.addManualItem(newItem)
     itemName.value = ''
     itemQuantity.value = 1
     itemUnit.value = '個'
-    itemCategory.value = 'vegetable'  // ← 重置為預設值
+    itemCategory.value = 'vegetable'
 }
 
 function clearPurchased() {
-    const purchasedItems = []
-    props.items.forEach((group) => {
-        group.items.forEach((item) => {
-            if (item.is_purchased) {
-                purchasedItems.push(item)
-            }
+    const purchasedItems = shoppingStore.clearPurchased()
+    // 將已購買的食材添加到冰箱
+    purchasedItems.forEach((item) => {
+        fridgeStore.addItem({
+            ingredient_id: item.ingredient_id || null,
+            name: item.ingredient_name,
+            category: item.category || 'other',
+            quantity: item.quantity,
+            unit: item.unit,
+            purchased_date: new Date().toISOString().split('T')[0],
+            expired_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split('T')[0]
         })
-    })
-    emit('update-fridge', purchasedItems)
-    props.items.forEach((group) => {
-        group.items = group.items.filter((item) => !item.is_purchased)
     })
 }
 </script>
@@ -129,13 +148,13 @@ function clearPurchased() {
 
             <!-- 進度條 -->
             <div class="mt-6 space-y-2">
-                <div class="text-xs font-black uppercase tracking-wide">購物進度</div>
+                <div class="text-xs font-black uppercase tracking-wide">購物進度（食材）</div>
                 <div class="border-2 border-black bg-gray-200 h-8 overflow-hidden">
                     <div 
-                        :style="{ width: stats.percentage + '%' }"
+                        :style="{ width: foodStats.percentage + '%' }"
                         class="bg-green-400 h-full transition-all border-r-2 border-black flex items-center justify-center"
                     >
-                        <span v-if="stats.percentage > 20" class="font-black text-xs text-black">{{ stats.percentage }}%</span>
+                        <span v-if="foodStats.percentage > 20" class="font-black text-xs text-black">{{ foodStats.percentage }}%</span>
                     </div>
                 </div>
             </div>
@@ -234,6 +253,12 @@ function clearPurchased() {
                             {{ item.quantity }}{{ item.unit }}
                         </span>
 
+                        <!-- 分類標籤 -->
+                        <span v-if="item.category === 'seasoning' || item.category === 'oil'" 
+                              class="bg-yellow-300 text-black px-2 py-1 font-bold text-xs rounded border border-black">
+                            {{ categories.find(c => c.key === item.category)?.name }}
+                        </span>
+
                         <!-- 刪除按鈕 -->
                         <button
                             @click="deleteItem(item.id)"
@@ -252,13 +277,13 @@ function clearPurchased() {
             </div>
         </div>
 
-        <!-- 清除已購買按鈕 -->
-        <div v-if="stats.purchased > 0" class="mt-8">
+        <!-- 清除已購買按鈕（只清除食材） -->
+        <div v-if="foodStats.purchased > 0" class="mt-8">
             <button
                 @click="clearPurchased"
                 class="w-full border-2 border-black bg-orange-400 text-black font-black py-4 px-6 uppercase tracking-wide shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-lg"
             >
-                清除已購買 ({{ stats.purchased }})
+                清除已購買食材 ({{ foodStats.purchased }})
             </button>
         </div>
 

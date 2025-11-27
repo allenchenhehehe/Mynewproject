@@ -1,11 +1,12 @@
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue'
+import { ref, watch } from 'vue'
+import { useFridgeStore } from '@/stores'
 
-const props = defineProps({ fridgeItems: Array })
-const emit = defineEmits(['updateFridge'])
+// 使用 fridgeStore
+const fridgeStore = useFridgeStore()
 
 const categories = [
-    { key: 'expiring', name: '即將過期', color: 'bg-red-100' }, // 增加顏色配置
+    { key: 'expiring', name: '即將過期', color: 'bg-red-100' },
     { key: 'vegetable', name: '蔬菜', color: 'bg-green-100' },
     { key: 'fruit', name: '水果', color: 'bg-pink-100' },
     { key: 'meat', name: '肉類', color: 'bg-red-200' },
@@ -17,16 +18,16 @@ const categories = [
     { key: 'other', name: '其他', color: 'bg-gray-200' },
 ]
 
-const ingredients = ref(categorizeIngredients(props.fridgeItems || []))
+const ingredients = ref(categorizeIngredients(fridgeStore.fridgeItems || []))
 
-// ✅ 改進：監聽 props 變化並實際更新本地數據
-watch(() => props.fridgeItems, (newItems) => {
+// 監聽 store 中的 fridgeItems 變化
+watch(() => fridgeStore.fridgeItems, (newItems) => {
     console.log('MyFridge 數據更新:', newItems)
     ingredients.value = categorizeIngredients(newItems || [])
 }, { deep: true })
 
 const expandedCategories = ref({
-    expiring: true, // 預設展開即將過期
+    expiring: true,
     vegetable: false,
     fruit: false,
     meat: false,
@@ -69,13 +70,7 @@ function toggleCategory(key) {
 
 function deleteIngredient(ingredientId) {
     if (confirm('確定要刪除這個食材嗎?')) {
-        let hasChanged = false
-        Object.keys(ingredients.value).forEach((category) => {
-            const originalLength = ingredients.value[category].length
-            ingredients.value[category] = ingredients.value[category].filter((item) => item.id !== ingredientId)
-            if (ingredients.value[category].length !== originalLength) hasChanged = true
-        })
-        if (hasChanged) emit('updateFridge', getUpdatedFridgeItems())
+        fridgeStore.deleteItem(ingredientId)
     }
 }
 
@@ -115,15 +110,9 @@ function saveEdit(updatedData) {
         return
     }
     
-    // 簡單的更新邏輯：先移除舊的，再重新分類加入新的
-    const currentList = getUpdatedFridgeItems().filter(item => item.id !== editIngredient.value.id)
-    currentList.push(updatedData)
-    
-    // 重新分類並更新本地視圖
-    ingredients.value = categorizeIngredients(currentList)
-    
+    // 使用 fridgeStore 的 updateItem 方法
+    fridgeStore.updateItem(updatedData.id, updatedData)
     closeEditModal()
-    emit('updateFridge', currentList)
 }
 
 function addIngredient() {
@@ -132,29 +121,9 @@ function addIngredient() {
     if (!newIngredient.value.expired_date) return alert('請輸入過期日期!')
     if (newIngredient.value.purchased_date > newIngredient.value.expired_date) return alert('購買日期不得晚於過期日期!')
 
-    const ingredient = {
-        id: Date.now(), // 暫時給個 ID
-        ...newIngredient.value
-    }
-
-    const category = isExpired(ingredient.expired_date) ? 'expiring' : ingredient.category
-    if (!ingredients.value[category]) {
-        ingredients.value[category] = []
-    }
-    ingredients.value[category].push(ingredient)
-
-    emit('updateFridge', getUpdatedFridgeItems())
+    // 使用 fridgeStore 的 addItem 方法
+    fridgeStore.addItem(newIngredient.value)
     closeAddModal()
-}
-
-function getUpdatedFridgeItems() {
-    const result = []
-    Object.values(ingredients.value).forEach((categoryItems) => {
-        if (Array.isArray(categoryItems)) {
-            result.push(...categoryItems)
-        }
-    })
-    return result
 }
 
 function groupByName(data) {
@@ -305,7 +274,8 @@ function isExpired(expiredDate) {
                             />
                         </div>
 
-                        <div v-if="!isEditModalOpen"> <label class="block mb-1 text-sm uppercase tracking-wider">Category</label>
+                        <div v-if="!isEditModalOpen">
+                            <label class="block mb-1 text-sm uppercase tracking-wider">Category</label>
                             <select v-model="newIngredient.category" class="w-full border-2 border-black p-3 bg-gray-50 focus:ring-0 focus:shadow-[4px_4px_0px_0px_black] transition-all outline-none appearance-none cursor-pointer">
                                 <option v-for="cat in categories.filter(c=>c.key!=='expiring')" :key="cat.key" :value="cat.key">{{ cat.name }}</option>
                             </select>
@@ -368,11 +338,10 @@ function isExpired(expiredDate) {
 </template>
 
 <style scoped>
-/* 為了讓文字有漫畫般的描邊效果 */
 .text-stroke-black {
   -webkit-text-stroke: 1px black;
 }
-/* 隱藏 select 預設箭頭，因為我們自定義樣式 */
+
 select {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 0.75rem center;

@@ -1,53 +1,50 @@
 <script setup>
-import { ref, defineProps, defineEmits, computed} from 'vue'
+import { ref, computed, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { useNavigationStore } from '@/stores'
+import { useFridgeStore } from '@/stores'
+import { useUserStore } from '@/stores'
+import { useShoppingStore } from '@/stores'
 
-const recipe = ref(null)
-const emit = defineEmits(['handlegoback', 'addToShopping'])
-const props = defineProps({
-    recipe: Object,
-    fridgeItems: Array,
-    favoriteRecipes: Array,
-    allComments: Array,
-})
-const pageTop = ref(null)
+// 使用 stores
+const navStore = useNavigationStore()
+const fridgeStore = useFridgeStore()
+const userStore = useUserStore()
+const shoppingStore = useShoppingStore()
+
+const userRating = ref(0)
+const commentText = ref('')
+
+const recipe = computed(() => navStore.selectedRecipe)
 
 const isFavorited = computed({
     get() {
-        return props.favoriteRecipes.some(fav => fav.id === props.recipe.id)
+        return userStore.isFavorited(recipe.value?.id)
     },
     set(value) {
-        if (value) {
-            // 如果還沒有就添加
-            if (!props.favoriteRecipes.some(fav => fav.id === props.recipe.id)) {
-                props.favoriteRecipes.push(props.recipe)
-            }
-        } else {
-            // 移除收藏
-            const index = props.favoriteRecipes.findIndex(fav => fav.id === props.recipe.id)
-            if (index > -1) {
-                props.favoriteRecipes.splice(index, 1)
+        if (recipe.value) {
+            if (value) {
+                userStore.addFavorite(recipe.value)
+            } else {
+                userStore.removeFavorite(recipe.value.id)
             }
         }
     }
 })
-const userRating = ref(0)
-const commentText = ref('')
+
 const comments = computed(() => {
-    if (!props.allComments || !props.recipe) {
-        return []
-    }
-    return props.allComments.filter(comment => comment.recipeId === props.recipe.id)
+    if (!recipe.value) return []
+    return userStore.allComments.filter(comment => comment.recipeId === recipe.value.id)
 })
-const recipeChanged = computed(() => {
-    if (props.recipe) {
-        window.scrollTo(0, 0)
-    }
-    return props.recipe?.id
+
+// 監聽 recipe 變化，頁面滾到頂部
+watch(() => recipe.value?.id, () => {
+    window.scrollTo(0, 0)
 })
+
 function handleGoBack() {
-    emit('handlegoback')
+    navStore.goBackToRecipes()
 }
 
 function toggleFavorite() {
@@ -58,8 +55,10 @@ function toggleFavorite() {
 }
 
 function addAllToShoppingList() {
+    if (!recipe.value) return
+    
     const timestamp = Date.now()
-    const itemsToAdd = props.recipe.ingredients.map((ingredient, index) => ({
+    const itemsToAdd = recipe.value.ingredients.map((ingredient, index) => ({
         id: timestamp + index,
         ingredient_id: null,
         ingredient_name: ingredient.ingredient_name,
@@ -68,15 +67,18 @@ function addAllToShoppingList() {
         unit: ingredient.unit,
         is_purchased: false,
     }))
-    emit('addToShopping', itemsToAdd, props.recipe.title, props.recipe.id)
+    
+    shoppingStore.addToShoppingList(itemsToAdd, recipe.value.title, recipe.value.id)
     toast.success(`已將 ${itemsToAdd.length} 項食材添加到購物清單！`, {
         autoClose: 1000,
     })
 }
 
 function getMissingIngredients() {
-    return props.recipe.ingredients.filter((recipeIng) => {
-        return !props.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_id === recipeIng.ingredient_id)
+    if (!recipe.value) return []
+    
+    return recipe.value.ingredients.filter((recipeIng) => {
+        return !fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_id === recipeIng.ingredient_id)
     })
 }
 
@@ -87,12 +89,16 @@ function getMissingIngredientsText() {
 }
 
 function getHavingIngredients() {
-    return props.recipe.ingredients.filter((recipeIng) => {
-        return props.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_id === recipeIng.ingredient_id)
+    if (!recipe.value) return []
+    
+    return recipe.value.ingredients.filter((recipeIng) => {
+        return fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_id === recipeIng.ingredient_id)
     })
 }
 
 function submitComment() {
+    if (!recipe.value) return
+    
     if (!commentText.value.trim() || userRating.value === 0) {
         toast.error('請輸入評論並選擇評分！', {
             autoClose: 1000,
@@ -102,17 +108,17 @@ function submitComment() {
 
     const newComment = {
         id: Date.now(),
-        recipeId: props.recipe.id,
-        recipeTitle: props.recipe.title,  // 添加這一行
+        recipeId: recipe.value.id,
+        recipeTitle: recipe.value.title,
         author: '你',
         rating: userRating.value,
         text: commentText.value,
         date: new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString().split('T')[0],  // 添加這一行
-        likes: 0  // 添加這一行
+        createdAt: new Date().toISOString().split('T')[0],
+        likes: 0
     }
 
-    props.allComments.push(newComment)
+    userStore.addComment(newComment)
     commentText.value = ''
     userRating.value = 0
 
@@ -129,7 +135,7 @@ function getAverageRating() {
 </script>
 
 <template>
-    <div :key="recipeChanged" class="mt-28 max-w-6xl mx-auto px-6 pb-20 font-sans text-black">
+    <div v-if="recipe" :key="recipe.id" class="mt-28 max-w-6xl mx-auto px-6 pb-20 font-sans text-black">
         
         <!-- 標題區 -->
         <div class="flex flex-col md:flex-row justify-between items-start mb-10 gap-4">
@@ -148,7 +154,7 @@ function getAverageRating() {
         </div>
 
         <!-- 主要內容 -->
-        <div v-if="props.recipe" class="space-y-6">
+        <div class="space-y-6">
             
             <!-- 頂部：圖片 + 基本信息 + 互動區 -->
             <div class="border-2 border-black bg-white shadow-[4px_4px_0px_0px_black] overflow-hidden">
@@ -157,8 +163,8 @@ function getAverageRating() {
                     <!-- 左側：食譜圖片 -->
                     <div class="border-b-2 md:border-b-0 md:border-r-2 border-black bg-gray-300 overflow-hidden">
                         <img 
-                            :src="props.recipe.image_url" 
-                            :alt="props.recipe.title" 
+                            :src="recipe.image_url" 
+                            :alt="recipe.title" 
                             class="w-full h-full object-cover"
                         />
                     </div>
@@ -168,10 +174,10 @@ function getAverageRating() {
                         
                         <!-- 標題 + 創作者（頂部並排） -->
                         <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-2">
-                            <h2 class="text-4xl font-black uppercase tracking-tighter wrap-break-word flex-1">{{ props.recipe.title }}</h2>
+                            <h2 class="text-4xl font-black uppercase tracking-tighter wrap-break-word flex-1">{{ recipe.title }}</h2>
                             <div class="border-2 border-black bg-blue-50 p-3 whitespace-nowrap">
                                 <span class="text-xs font-black uppercase tracking-wide text-gray-600 block">創作者</span>
-                                <div class="font-black text-lg">{{ props.recipe.creator_id }}</div>
+                                <div class="font-black text-lg">{{ recipe.creator_id }}</div>
                             </div>
                         </div>
 
@@ -179,14 +185,14 @@ function getAverageRating() {
                         <div class="grid grid-cols-2 gap-3">
                             <div class="border-2 border-black bg-yellow-100 p-4">
                                 <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">烹飪時間</div>
-                                <div class="text-3xl font-black">{{ props.recipe.coocking_time }}</div>
+                                <div class="text-3xl font-black">{{ recipe.coocking_time }}</div>
                                 <div class="text-xs font-bold">分鐘</div>
                             </div>
                             <div class="border-2 border-black bg-blue-100 p-4">
                                 <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">難度等級</div>
                                 <div class="flex gap-1">
                                     <Icon 
-                                        v-for="n in props.recipe.difficulty" 
+                                        v-for="n in recipe.difficulty" 
                                         :key="n"
                                         icon="mdi:star"
                                         class="text-sm text-amber-400"
@@ -232,7 +238,7 @@ function getAverageRating() {
                 
                 <div class="space-y-2">
                     <div 
-                        v-for="ingredient in props.recipe.ingredients" 
+                        v-for="ingredient in recipe.ingredients" 
                         :key="ingredient.id"
                         :class="getHavingIngredients().some(h => h.ingredient_id === ingredient.ingredient_id) 
                             ? 'bg-green-100 border-green-400' 
@@ -278,10 +284,10 @@ function getAverageRating() {
 
             <!-- 詳細步驟 -->
             <div class="border-2 border-black bg-yellow-50 shadow-[4px_4px_0px_0px_black] p-6 space-y-4">
-                <h3 class="text-2xl font-black uppercase tracking-wide mb-6"> 詳細步驟</h3>
+                <h3 class="text-2xl font-black uppercase tracking-wide mb-6">詳細步驟</h3>
                 <div class="space-y-4">
                     <div 
-                        v-for="(step, index) in props.recipe.step.split('\n\n')"
+                        v-for="(step, index) in recipe.step.split('\n\n')"
                         :key="index"
                         class="border-l-4 border-black pl-4 py-2"
                     >

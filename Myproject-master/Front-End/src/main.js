@@ -6,8 +6,8 @@ import { Icon } from '@iconify/vue'
 import Vue3Toasity, { toast } from 'vue3-toastify';
 
 const app = createApp(App)
-
-
+const pinia = createPinia()
+app.use(pinia)
 app.use( Vue3Toasity, {
   autoClose: 1000, //自動關閉時間
   position: toast.POSITION.TOP_CENTER //提示窗位置
