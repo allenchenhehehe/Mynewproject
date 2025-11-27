@@ -206,7 +206,7 @@ function handleCookRecipe(recipe) {
                 class="border-2 border-black bg-white shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] transition-all overflow-hidden group"
             >
                 <!-- 食譜圖片 -->
-                <div class="relative overflow-hidden h-48 border-b-2 border-black bg-gray-200">
+                <div class="relative overflow-hidden h-90 border-b-2 border-black bg-gray-200">
                     <img 
                         :src="recipe.image_url" 
                         :alt="recipe.title" 

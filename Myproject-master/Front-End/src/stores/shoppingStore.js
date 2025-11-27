@@ -34,7 +34,7 @@ export const useShoppingStore = defineStore('shopping', () => {
 
   // 只計算食材（不含調味料、油類等）
   const foodItems = computed(() => {
-    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'other']
+    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean', 'other']
     let count = 0
     let purchased = 0
     shoppingList.value.forEach((group) => {
@@ -116,8 +116,12 @@ export const useShoppingStore = defineStore('shopping', () => {
       )
     })
 
-    // 移除空的分組
-    shoppingList.value = shoppingList.value.filter((group) => group.items.length > 0)
+    // ✅ 改進：移除空的分組 或 只剩調味料的分組
+    shoppingList.value = shoppingList.value.filter((group) => {
+      // 檢查是否有「食材」（不是調味料/油類）
+      const hasFoodItems = group.items.some(item => foodCategories.includes(item.category))
+      return hasFoodItems
+    })
 
     console.log('清除已購買食材，共', purchasedItems.length, '個')
     return purchasedItems

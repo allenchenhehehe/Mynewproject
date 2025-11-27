@@ -9,6 +9,7 @@ export const useNavigationStore = defineStore('navigation', () => {
   // Actions
   function goToPage(pageName) {
     currentPage.value = pageName
+    window.scrollTo(0, 0)
     console.log('導航到頁面:', pageName)
   }
 

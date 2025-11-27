@@ -18,6 +18,7 @@ const categories = [
     { key: 'fruit', name: '水果' },
     { key: 'meat', name: '肉類' },
     { key: 'egg', name: '蛋類' },
+    { key: 'bean', name: '豆類' },
     { key: 'seasoning', name: '調味料' },
     { key: 'oil', name: '油類' },
     { key: 'seafood', name: '海鮮' },
@@ -47,7 +48,7 @@ const stats = computed(() => {
 
 // 只計算食材（不含調味料、油類等）
 const foodStats = computed(() => {
-    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'other']
+    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean', 'other']
     let total = 0
     let purchased = 0
     shoppingStore.shoppingList.forEach((group) => {
