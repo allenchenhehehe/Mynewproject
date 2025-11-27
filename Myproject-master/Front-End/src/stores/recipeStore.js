@@ -76,7 +76,7 @@ const mockRecipes = [
         step: '1. 醃製肉絲：豬里脊肉切成均勻的細絲，加入料酒、鹽、蛋清和澱粉抓勻醃製15分鐘。\n\n2. 調製魚香汁：將醋、糖、生抽、老抽、水澱粉和清水按比例混合均勻，製成魚香汁。\n\n3. 滑炒肉絲：鍋中熱油，將醃好的肉絲快速滑炒至變色即刻盛出，保持肉絲的嫩度。\n\n4. 炒香配料：利用底油，先後放入薑末、蒜末、泡椒末和剁碎的豆瓣醬，小火炒出紅油和香氣。\n\n5. 混合收汁：將肉絲和切好的木耳絲、筍絲等配料倒入鍋中，快速翻炒，隨後倒入魚香汁，大火翻炒，讓醬汁均勻地裹在食材上，湯汁變得濃稠發亮後即可出鍋。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/Fish&Meat.webp',
         ingredients: [
             { ingredient_id: 14, ingredient_name: '豬里脊肉', quantity: 250, unit: '克', category: 'meat' },
             { ingredient_id: 15, ingredient_name: '木耳/筍絲', quantity: 100, unit: '克', category: 'vegetable' },
@@ -92,7 +92,7 @@ const mockRecipes = [
         step: '1. 清洗備料：將所選的時令蔬菜（如：菠菜、空心菜、油菜等）清洗乾��淨，瀝乾水分，大蒜切成細蓉備用。\n\n2. 爆香蒜蓉：鍋中倒入較多的油，大火燒熱後，將一半的蒜蓉倒入，快速爆香，注意不要炒焦。\n\n3. 快速翻炒：將蔬菜倒入鍋中，大火快速翻炒，這樣可以最大限度地保留蔬菜的翠綠色和清脆口感，如果蔬菜不易熟可適當加蓋燜煮片刻。\n\n4. 調味出鍋：在蔬菜接近斷生時，加入適量的鹽和少許雞精調味，如果喜歡更濃的蒜味，此時可加入剩下的生蒜蓉。\n\n5. 均勻翻動：快速翻炒均勻後，即可盛盤上桌，追求速度是清炒時蔬的關鍵。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/Veg.webp',
         ingredients: [
             { ingredient_id: 17, ingredient_name: '時令蔬菜', quantity: 500, unit: '克', category: 'vegetable' },
             { ingredient_id: 18, ingredient_name: '大蒜', quantity: 3, unit: '瓣', category: 'vegetable'},
