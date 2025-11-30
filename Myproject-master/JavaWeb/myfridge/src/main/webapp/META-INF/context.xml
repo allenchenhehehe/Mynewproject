@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource 
+        name="jdbc/MyFridge"
+        auth="Container"
+        type="javax.sql.DataSource"
+        maxTotal="10"
+        maxIdle="4"
+        maxWaitMillis="10000"
+        username="root"
+        password="Esketit"
+        driverClassName="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/MyFridge"
+    />
+</Context>

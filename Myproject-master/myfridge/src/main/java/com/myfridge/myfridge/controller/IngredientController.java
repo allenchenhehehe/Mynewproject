@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myfridge.myfridge.entity.Ingredient;
-import com.myfridge.myfridge.repository.IngredientRepository;
+import com.myfridge.myfridge.service.IngredientService;
 
 
 
@@ -17,14 +17,17 @@ import com.myfridge.myfridge.repository.IngredientRepository;
 @RequestMapping("/api/ingredients")
 
 public class IngredientController {
+
     @Autowired
-    private IngredientRepository ingredientRepository;
+    private IngredientService ingredientService;
+    
     @GetMapping
     public List<Ingredient> getAllIngredients(){
-        return ingredientRepository.findAll();
+        return ingredientService.findAll();
     }
-     @GetMapping("/{id}")
+
+    @GetMapping("/{id}")
     public Ingredient getIngredientBId(@PathVariable Integer id){
-        return ingredientRepository.findById(id).orElse(null);
+        return ingredientService.findById(id);
     }
 }
