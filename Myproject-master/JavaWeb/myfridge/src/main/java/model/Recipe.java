@@ -1,6 +1,6 @@
 package model;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public class Recipe {
 	private Integer id;
@@ -12,6 +12,8 @@ public class Recipe {
 	private Integer difficulty;
 	private String step;
 	private Boolean isPublic;  
+	private List<RecipeIngredient> ingredients;
+
 	
 	public Recipe() {}
 	public Recipe(Integer id, Integer userId, String title, String description, String imageURL, Integer cookingTime,
@@ -82,4 +84,11 @@ public class Recipe {
 	public void setIsPublic(Boolean isPublic) {
 		this.isPublic = isPublic;
 	}
+	public List<RecipeIngredient> getIngredients() {
+		return ingredients;
+	}
+	public void setIngredients(List<RecipeIngredient> ingredients) {
+		this.ingredients = ingredients;
+	}
+	
 }
