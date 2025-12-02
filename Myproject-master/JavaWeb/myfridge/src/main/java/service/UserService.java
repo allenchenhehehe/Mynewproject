@@ -34,12 +34,9 @@ private UserDAO userDAO;
 	}
 	public User login (String email, String password) {
 		User user = userDAO.findByEmail(email);
-		if(user == null) {
-			throw new RuntimeException("此Email尚未註冊!");
-		}
-		if(!BCrypt.checkpw(password, user.getPassword())){
-			throw new RuntimeException("密碼錯誤!");
-		}
+		if(user == null || !BCrypt.checkpw(password, user.getPassword())) {
+	        throw new RuntimeException("帳號或密碼錯誤!"); 
+	    }
 		return user;
 	}
 }

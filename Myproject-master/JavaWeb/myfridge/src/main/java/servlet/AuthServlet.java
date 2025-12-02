@@ -41,7 +41,7 @@ public class AuthServlet extends HttpServlet {
 		String email;
 		String password;
 	}
-
+	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		resp.setContentType("application/json");

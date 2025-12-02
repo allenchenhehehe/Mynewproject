@@ -56,11 +56,11 @@ const filterRecipes = computed(() => {
   if (selectByCookingTime.value === 'all') {
     // 保持所有食譜
   } else if (selectByCookingTime.value === '15') {
-    result = result.filter((recipe) => recipe.coocking_time <= 15)
+    result = result.filter((recipe) => recipe.cooking_time <= 15)
   } else if (selectByCookingTime.value === '30') {
-    result = result.filter((recipe) => recipe.coocking_time <= 30)
+    result = result.filter((recipe) => recipe.cooking_time <= 30)
   } else if (selectByCookingTime.value === '60') {
-    result = result.filter((recipe) => recipe.coocking_time >= 60)
+    result = result.filter((recipe) => recipe.cooking_time >= 60)
   }
 
   // 按難度篩選

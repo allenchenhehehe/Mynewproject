@@ -48,7 +48,7 @@ const stats = computed(() => {
 
 // 只計算食材（不含調味料、油類等）
 const foodStats = computed(() => {
-    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean', 'other']
+    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean','oil','seasoning', 'other']
     let total = 0
     let purchased = 0
     shoppingStore.shoppingList.forEach((group) => {

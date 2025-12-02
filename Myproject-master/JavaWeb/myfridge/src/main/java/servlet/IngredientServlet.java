@@ -35,7 +35,6 @@ public class IngredientServlet extends HttpServlet {
 		PrintWriter out = resp.getWriter();
 		String pathInfo = req.getPathInfo();
 		if(pathInfo == null || pathInfo == "/") {
-			
 			List<Ingredient> list = ingredientservice.getAllIngre();
 			out.println(gson.toJson(list));
 			

@@ -18,14 +18,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ingredient {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Integer id;
+
     @Column(name = "ingredient_name",nullable = false, unique = true, length = 20)
     private String ingredientName;
+
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private Category category;
+
     @Column(name = "shelf_life_days")
     private Integer shelfLifeDays;
     public enum Category{

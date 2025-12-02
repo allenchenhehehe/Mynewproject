@@ -33,9 +33,10 @@ CREATE TABLE ingredients (
         'meat',        -- 肉類
         'dairy',       -- 乳製品 
         'seasoning',   -- 調味料
-        'oil',         -- 油類
+        'oil',         -- 油類users
         'seafood',     -- 海鮮
         'egg',         -- 蛋類
+		'bean',         -- 豆類
         'other'        -- 其他
     ) NOT NULL COMMENT '食材分類',
     shelf_life_days INT COMMENT '預設保存天數'
@@ -76,12 +77,12 @@ CREATE TABLE fridge_items (
     ingredient_id INT NOT NULL COMMENT '食材 ID',
     quantity INT NOT NULL DEFAULT 1 COMMENT '數量',
     unit VARCHAR(10) NOT NULL COMMENT '單位',
-    purchase_date DATE NOT NULL COMMENT '購買日期',
-    expiry_date DATE COMMENT '過期日期',
+    purchased_date DATE NOT NULL COMMENT '購買日期',
+    expired_date DATE COMMENT '過期日期',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT,
     INDEX idx_user_id (user_id),
-    INDEX idx_expiry_date (expiry_date)
+    INDEX idx_expired_date (expired_date)
 ) COMMENT='冰箱庫存表',ENGINE=InnoDB;
 
 -- 4. 食譜表 存儲所有食譜的基本資訊
@@ -91,9 +92,9 @@ CREATE TABLE recipes (
     title VARCHAR(20) NOT NULL COMMENT '食譜名稱',
     description TEXT COMMENT '食譜描述',
     image_url VARCHAR(255) COMMENT '食譜圖片 URL（public 資料夾的相對路徑）',
-    cooking_time_minutes INT COMMENT '烹飪時間（分鐘）',
+    coocking_time INT COMMENT '烹飪時間（分鐘）',
     difficulty INT COMMENT '難度等級（1-5）',
-    instructions TEXT COMMENT '詳細步驟',
+    step TEXT COMMENT '詳細步驟',
     is_public BOOLEAN DEFAULT TRUE COMMENT '是否公開食譜',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id)
@@ -113,34 +114,27 @@ CREATE TABLE recipe_ingredients (
     INDEX idx_ingredient_id (ingredient_id)
 ) COMMENT='食譜和食材的關聯表',ENGINE=InnoDB;
 
--- 6. 購物清單表 存儲使用者的購物清單
-CREATE TABLE shopping_lists (
+-- 6. 購物清單項目表 存儲購物清單中的個別食材
+CREATE TABLE shopping_list_items (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL COMMENT '使用者 ID',
     recipe_id INT COMMENT '來自哪個食譜（null=手動新增）',
+    recipe_name VARCHAR(50) COMMENT '食譜名稱（冗餘存儲，方便顯示）',
+    ingredient_id INT COMMENT '食材 ID（可為 null，支援自訂食材名）',
+    ingredient_name VARCHAR(20) NOT NULL COMMENT '食材名稱',
+    quantity INT NOT NULL DEFAULT 1,
+    unit VARCHAR(10) NOT NULL,
+    category VARCHAR(20),
+    is_purchased BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-     FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE SET NULL,
-    INDEX idx_user_id (user_id)
-) COMMENT='購物清單（可能有多個）',ENGINE=InnoDB;
-
--- 7. 購物清單項目表 存儲購物清單中的個別食材
-CREATE TABLE shopping_list_items (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    shopping_list_id INT NOT NULL COMMENT '購物清單 ID',
-    recipe_id INT COMMENT '來自哪個食譜（null 表示手動新增）',
-    ingredient_id INT NOT NULL COMMENT '食材 ID',
-    quantity INT NOT NULL DEFAULT 1 COMMENT '數量',
-    unit VARCHAR(5) NOT NULL COMMENT '單位',
-    category VARCHAR(20) COMMENT '食材分類',
-    is_purchased BOOLEAN DEFAULT FALSE COMMENT '是否已購買',
-    FOREIGN KEY (shopping_list_id) REFERENCES shopping_lists(id) ON DELETE CASCADE,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT,
-    INDEX idx_shopping_list_id (shopping_list_id),
-    INDEX idx_ingredient_id (ingredient_id),
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE SET NULL,
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE SET NULL,
+    INDEX idx_user_id (user_id),
     INDEX idx_is_purchased (is_purchased)
 ) COMMENT='購物清單項目表',ENGINE=InnoDB;
 
--- 8. 收藏食譜表 存儲使用者收藏的食譜
+-- 7. 收藏食譜表 存儲使用者收藏的食譜
 CREATE TABLE favorites (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL COMMENT '使用者 ID',
@@ -154,7 +148,7 @@ CREATE TABLE favorites (
     INDEX idx_saved_at (saved_at)
 ) COMMENT='使用者收藏食譜表',ENGINE=InnoDB;
 
--- 9. 評論表 存儲使用者對食譜的評論
+-- 8. 評論表 存儲使用者對食譜的評論
 CREATE TABLE comments (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL COMMENT '使用者 ID',

@@ -78,7 +78,7 @@ function getMissingIngredients() {
     if (!recipe.value) return []
     
     return recipe.value.ingredients.filter((recipeIng) => {
-        return !fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_id === recipeIng.ingredient_id)
+        return !fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_name === recipeIng.ingredient_name)
     })
 }
 
@@ -92,7 +92,7 @@ function getHavingIngredients() {
     if (!recipe.value) return []
     
     return recipe.value.ingredients.filter((recipeIng) => {
-        return fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_id === recipeIng.ingredient_id)
+        return fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_name === recipeIng.ingredient_name)
     })
 }
 
@@ -185,7 +185,7 @@ function getAverageRating() {
                         <div class="grid grid-cols-2 gap-3">
                             <div class="border-2 border-black bg-yellow-100 p-4">
                                 <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">烹飪時間</div>
-                                <div class="text-3xl font-black">{{ recipe.coocking_time }}</div>
+                                <div class="text-3xl font-black">{{ recipe.cooking_time }}</div>
                                 <div class="text-xs font-bold">分鐘</div>
                             </div>
                             <div class="border-2 border-black bg-blue-100 p-4">
@@ -240,7 +240,7 @@ function getAverageRating() {
                     <div 
                         v-for="ingredient in recipe.ingredients" 
                         :key="ingredient.id"
-                        :class="getHavingIngredients().some(h => h.ingredient_id === ingredient.ingredient_id) 
+                        :class="getHavingIngredients().some(h => h.ingredient_name === ingredient.ingredient_name) 
                             ? 'bg-green-100 border-green-400' 
                             : 'bg-red-100 border-red-400'"
                         class="border-2 p-3 flex justify-between items-center font-bold"

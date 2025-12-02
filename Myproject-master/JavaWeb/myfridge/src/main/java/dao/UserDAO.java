@@ -80,7 +80,7 @@ public class UserDAO {
 			psmt = conn.prepareStatement(SELECT_BY_EMAIL);
 			psmt.setString(1, email);
 			rs = psmt.executeQuery();
-			while(rs.next()) {
+			if(rs.next()) {
 				return new User(
 						rs.getInt("id"), 
 						rs.getString("username"),
@@ -101,34 +101,32 @@ public class UserDAO {
 	private static final String INSERT_USER= 
 			"INSERT INTO USERS (USERNAME,EMAIL,PASSWORD) VALUES (?,?,?)";
 	public User insert(User user) {
-		Connection conn = null;
-		PreparedStatement psmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection();
-			psmt = conn.prepareStatement(INSERT_USER,Statement.RETURN_GENERATED_KEYS);
-			psmt.setString(1, user.getUserName());
-			psmt.setString(2, user.getEmail());
-			psmt.setString(3, user.getPassword());
-			psmt.executeUpdate();
-			
-			rs = psmt.getGeneratedKeys();
-			if(rs.next()) {
-				user.setId(rs.getInt(1));
-			}
-			conn.commit();
-			return user;
-		} catch (SQLException e) {
-			try {
-	            if (conn != null) {
-	                conn.rollback(); 
-	            }
-	        } catch (SQLException rollbackEx) {
-	            rollbackEx.printStackTrace();
+	    Connection conn = null;
+	    PreparedStatement psmt = null;
+	    ResultSet rs = null;
+	    try {
+	        conn = DBUtil.getConnection();
+	        psmt = conn.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS);
+	        psmt.setString(1, user.getUserName());
+	        psmt.setString(2, user.getEmail());
+	        psmt.setString(3, user.getPassword());
+	        
+	        int rows = psmt.executeUpdate();     
+	        rs = psmt.getGeneratedKeys();
+	        if(rs.next()) {
+	            int newId = rs.getInt(1);
+	            System.out.println("新增的 ID: " + newId);
+	            user.setId(newId);
+	            return user;
 	        }
-			throw new RuntimeException("新增用戶失敗", e);
-		}finally {
-			DBUtil.close(conn, psmt, rs);
-		}	
+	        
+	        throw new RuntimeException("無法取得新增的 ID");   
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();  // 印出完整錯誤
+	        throw new RuntimeException("新增用戶失敗", e);
+	    } finally {
+	        DBUtil.close(conn, psmt, rs);
+	    }   
 	}
 }

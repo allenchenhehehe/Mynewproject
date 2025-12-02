@@ -34,7 +34,7 @@ export const useShoppingStore = defineStore('shopping', () => {
 
   // 只計算食材（不含調味料、油類等）
   const foodItems = computed(() => {
-    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean', 'other']
+    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean','oil', 'seasoning', 'other']
     let count = 0
     let purchased = 0
     shoppingList.value.forEach((group) => {
@@ -97,7 +97,7 @@ export const useShoppingStore = defineStore('shopping', () => {
   }
 
   function clearPurchased() {
-    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'other']
+    const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood','oil','seasoning', 'other']
     const purchasedItems = []
 
     // 收集所有已購買的食材（不含調味料、油類）
