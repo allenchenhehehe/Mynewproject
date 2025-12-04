@@ -33,7 +33,7 @@ CREATE TABLE ingredients (
         'meat',        -- 肉類
         'dairy',       -- 乳製品 
         'seasoning',   -- 調味料
-        'oil',         -- 油類users
+        'oil',         -- 油類
         'seafood',     -- 海鮮
         'egg',         -- 蛋類
 		'bean',         -- 豆類
@@ -75,7 +75,7 @@ CREATE TABLE fridge_items (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL COMMENT '使用者 ID',
     ingredient_id INT NOT NULL COMMENT '食材 ID',
-    quantity INT NOT NULL DEFAULT 1 COMMENT '數量',
+    amount DECIMAL(10, 2) NOT NULL DEFAULT 1 COMMENT '數量',
     unit VARCHAR(10) NOT NULL COMMENT '單位',
     purchased_date DATE NOT NULL COMMENT '購買日期',
     expired_date DATE COMMENT '過期日期',
@@ -89,10 +89,10 @@ CREATE TABLE fridge_items (
 CREATE TABLE recipes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT COMMENT '使用者 ID（null 表示系統食譜）',
-    title VARCHAR(20) NOT NULL COMMENT '食譜名稱',
+    title VARCHAR(100) NOT NULL COMMENT '食譜名稱',
     description TEXT COMMENT '食譜描述',
     image_url VARCHAR(255) COMMENT '食譜圖片 URL（public 資料夾的相對路徑）',
-    coocking_time INT COMMENT '烹飪時間（分鐘）',
+    cooking_time INT COMMENT '烹飪時間（分鐘）',
     difficulty INT COMMENT '難度等級（1-5）',
     step TEXT COMMENT '詳細步驟',
     is_public BOOLEAN DEFAULT TRUE COMMENT '是否公開食譜',
@@ -105,7 +105,7 @@ CREATE TABLE recipe_ingredients (
     id INT PRIMARY KEY AUTO_INCREMENT,
     recipe_id INT NOT NULL COMMENT '食譜 ID',
     ingredient_id INT NOT NULL COMMENT '食材 ID',
-    quantity DECIMAL(10, 2) NOT NULL COMMENT '需要的數量',
+    amount DECIMAL(10, 2) NOT NULL COMMENT '需要的數量',
     unit VARCHAR(5) NOT NULL COMMENT '單位',
     FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT,
@@ -122,7 +122,7 @@ CREATE TABLE shopping_list_items (
     recipe_name VARCHAR(50) COMMENT '食譜名稱（冗餘存儲，方便顯示）',
     ingredient_id INT COMMENT '食材 ID（可為 null，支援自訂食材名）',
     ingredient_name VARCHAR(20) NOT NULL COMMENT '食材名稱',
-    quantity INT NOT NULL DEFAULT 1,
+    amount DECIMAL(10, 2) NOT NULL DEFAULT 1,
     unit VARCHAR(10) NOT NULL,
     category VARCHAR(20),
     is_purchased BOOLEAN DEFAULT FALSE,

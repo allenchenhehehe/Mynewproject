@@ -270,6 +270,7 @@ function isExpired(expiredDate) {
                             <label class="block mb-1 text-sm uppercase tracking-wider">Name</label>
                             <input type="text" v-model="(isEditModalOpen ? editIngredient : newIngredient).name" 
                                 class="w-full border-2 border-black p-3 bg-gray-50 focus:bg-white focus:ring-0 focus:shadow-[4px_4px_0px_0px_black] transition-all outline-none"
+                                :disabled="isEditModalOpen"
                                 placeholder="e.g., Tomato"
                             />
                         </div>

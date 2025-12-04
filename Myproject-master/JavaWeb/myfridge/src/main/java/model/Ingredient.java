@@ -19,10 +19,10 @@ public class Ingredient {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getIngredientname() {
+	public String getIngredientName() {
 		return ingredientname;
 	}
-	public void setIngredientname(String ingredientname) {
+	public void setIngredientName(String ingredientname) {
 		this.ingredientname = ingredientname;
 	}
 	public String getCategory() {
@@ -31,10 +31,10 @@ public class Ingredient {
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	public Integer getShelflifedays() {
+	public Integer getShelfLifeDays() {
 		return shelflifedays;
 	}
-	public void setShelflifedays(Integer shelflifedays) {
+	public void setShelfLifeDays(Integer shelflifedays) {
 		this.shelflifedays = shelflifedays;
 	}
  

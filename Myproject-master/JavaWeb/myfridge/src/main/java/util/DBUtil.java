@@ -1,41 +1,31 @@
 package util;
 
-
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import javax.naming.*;
-import javax.sql.*;
+import java.sql.*;
 
 public class DBUtil {
-	private static DataSource datasource;  
-	static {
-		try {
-			Context ctx = new InitialContext();
-			datasource = (DataSource)ctx.lookup("java:comp/env/jdbc/MyFridge");
-		} catch (NamingException e) {
-			throw new RuntimeException("DataSource could not be found.",e);
-		}
-	}
-	public static Connection getConnection() throws SQLException {
-		return datasource.getConnection();
-	}
-	public static void close(Connection conn, PreparedStatement psmt, ResultSet rs) {
-		try {
-			if(conn!=null) {
-				conn.close();
-			}
-			if(psmt!=null) {
-				psmt.close();
-			}
-			if(rs!=null) {
-				rs.close();
-			}		
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+    private static final String URL = "jdbc:mysql://localhost:3306/MyFridge?useSSL=false&serverTimezone=Asia/Taipei";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Esketit";  // ← 改這裡
+    
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("MySQL Driver not found.", e);
+        }
+    }
+    
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+    
+    public static void close(Connection conn, PreparedStatement psmt, ResultSet rs) {
+        try {
+            if (rs != null) rs.close();
+            if (psmt != null) psmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
