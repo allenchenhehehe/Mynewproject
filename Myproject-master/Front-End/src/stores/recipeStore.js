@@ -14,7 +14,7 @@ const mockRecipes = [
         is_public: true,
         image_url: '/TomatoEgg.webp',
         ingredients: [
-            { ingredient_id: 4, ingredient_name: '番茄', quantity: 2, unit: '個',category: 'vegetable' },
+            { ingredient_id: 1, ingredient_name: '番茄', quantity: 2, unit: '個',category: 'vegetable' },
             { ingredient_id: 3, ingredient_name: '雞蛋', quantity: 3, unit: '個',category: 'egg' },
             { ingredient_id: 101, ingredient_name: '蔥花', quantity: 1, unit: '匙',category: 'vegetable' },
         ],
@@ -108,7 +108,7 @@ const mockRecipes = [
         step: '1. 雞翅處理：將雞中翅清洗乾淨，用刀在表面劃兩刀方便入味，加入薑片、料酒和少量生抽醃製15分鐘。\n\n2. 煸炒上色：鍋中放少量油，將雞翅放入，中小火煎至兩面金黃微焦，逼出多餘油脂後盛出。\n\n3. 加入可樂：將煎好的雞翅重新放回鍋中，加入生抽和老抽調色，然後倒入整罐可樂，水量需沒過雞翅。\n\n4. 小火慢燉：大火煮沸後轉小火，蓋上鍋蓋燜煮約20分鐘，讓雞翅充分吸收可樂的甜味和焦糖色。\n\n5. 大火收汁：開大火將湯汁收濃，期間要不斷翻動雞翅防止粘鍋，待湯汁變得濃稠且均勻包裹住雞翅後即可關火盛盤。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/cokechicken.webp',
         ingredients: [
             { ingredient_id: 20, ingredient_name: '雞中翅', quantity: 8, unit: '個', category: 'meat'},
             { ingredient_id: 21, ingredient_name: '可樂', quantity: 300, unit: '毫升', category: 'other' },
@@ -124,7 +124,7 @@ const mockRecipes = [
         step: '1. 魚身處理：將魚（如鱸魚、石斑魚）內臟去除洗淨，魚身劃幾刀，用鹽和料酒輕輕塗抹，魚肚和魚身上放上蔥薑絲去腥。\n\n2. 準備蒸鍋：蒸鍋中水燒開，將魚放在墊有蔥薑段的盤子上，確保魚身與盤底有空隙，利於蒸汽循環。\n\n3. 控制火候：大火蒸約8-10分鐘（根據魚的大小調整時間），魚眼突出、魚肉剛好離骨即為成熟。\n\n4. 淋醬油：將蒸魚盤中多餘的湯汁倒掉（腥味來源），夾去魚身上的蔥薑絲，重新鋪上新的蔥絲和香菜。\n\n5. 熱油激香：將適量的蒸魚豉油淋在魚身上，隨後燒熱少許油，將熱油均勻地潑在蔥絲上，激發出香氣即可上桌。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/fish.webp',
         ingredients: [
             { ingredient_id: 23, ingredient_name: '新鮮活魚', quantity: 500, unit: '克', category: 'seafood' },
             { ingredient_id: 24, ingredient_name: '蔥薑絲', quantity: 50, unit: '克', category: 'seasoning' },
@@ -140,7 +140,7 @@ const mockRecipes = [
         step: '1. 切絲浸泡：將土豆去皮後切成極細的絲，放入清水中反覆沖洗或浸泡，直到水變清澈，目的是洗去多餘的澱粉，保證炒出來的口感脆爽。\n\n2. 準備調料：將乾辣椒切段，蒜切末備用，醋、鹽、少量糖調和成汁。\n\n3. 爆炒調料：鍋中燒熱油，先放入乾辣椒段和花椒粒小火煸炒出香，隨後加入蒜末爆香。\n\n4. 大火快炒：將瀝乾的土豆絲倒入鍋中，轉大火快速翻炒，加入少量白醋和鹽調味。\n\n5. 醋香收尾：在土豆絲快要炒熟時，沿鍋邊淋入大量的醋，快速翻炒幾下即可出鍋，保持其酸味和清脆的口感。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/sourspicy.webp',
         ingredients: [
             { ingredient_id: 26, ingredient_name: '土豆', quantity: 2, unit: '個', category: 'vegetable'},
             { ingredient_id: 27, ingredient_name: '白醋', quantity: 3, unit: '匙', category: 'seasoning' },
@@ -156,7 +156,7 @@ const mockRecipes = [
         step: '1. 滑炒雞蛋：雞蛋打散後，鍋中放油燒熱，將蛋液倒入，快速滑炒成大塊的雞蛋碎，盛出備用。\n\n2. 醃製肉片：將豬肉切成薄片，用鹽、料酒和澱粉抓勻醃製10分鐘。\n\n3. 炒肉片：鍋中放油，將醃好的肉片倒入，快速滑炒至變色即刻盛出，保持肉片的嫩度。\n\n4. 炒配料：利用鍋中底油，放入蔥段、薑絲爆香，隨後加入泡發好的木耳和黃瓜片或筍片，大火翻炒。\n\n5. 混合調味：將炒好的雞蛋和肉片重新倒入鍋中，加入生抽、少許鹽和糖調味，快速翻炒均勻，淋入少許水澱粉勾薄芡即可出鍋。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/muxu.webp',
         ingredients: [
             { ingredient_id: 29, ingredient_name: '豬肉片', quantity: 150, unit: '克', category: 'meat' },
             { ingredient_id: 30, ingredient_name: '雞蛋', quantity: 2, unit: '個', category: 'egg' },
@@ -172,7 +172,7 @@ const mockRecipes = [
         step: '1. 肉片處理：將豬後腿肉或里脊肉切成薄片，加入料酒、生抽、少許澱粉抓勻醃製10分鐘。\n\n2. 調製醬汁：用甜麵醬、黃豆醬、少許糖和少量水混合均勻，製成濃郁的醬汁。\n\n3. 滑炒肉片：鍋中熱油，將醃好的肉片倒入，快速滑炒至變色後盛出備用。\n\n4. 爆香醬汁：鍋中留底油，先放入蔥薑末爆香，接著倒入調好的醬汁，小火慢慢炒出醬香和光澤。\n\n5. 混合收汁：將肉片和切好的青椒或洋蔥片倒入鍋中，快速大火翻炒，讓濃稠的醬汁均勻地裹在肉片和蔬菜上，撒上蔥花即可出鍋。',
         creator_id: 'system',
         is_public: true,
-        image_url: '/TomatoEgg.webp',
+        image_url: '/JumBao.webp',
         ingredients: [
             { ingredient_id: 32, ingredient_name: '豬後腿肉', quantity: 250, unit: '克', category: 'meat' },
             { ingredient_id: 33, ingredient_name: '甜麵醬/黃豆醬', quantity: 3, unit: '匙', category: 'seasoning' },
