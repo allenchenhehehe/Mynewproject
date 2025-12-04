@@ -2,15 +2,20 @@ package servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import model.FridgeItem;
 import service.FridgeItemService;
 import service.IngredientService;
 
@@ -65,21 +70,61 @@ public class FridgeItemServlet extends HttpServlet {
     	error.addProperty("error", message);
     	resp.getWriter().write(gson.toJson(error));
     }
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    //從session拿userId
+    private Integer getUserIdFromSession(HttpServletRequest req, HttpServletResponse resp)
+    		throws IOException {
+    	HttpSession session = req.getSession(false);
+    	if(session == null|| session.getAttribute("userId")==null) {
+    		sendErrorResponse(resp,401,"尚未登入!");
+    		return null;
+    	}
+    	return (Integer)session.getAttribute("userId");
+    }
+    
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+		try {
+			Integer userId = getUserIdFromSession(req, resp);
+			if(userId == null) {
+				return;
+			}
+			List<FridgeItem> list = fridgeItemService.getAllItems(userId);
+			sendJsonResponse(resp,200,list);
+		}catch(Exception e) {
+			e.printStackTrace();
+			sendErrorResponse(resp,500,"伺服器錯誤!"+e.getMessage());
+		}
 	}
 
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+		try {
+			Integer userId = getUserIdFromSession(req, resp);
+			if(userId == null) {
+				return;
+			}
+			String requestBody = getRequestBody(req);
+			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
+			String ingredientName = json.get("name").getAsString();
+			String category = json.get("category").getAsString();
+			Integer amount = json.get("quantity").getAsInt();
+			String unit = json.get("unit").getAsString();
+			String purchasedDateStr = json.get("purchased_date").getAsString();
+			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
+	                ? json.get("expired_date").getAsString() : null;
+			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
+			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
+	                ? LocalDate.parse(expiredDateStr): null;
+			FridgeItem item = fridgeItemService.addToFridge(userId, ingredientName, category, amount, unit, purchasedDate, expiredDate);
+			sendJsonResponse(resp,200,item);
+		}catch(Exception e) {
+			e.printStackTrace();
+			sendErrorResponse(resp,500,"新增失敗!"+e.getMessage());
+		}
 	}
-	
 	
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		
 	}
 	
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
