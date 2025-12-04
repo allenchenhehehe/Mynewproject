@@ -80,10 +80,10 @@ public class AuthServlet extends HttpServlet {
 					session.invalidate();
 				}
 				resp.setStatus(HttpServletResponse.SC_OK);
-				out.print("{\"message\": \"登出成功\"}");
+				out.print("{\"message\": \"登出成功!\"}");
 			}else {
 				resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				out.print("{\"error\": \"找不到此路徑\"}");
+				out.print("{\"error\": \"尚未登入!\"}");
 			}
 		}catch(RuntimeException e) {
 			 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

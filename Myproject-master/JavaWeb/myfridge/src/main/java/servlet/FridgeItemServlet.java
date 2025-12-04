@@ -13,11 +13,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import model.FridgeItem;
 import service.FridgeItemService;
 import service.IngredientService;
+import java.lang.reflect.Type;
 
 @WebServlet("/api/fridge-items/*")
 public class FridgeItemServlet extends HttpServlet {
@@ -28,7 +36,23 @@ public class FridgeItemServlet extends HttpServlet {
 	@Override
 	public void init() {
 		fridgeItemService = new FridgeItemService();
-		gson = new Gson();
+		gson = new GsonBuilder()
+				.disableHtmlEscaping()
+	            .registerTypeAdapter(LocalDate.class, new JsonSerializer<LocalDate>() {
+	                @Override
+	                public JsonElement serialize(LocalDate date, Type type, 
+	                                            JsonSerializationContext context) {
+	                    return date != null ? new JsonPrimitive(date.toString()) : null;
+	                }
+	            })
+	            .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
+	                @Override
+	                public LocalDate deserialize(JsonElement json, Type type, 
+	                                            JsonDeserializationContext context) {
+	                    return json != null ? LocalDate.parse(json.getAsString()) : null;
+	                }
+	            })
+	            .create();
 	}
 	//處理跨域的問題
 	private void setCrossHeader(HttpServletResponse resp) {
@@ -83,6 +107,8 @@ public class FridgeItemServlet extends HttpServlet {
     
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		req.setCharacterEncoding("UTF-8");
+	    resp.setCharacterEncoding("UTF-8");
 		try {
 			Integer userId = getUserIdFromSession(req, resp);
 			if(userId == null) {
@@ -98,6 +124,8 @@ public class FridgeItemServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		req.setCharacterEncoding("UTF-8");
+	    resp.setCharacterEncoding("UTF-8");
 		try {
 			Integer userId = getUserIdFromSession(req, resp);
 			if(userId == null) {
@@ -123,7 +151,10 @@ public class FridgeItemServlet extends HttpServlet {
 		}
 	}
 	
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		req.setCharacterEncoding("UTF-8");
+	    resp.setCharacterEncoding("UTF-8");
 		try {
 			Integer userId = getUserIdFromSession(req, resp);
 			if(userId == null) {
@@ -147,17 +178,20 @@ public class FridgeItemServlet extends HttpServlet {
 			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
 			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
 	                ? LocalDate.parse(expiredDateStr): null;
-			FridgeItem item = fridgeItemService.updateItem(id, amount, unit, purchasedDate, expiredDate);
+			FridgeItem item = fridgeItemService.updateItem(userId,id, amount, unit, purchasedDate, expiredDate);
 			sendJsonResponse(resp,200,item);
 		}catch (NumberFormatException e) {
             sendErrorResponse(resp, 400, "ID 格式錯誤");
         }catch(Exception e) {
 			e.printStackTrace();
-			sendErrorResponse(resp,500,"新增失敗!"+e.getMessage());
+			sendErrorResponse(resp,500,"更新失敗!"+e.getMessage());
 		}
 	}
 	
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		req.setCharacterEncoding("UTF-8");
+	    resp.setCharacterEncoding("UTF-8");
 		try {
 			Integer userId = getUserIdFromSession(req, resp);
 			if(userId == null) {
@@ -169,25 +203,20 @@ public class FridgeItemServlet extends HttpServlet {
 				return;
 			}
 			
-			Integer id = Integer.parseInt(pathInfo.substring(1));
-			String requestBody = getRequestBody(req);
-			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
-			
-			Integer amount = json.get("quantity").getAsInt();
-			String unit = json.get("unit").getAsString();
-			String purchasedDateStr = json.get("purchased_date").getAsString();
-			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
-	                ? json.get("expired_date").getAsString() : null;
-			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
-			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
-	                ? LocalDate.parse(expiredDateStr): null;
-			FridgeItem item = fridgeItemService.updateItem(id, amount, unit, purchasedDate, expiredDate);
-			sendJsonResponse(resp,200,item);
+			Integer id = Integer.parseInt(pathInfo.substring(1));			
+			Boolean success = fridgeItemService.deleteItem(userId,id);
+			if (success) {
+			    JsonObject response = new JsonObject();
+			    response.addProperty("message", "刪除成功");
+			    sendJsonResponse(resp, 200, response);
+			} else {
+			    sendErrorResponse(resp, 404, "找不到此食材");
+			}
 		}catch (NumberFormatException e) {
             sendErrorResponse(resp, 400, "ID 格式錯誤");
         }catch(Exception e) {
 			e.printStackTrace();
-			sendErrorResponse(resp,500,"新增失敗!"+e.getMessage());
+			sendErrorResponse(resp,500,"刪除失敗!"+e.getMessage());
 		}
 	}
 	

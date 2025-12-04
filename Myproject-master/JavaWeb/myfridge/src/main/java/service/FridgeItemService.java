@@ -60,8 +60,16 @@ public class FridgeItemService {
 		saved.setCategory(category);
 		return saved;
 	}
-	public FridgeItem updateItem(Integer id, Integer amount, String unit, LocalDate purchasedDate, LocalDate expiredDate) {
+	public FridgeItem updateItem(Integer userId,Integer id, Integer amount, String unit, LocalDate purchasedDate, LocalDate expiredDate) {
+		FridgeItem exist = fridgeItemDAO.findById(id);
+		if(exist==null) {
+			throw new RuntimeException("找不到此食材");
+		}
+		if(!exist.getUserId().equals(userId)) {
+			 throw new RuntimeException("無權修改此食材");
+		}
 		FridgeItem item = new FridgeItem();
+		item.setUserId(userId);
 		item.setId(id);
 		item.setAmount(amount);
 		item.setUnit(unit);
@@ -70,7 +78,14 @@ public class FridgeItemService {
 		fridgeItemDAO.updateItem(item);
 		return fridgeItemDAO.findById(id);
 	}
-	public boolean deleteItem(Integer id) {
-		return fridgeItemDAO.deleteItem(id);
+	public boolean deleteItem(Integer userId, Integer itemid) {
+		FridgeItem fridgeItem = fridgeItemDAO.findById(itemid);
+		if(fridgeItem==null) {
+			 throw new RuntimeException("找不到此食材");
+		}
+		if(!fridgeItem.getUserId().equals(userId)) {
+			 throw new RuntimeException("無權刪除此食材");
+		}
+		return fridgeItemDAO.deleteItem(userId,itemid);
 	}
 }

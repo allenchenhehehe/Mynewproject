@@ -136,8 +136,8 @@ public class FridgeItemDAO {
 	}
 	
 	private static final String DELETE_ITEM= 
-			"DELETE  FROM FRIDGE_ITEMS WHERE ID=?";
-	public boolean deleteItem(Integer id) {
+			"DELETE  FROM FRIDGE_ITEMS WHERE ID=? AND user_id = ?";
+	public boolean deleteItem(Integer userId, Integer id) {
 		Connection conn = null;
 	    PreparedStatement psmt = null;
 	    ResultSet rs = null;
@@ -146,6 +146,7 @@ public class FridgeItemDAO {
 	        conn.setAutoCommit(false);
 	        psmt = conn.prepareStatement(DELETE_ITEM);
 	        psmt.setInt(1, id);
+	        psmt.setInt(2, userId);        
 	        int rows = psmt.executeUpdate();
 	        conn.commit();
 	        return rows>0;
@@ -165,7 +166,7 @@ public class FridgeItemDAO {
 	
 	private static final String UPDATE_ITEM= 
 			"UPDATE FRIDGE_ITEMS SET "
-			+ "AMOUNT=?, UNIT=?, PURCHASED_DATE=?, EXPIRED_DATE=? WHERE ID=?";
+			+ "AMOUNT=?, UNIT=?, PURCHASED_DATE=?, EXPIRED_DATE=? WHERE ID=? AND user_id = ?";
 	public FridgeItem updateItem(FridgeItem item) {
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -183,6 +184,7 @@ public class FridgeItemDAO {
 	            psmt.setNull(4, Types.DATE);
 	        }
 	        psmt.setInt(5,item.getId());
+	        psmt.setInt(6,item.getUserId());
 	        int rows =psmt.executeUpdate();
 	        if (rows == 0) {
 	            throw new RuntimeException("找不到此食材,更新失敗");
