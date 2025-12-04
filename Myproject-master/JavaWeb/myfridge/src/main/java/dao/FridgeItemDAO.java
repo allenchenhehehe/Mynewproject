@@ -85,8 +85,9 @@ public class FridgeItemDAO {
 							rs.getDate("expired_date") != null ?
 									rs.getDate("expired_date").toLocalDate():null,
 							rs.getString("ingredient_name"),
-							rs.getString("category")
+							rs.getString("category")					
 					);
+					return item;
 				}
 		        return null;
 		    }catch(SQLException se) {

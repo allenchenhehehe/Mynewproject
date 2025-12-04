@@ -124,11 +124,71 @@ public class FridgeItemServlet extends HttpServlet {
 	}
 	
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
+		try {
+			Integer userId = getUserIdFromSession(req, resp);
+			if(userId == null) {
+				return;
+			}
+			String pathInfo = req.getPathInfo();
+			if(pathInfo == null || pathInfo.length()<=1) {
+				sendErrorResponse(resp,400,"缺少id!");
+				return;
+			}
+			
+			Integer id = Integer.parseInt(pathInfo.substring(1));
+			String requestBody = getRequestBody(req);
+			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
+			
+			Integer amount = json.get("quantity").getAsInt();
+			String unit = json.get("unit").getAsString();
+			String purchasedDateStr = json.get("purchased_date").getAsString();
+			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
+	                ? json.get("expired_date").getAsString() : null;
+			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
+			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
+	                ? LocalDate.parse(expiredDateStr): null;
+			FridgeItem item = fridgeItemService.updateItem(id, amount, unit, purchasedDate, expiredDate);
+			sendJsonResponse(resp,200,item);
+		}catch (NumberFormatException e) {
+            sendErrorResponse(resp, 400, "ID 格式錯誤");
+        }catch(Exception e) {
+			e.printStackTrace();
+			sendErrorResponse(resp,500,"新增失敗!"+e.getMessage());
+		}
 	}
 	
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		try {
+			Integer userId = getUserIdFromSession(req, resp);
+			if(userId == null) {
+				return;
+			}
+			String pathInfo = req.getPathInfo();
+			if(pathInfo == null || pathInfo.length()<=1) {
+				sendErrorResponse(resp,400,"缺少id!");
+				return;
+			}
+			
+			Integer id = Integer.parseInt(pathInfo.substring(1));
+			String requestBody = getRequestBody(req);
+			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
+			
+			Integer amount = json.get("quantity").getAsInt();
+			String unit = json.get("unit").getAsString();
+			String purchasedDateStr = json.get("purchased_date").getAsString();
+			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
+	                ? json.get("expired_date").getAsString() : null;
+			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
+			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
+	                ? LocalDate.parse(expiredDateStr): null;
+			FridgeItem item = fridgeItemService.updateItem(id, amount, unit, purchasedDate, expiredDate);
+			sendJsonResponse(resp,200,item);
+		}catch (NumberFormatException e) {
+            sendErrorResponse(resp, 400, "ID 格式錯誤");
+        }catch(Exception e) {
+			e.printStackTrace();
+			sendErrorResponse(resp,500,"新增失敗!"+e.getMessage());
+		}
 	}
 	
 	

@@ -18,7 +18,7 @@ public class FridgeItemService {
 			case "meat": return 3;
 			case "bean": return 180;
 			case "egg": return 30;
-			case "diary": return 7;
+			case "dairy": return 7;
 			case "seafood": return 2;
 			case "seasoning": return 365;
 			case "oil": return 365;
@@ -60,12 +60,12 @@ public class FridgeItemService {
 		saved.setCategory(category);
 		return saved;
 	}
-	public FridgeItem updateItem(Integer id, Integer amount, String unit, LocalDate puchasedDate, LocalDate expiredDate) {
+	public FridgeItem updateItem(Integer id, Integer amount, String unit, LocalDate purchasedDate, LocalDate expiredDate) {
 		FridgeItem item = new FridgeItem();
 		item.setId(id);
 		item.setAmount(amount);
 		item.setUnit(unit);
-		item.setPurchasedDate(puchasedDate);
+		item.setPurchasedDate(purchasedDate);
 		item.setExpiredDate(expiredDate);
 		fridgeItemDAO.updateItem(item);
 		return fridgeItemDAO.findById(id);
