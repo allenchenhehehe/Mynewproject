@@ -213,7 +213,7 @@ function handleCookRecipe(recipe) {
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     <div class="absolute top-2 right-2 bg-black text-white border-2 border-white px-3 py-1 font-bold ">
-                        {{ recipe.coocking_time }} MIN
+                        {{ recipe.cooking_time }} MIN
                     </div>
                 </div>
 

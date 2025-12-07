@@ -10,10 +10,34 @@ import java.sql.Types;
 import java.util.*;
 import javax.sql.*;
 import model.Ingredient;
+import model.Recipe;
 
 public class IngredientDAO {
+	//sql statement
 	private static final String SELECT_ALL = "SELECT * FROM INGREDIENTS";
+	
+	private static final String SELECT_BY_ID = "SELECT * FROM INGREDIENTS WHERE ID=?";
+	
+	private static final String SELECT_BY_NAME = "SELECT * FROM INGREDIENTS"
+			+ " WHERE INGREDIENT_NAME=?";
+	
+	private static final String INSERT_INGREDIENT = "INSERT INTO INGREDIENTS"
+			+ " (INGREDIENT_NAME,CATEGORY,SHELF_LIFE_DAYS) VALUES (?,?,?)";
+	
+	//default constructor
 	public IngredientDAO() {};
+	
+	//helper(Get Ingredient Object)
+	private Ingredient buildIngredient(ResultSet rs) throws SQLException {
+		Ingredient ingredient = new Ingredient();
+		ingredient.setId(rs.getInt("id"));		 	  
+		ingredient.setIngredientName(rs.getString("ingredient_name"));	 
+		ingredient.setCategory(rs.getString("category"));	 
+		ingredient.setShelfLifeDays(rs.getInt("shelf_life_days"));	 
+		return ingredient;
+	 }
+	
+	//查詢所有
 	public List<Ingredient> findAll(){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -24,26 +48,18 @@ public class IngredientDAO {
 			psmt = conn.prepareStatement(SELECT_ALL);
 			rs = psmt.executeQuery();
 			while(rs.next()) {
-				Ingredient ingredients = new Ingredient(
-						rs.getInt("id"), 
-						rs.getString("ingredient_name"),
-						rs.getString("category"),
-						rs.getInt("shelf_life_days")
-						);
+				Ingredient ingredients = buildIngredient(rs);
 				list.add(ingredients);
-			}
-			
+			}	
 		}catch(SQLException se) {
 			throw new RuntimeException("A database error occured. " + se.getMessage());
 		}finally {
 			DBUtil.close(conn, psmt, rs);
 		}
-		
-		return list;	
-		
+		return list;		
 	}
 	
-	private static final String SELECT_BY_ID = "SELECT * FROM INGREDIENTS WHERE ID=?";
+	//用Id查詢
 	public Ingredient findById(Integer id){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -54,12 +70,8 @@ public class IngredientDAO {
 			psmt.setInt(1, id);
 			rs = psmt.executeQuery();
 			if(rs.next()) {
-				return new Ingredient(
-						rs.getInt("id"), 
-						rs.getString("ingredient_name"),
-						rs.getString("category"),
-						rs.getInt("shelf_life_days")
-						);
+				Ingredient ingredients = buildIngredient(rs);
+				return ingredients;
 			}
 			return null;	
 		}catch(SQLException se) {
@@ -69,7 +81,7 @@ public class IngredientDAO {
 		}
 	}
 	
-	private static final String SELECT_BY_NAME = "SELECT * FROM INGREDIENTS WHERE INGREDIENT_NAME=?";
+	//用名稱查詢
 	public Ingredient findByName(String name){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -80,12 +92,8 @@ public class IngredientDAO {
 			psmt.setString(1, name);
 			rs = psmt.executeQuery();
 			if(rs.next()) {
-				return new Ingredient(
-						rs.getInt("id"), 
-						rs.getString("ingredient_name"),
-						rs.getString("category"),
-						rs.getInt("shelf_life_days")
-						);
+				Ingredient ingredients = buildIngredient(rs);
+				return ingredients;
 			}
 			return null;	
 		}catch(SQLException se) {
@@ -95,8 +103,7 @@ public class IngredientDAO {
 		}
 	}
 	
-	private static final String INSERT_INGREDIENT = 
-			"INSERT INTO INGREDIENTS (INGREDIENT_NAME,CATEGORY,SHELF_LIFE_DAYS) VALUES (?,?,?)";
+	//當使用者新增食材，如果沒有在ingredients就新增進去
 	public Ingredient insert (Ingredient ingre) {
 		Connection conn = null;
 	    PreparedStatement psmt = null;

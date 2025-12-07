@@ -7,20 +7,27 @@ public class RecipeIngredient {
 	private Integer recipeId;
 	private Integer ingredientId;
 	private String ingredientName;
-	private double quantity;
+	private Double amount;
 	private String unit;
 	private String category;
 	
+	
 	public RecipeIngredient() {}
-
-	public RecipeIngredient(Integer id, Integer recipeId, Integer ingredientId, String ingredientName, double quantity,
-			String unit, String category) {
-		super();
+	public RecipeIngredient(Integer id, Integer recipeId, Integer ingredientId, 
+	         Double amount, String unit) {
+		this.id = id;
+		this.recipeId = recipeId;
+		this.ingredientId = ingredientId;
+		this.amount = amount;
+		this.unit = unit;
+	}
+	public RecipeIngredient(Integer id, Integer recipeId, Integer ingredientId, Double amount,
+			String unit, String ingredientName, String category) {
 		this.id = id;
 		this.recipeId = recipeId;
 		this.ingredientId = ingredientId;
 		this.ingredientName = ingredientName;
-		this.quantity = quantity;
+		this.amount = amount;
 		this.unit = unit;
 		this.category = category;
 	}
@@ -57,12 +64,12 @@ public class RecipeIngredient {
 		this.ingredientName = ingredientName;
 	}
 
-	public double getQuantity() {
-		return quantity;
+	public Double getAmount() {
+		return amount;
 	}
 
-	public void setQuantity(double quantity) {
-		this.quantity = quantity;
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
 
 	public String getUnit() {
