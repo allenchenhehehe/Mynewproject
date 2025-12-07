@@ -135,7 +135,7 @@ public class FridgeItemServlet extends HttpServlet {
 			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
 			String ingredientName = json.get("name").getAsString();
 			String category = json.get("category").getAsString();
-			Integer amount = json.get("quantity").getAsInt();
+			Double amount = json.get("quantity").getAsDouble();
 			String unit = json.get("unit").getAsString();
 			String purchasedDateStr = json.get("purchased_date").getAsString();
 			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
@@ -170,7 +170,7 @@ public class FridgeItemServlet extends HttpServlet {
 			String requestBody = getRequestBody(req);
 			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
 			
-			Integer amount = json.get("quantity").getAsInt();
+			Double amount = json.get("quantity").getAsDouble();
 			String unit = json.get("unit").getAsString();
 			String purchasedDateStr = json.get("purchased_date").getAsString();
 			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()

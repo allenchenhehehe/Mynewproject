@@ -130,5 +130,35 @@ public class IngredientDAO {
 	        DBUtil.close(conn, psmt, rs);
 	    }
 	}
+	
+	public Integer findOrCreate(String ingredientName, String category) {
+	    if (ingredientName == null || ingredientName.trim().isEmpty()) {
+	        throw new IllegalArgumentException("食材名稱不可為空");
+	    }
+	    
+	    try {
+	        // 1. 先查詢是否已存在
+	        Ingredient existing = findByName(ingredientName);
+	        
+	        if (existing != null) {
+	            // 已存在,回傳 ID
+	            return existing.getId();
+	        }
+	        
+	        // 2. 不存在,建立新的
+	        Ingredient newIngredient = new Ingredient();
+	        newIngredient.setIngredientName(ingredientName);
+	        newIngredient.setCategory(category != null ? category : "other");
+	        newIngredient.setShelfLifeDays(7);  // ✅ 簡單的預設值就好
+	        
+	        Ingredient inserted = insert(newIngredient);
+	        return inserted.getId();
+	        
+	    } catch (Exception e) {
+	        System.err.println("findOrCreate 失敗 (食材: " + ingredientName + "): " + e.getMessage());
+	        throw new RuntimeException("處理食材失敗", e);
+	    }
+	}
+	
 }
 	

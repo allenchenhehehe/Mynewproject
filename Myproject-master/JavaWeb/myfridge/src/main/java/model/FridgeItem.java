@@ -7,7 +7,7 @@ public class FridgeItem {
 	private Integer id;
 	private Integer userId;
 	private Integer ingredientId;
-	private Integer amount;
+	private Double amount;
 	private String unit;
 	private LocalDate purchasedDate;      
     private LocalDate expiredDate;
@@ -15,7 +15,7 @@ public class FridgeItem {
     private String category; // 從 ingredients 表 JOIN 來的
     
     public FridgeItem() {}
-	public FridgeItem(Integer id, Integer userId, Integer ingredientId, Integer amount, String unit,
+	public FridgeItem(Integer id, Integer userId, Integer ingredientId, Double amount, String unit,
 			LocalDate purchasedDate, LocalDate expiredDate, String ingredientName, String category) {
 		this.id = id;
 		this.userId = userId;
@@ -47,10 +47,10 @@ public class FridgeItem {
 	public void setIngredientId(Integer ingredientId) {
 		this.ingredientId = ingredientId;
 	}
-	public Integer getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
-	public void setAmount(Integer amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 	public String getUnit() {

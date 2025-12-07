@@ -38,7 +38,7 @@ public class FridgeItemService {
 		return fridgeItemDAO.findByUserId(userId);
 	}
 	public FridgeItem addToFridge(Integer userId,String ingredientName, String category
-			,Integer amount,String unit, LocalDate purchasedDate, LocalDate expiredDate) {
+			,Double amount,String unit, LocalDate purchasedDate, LocalDate expiredDate) {
 		Ingredient ingredient = ingredientDAO.findByName(ingredientName);
 		if(ingredient == null) {
 			ingredient = new Ingredient();
@@ -60,7 +60,7 @@ public class FridgeItemService {
 		saved.setCategory(category);
 		return saved;
 	}
-	public FridgeItem updateItem(Integer userId,Integer id, Integer amount, String unit, LocalDate purchasedDate, LocalDate expiredDate) {
+	public FridgeItem updateItem(Integer userId,Integer id, Double amount, String unit, LocalDate purchasedDate, LocalDate expiredDate) {
 		FridgeItem exist = fridgeItemDAO.findById(id);
 		if(exist==null) {
 			throw new RuntimeException("找不到此食材");

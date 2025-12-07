@@ -38,7 +38,7 @@ public class FridgeItemDAO {
 							rs.getInt("id"),
 							rs.getInt("user_id"),
 							rs.getInt("ingredient_id"),
-							rs.getInt("amount"),
+							rs.getDouble("amount"),
 							rs.getString("unit"),
 							rs.getDate("purchased_date").toLocalDate(),
 							rs.getDate("expired_date") != null ?
@@ -79,7 +79,7 @@ public class FridgeItemDAO {
 							rs.getInt("id"),
 							rs.getInt("user_id"),
 							rs.getInt("ingredient_id"),
-							rs.getInt("amount"),
+							rs.getDouble("amount"),
 							rs.getString("unit"),
 							rs.getDate("purchased_date").toLocalDate(),
 							rs.getDate("expired_date") != null ?
@@ -110,7 +110,7 @@ public class FridgeItemDAO {
 		        psmt = conn.prepareStatement(INSERT_ITEM, Statement.RETURN_GENERATED_KEYS);
 		        psmt.setInt(1,item.getUserId());
 		        psmt.setInt(2,item.getIngredientId());
-		        psmt.setInt(3,item.getAmount());
+		        psmt.setDouble(3,item.getAmount());
 		        psmt.setString(4,item.getUnit());
 		        psmt.setDate(5,java.sql.Date.valueOf(item.getPurchasedDate())); 
 		        if (item.getExpiredDate() != null) {
@@ -175,7 +175,7 @@ public class FridgeItemDAO {
 		try {
 			conn = DBUtil.getConnection();
 			psmt = conn.prepareStatement(UPDATE_ITEM);
-			psmt.setInt(1,item.getAmount());
+			psmt.setDouble(1,item.getAmount());
 			psmt.setString(2,item.getUnit());
 	        psmt.setDate(3,java.sql.Date.valueOf(item.getPurchasedDate()));
 	        if (item.getExpiredDate() != null) {

@@ -26,7 +26,7 @@ public class TestFridgeItemInsert {
         FridgeItem item = new FridgeItem();
         item.setUserId(1);
         item.setIngredientId(ing.getId());
-        item.setAmount(5);
+        item.setAmount((double) 5);
         item.setUnit("個");
         item.setPurchasedDate(LocalDate.now());
         item.setExpiredDate(LocalDate.now().plusDays(7));
