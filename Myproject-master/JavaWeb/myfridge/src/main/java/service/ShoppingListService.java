@@ -1,6 +1,7 @@
 package service;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import dao.FridgeItemDAO;
@@ -12,11 +13,13 @@ import model.ShoppingItem;
 public class ShoppingListService {
 	private ShoppingListDAO shoppingListDao;
 	private FridgeItemDAO fridgeItemDAO;
+	private FridgeItemService fridgeItemService;
     private IngredientDAO ingredientDAO;
     
 	public  ShoppingListService() {
 		this.shoppingListDao = new ShoppingListDAO();
 		this.fridgeItemDAO = new FridgeItemDAO();
+		this.fridgeItemService = new FridgeItemService();
         this.ingredientDAO = new IngredientDAO();
 	}
 	
@@ -197,6 +200,12 @@ public class ShoppingListService {
 	                fridgeItem.setAmount(item.getAmount());
 	                fridgeItem.setUnit(item.getUnit());
 	                fridgeItem.setCategory(item.getCategory());
+	                LocalDate purchaseDate = LocalDate.now();
+	                Integer shelfLifeDays = fridgeItemService.getDefaultShelfLife(item.getCategory());  //呼叫fridgeItem的方法
+	                LocalDate expirationDate = purchaseDate.plusDays(shelfLifeDays);
+	                
+	                fridgeItem.setPurchasedDate(purchaseDate);
+	                fridgeItem.setExpiredDate(expirationDate);
 	                
 	                // 過期日期由 FridgeItemDAO.insert() 自動設定
 	                // 之後會用 FridgeItemService.getDefaultShelfLife() 計算

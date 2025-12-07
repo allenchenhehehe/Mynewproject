@@ -11,7 +11,7 @@ import model.Ingredient;
 public class FridgeItemService {
 	private IngredientDAO ingredientDAO;
 	private FridgeItemDAO fridgeItemDAO;
-	private Integer getDefaultShelfLife(String category) {
+	public Integer getDefaultShelfLife(String category) {
 		switch(category.toLowerCase()) {
 			case "vegetable": return 7;
 			case "fruit": return 7;
