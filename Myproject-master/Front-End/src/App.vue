@@ -11,7 +11,8 @@ import RecipeDetail from './components/ApplicationSection/RecipeDetail.vue'
 import ShoppingList from './components/ApplicationSection/ShoppingList.vue'
 import Favorites from './components/ApplicationSection/Favorites.vue'
 import MyComments from './components/ApplicationSection/MyComments.vue'
-
+import AdminLogin from './components/ApplicationSection/AdminLogin.vue'
+import AdminPanel from './components/ApplicationSection/AdminPanel.vue'
 // 導入所有 stores
 import {
   useAuthStore,
@@ -24,6 +25,8 @@ import { useNavigationStore } from './stores'
 import { useFridgeStore } from './stores'
 import { useShoppingStore } from './stores'
 import { useUserStore } from './stores'
+import { useAdminStore } from './stores'
+
 
 // 初始化所有 stores
 const authStore = useAuthStore()
@@ -31,6 +34,7 @@ const navStore = useNavigationStore()
 const fridgeStore = useFridgeStore()
 const shoppingStore = useShoppingStore()
 const userStore = useUserStore()
+const adminStore = useAdminStore()
 
 // ==================== 認證相關 ====================
 const gotoSignup = () => authStore.setAuthStatus(STATUS_SIGNUP)
@@ -41,20 +45,21 @@ const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
 
 <template>
   <Login 
-    v-if="authStore.status === STATUS_LOGIN"
+    v-if="authStore.authStatus === STATUS_LOGIN"
     @signup="gotoSignup" 
     @navbar="gotoApp" 
     @forgetpassword="gotoForget" 
+    @admin="navStore.goToAdminLogin()"
   />
   <SignUp 
-    v-if="authStore.status === STATUS_SIGNUP"
+    v-if="authStore.authStatus === STATUS_SIGNUP"
     @login="gotoLogin" 
   />
   <ForgetPassword 
-    v-if="authStore.status === STATUS_FORGET_PASSWORD"
+    v-if="authStore.authStatus === STATUS_FORGET_PASSWORD"
     @login="gotoLogin" 
   />
-  <div v-if="authStore.status === STATUS_APP" class="min-h-screen bg-[#fefae0] text-gray-800 overflow-x-hidden">
+  <div v-if="authStore.authStatus === STATUS_APP" class="min-h-screen bg-[#fefae0] text-gray-800 overflow-x-hidden">
     <Navbar />
     <!-- 首頁 -->
     <Home 
@@ -85,4 +90,9 @@ const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
       v-show="navStore.currentPage === 'MyComments'"
     />
   </div>
+  <!--  新增:管理員登入 -->
+  <AdminLogin v-if="navStore.currentPage === 'AdminLogin'" />
+  
+  <!--  新增:管理員後台 -->
+  <AdminPanel v-if="navStore.currentPage === 'AdminPanel'" />
 </template>

@@ -43,6 +43,13 @@ export const useNavigationStore = defineStore('navigation', () => {
   function goToMyComments() {
     currentPage.value = 'MyComments'
   }
+  function goToAdminLogin() {
+  currentPage.value = 'AdminLogin'
+}
+
+function goToAdminPanel() {
+  currentPage.value = 'AdminPanel'
+}
 
   return {
     // State
@@ -56,6 +63,8 @@ export const useNavigationStore = defineStore('navigation', () => {
     goToMyFridge,
     goToShoppingList,
     goToFavorites,
-    goToMyComments
+    goToMyComments,
+    goToAdminLogin,
+    goToAdminPanel
   }
 })

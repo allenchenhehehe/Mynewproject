@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
-const emits = defineEmits(['navbar', 'signup', 'forgetpassword'])
+const emits = defineEmits(['navbar', 'signup', 'forgetpassword', 'admin'])
 
 async function login() {
     const isLoginSuccessful = true
@@ -11,6 +11,7 @@ async function login() {
         emits('navbar')
     }
 }
+
 </script>
 
 <template>
@@ -76,7 +77,7 @@ async function login() {
                         登 入
                     </button>
                 </form>
-
+            
                 <!-- 分隔線 -->
                 <div class="relative">
                     <div class="border-t-2 border-black"></div>
@@ -95,9 +96,18 @@ async function login() {
                         立即註冊
                     </button>
                 </div>
+                <div class="text-center pt-4 border-t-2 border-dashed border-gray-300">
+                    <button
+                        @click.prevent="$emit('admin')"
+                        class="text-xs text-gray-500 hover:text-black font-bold uppercase tracking-wide transition-colors"
+                    >
+                        🔧 管理員登入
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+    
 </template>
 
 <style scoped>

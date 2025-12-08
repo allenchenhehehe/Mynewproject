@@ -9,7 +9,7 @@ export const STATUS_FORGET_PASSWORD = 'forgetPassword'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
-  const status = ref(STATUS_LOGIN)
+  const authStatus = ref(STATUS_LOGIN)
   const currentUser = ref(null)
   const token = ref(localStorage.getItem('token') || null)
 
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const isAuthenticated = computed(() => !!token.value)
-  const isLoggedIn = computed(() => status.value === STATUS_APP)
+  const isLoggedIn = computed(() => authStatus.value === STATUS_APP)
 
   // Actions
   function login(email, password) {
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('user', JSON.stringify(currentUser.value))
     localStorage.setItem('token', token.value)
     localStorage.setItem('userId', currentUser.value.id)
-    status.value = STATUS_APP
+    authStatus.value = STATUS_APP
   }
 
   function signup(email, password, username) {
@@ -55,7 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('user', JSON.stringify(currentUser.value))
     localStorage.setItem('token', token.value)
     localStorage.setItem('userId', currentUser.value.id)
-    status.value = STATUS_APP
+    authStatus.value = STATUS_APP
   }
 
   function logout() {
@@ -64,22 +64,22 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('userId')
-    status.value = STATUS_LOGIN
+    authStatus.value = STATUS_LOGIN
   }
 
   function setAuthStatus(newStatus) {
-    status.value = newStatus
+    authStatus.value = newStatus
   }
 
   function forgetPassword(email) {
     // TODO: 這裡應該呼叫後端 API 重設密碼
     console.log('忘記密碼:', email)
-    status.value = STATUS_FORGET_PASSWORD
+    authStatus.value = STATUS_FORGET_PASSWORD
   }
 
   return {
     // State
-    status,
+    authStatus,
     currentUser,
     token,
     // Getters
