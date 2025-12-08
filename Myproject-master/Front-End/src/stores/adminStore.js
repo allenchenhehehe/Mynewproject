@@ -50,18 +50,22 @@ export const useAdminStore = defineStore('admin', () => {
     //     return { success: false, error: result.error || '登入失敗' }
     //   }
     if (username === 'admin' && password === 'admin123') {
-      adminUser.value = {
-        id: 1,
-        username: 'admin',
-        role: 'super_admin'
+        // 登入成功
+        adminUser.value = {
+          id: 1,
+          username: 'admin',
+          role: 'super_admin'
+        }
+        isAdminLoggedIn.value = true
+        localStorage.setItem('adminUser', JSON.stringify(adminUser.value))
+        
+        console.log('✅ 登入成功:', adminUser.value)
+        return { success: true }
+      } else {
+        // 登入失敗
+        console.log('❌ 登入失敗:帳號或密碼錯誤')
+        return { success: false, error: '帳號或密碼錯誤' }
       }
-      isAdminLoggedIn.value = true
-      localStorage.setItem('adminUser', JSON.stringify(adminUser.value))
-      
-      return { success: true }
-    } else {
-      return { success: false, error: '帳號或密碼錯誤' }
-    }
     } catch (error) {
       console.error('登入錯誤:', error)
       return { success: false, error: '連線失敗,請稍後再試' }
@@ -71,18 +75,10 @@ export const useAdminStore = defineStore('admin', () => {
   /**
    * 管理員登出
    */
-  async function logout() {
-    try {
-      // 呼叫後端登出 API (清除 Session)
-      await fetch('http://localhost:8080/myfridge/api/admin/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      })
-    } catch (error) {
-      console.error('登出請求失敗:', error)
-    }
-
-    // 清除前端狀態
+//   
+function logout() {
+    console.log('🧪 Demo 模式登出')
+    
     adminUser.value = null
     isAdminLoggedIn.value = false
     localStorage.removeItem('adminUser')
@@ -91,24 +87,28 @@ export const useAdminStore = defineStore('admin', () => {
   /**
    * 檢查登入狀態
    */
-  async function checkAuth() {
-    try {
-      // TODO: 替換成真實 API
-      const response = await fetch('http://localhost:8080/myfridge/api/admin/auth/check', {
-        credentials: 'include'
-      })
+//   async function checkAuth() {
+//     try {
+//       // TODO: 替換成真實 API
+//       const response = await fetch('http://localhost:8080/myfridge/api/admin/auth/check', {
+//         credentials: 'include'
+//       })
 
-      if (response.ok) {
-        return true
-      } else {
-        // Session 已過期
-        logout()
-        return false
-      }
-    } catch (error) {
-      console.error('驗證失敗:', error)
-      return false
-    }
+//       if (response.ok) {
+//         return true
+//       } else {
+//         // Session 已過期
+//         logout()
+//         return false
+//       }
+//     } catch (error) {
+//       console.error('驗證失敗:', error)
+//       return false
+//     }
+//   }
+function checkAuth() {
+    console.log('🧪 Demo 模式檢查登入:', isAuthenticated.value)
+    return isAuthenticated.value
   }
 
   // ==================== Return ====================
