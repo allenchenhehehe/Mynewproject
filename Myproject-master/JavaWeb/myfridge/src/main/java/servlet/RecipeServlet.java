@@ -165,10 +165,4 @@ public class RecipeServlet extends HttpServlet {
             sendErrorResponse(resp, 500, "伺服器錯誤: " + e.getMessage());
         }
 	}
-
-
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-	}
-
 }
