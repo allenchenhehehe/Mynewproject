@@ -18,61 +18,61 @@ import util.DBUtil;
 
 public class ShoppingListItemDAO {
 	private static final String SELECT_BY_USER_ID = "Select "
-			+ "id, user_id, recipe_id, recipe_name, ingredient_id, ingredient_name, "
-			+ "amount, unit, category, is_purchased, created_at "
-			+ "From shopping_list_items "
-			+ "Where user_id = ? "
-			+ "Order By is_purchased ASC, created_at DESC ";
+			+ "id, userId, recipeId, recipeName, ingredientId, ingredientName, "
+			+ "amount, unit, category, isPurchased, createdAt "
+			+ "From ShoppingListItem "
+			+ "Where userId = ? "
+			+ "Order By isPurchased ASC, createdAt DESC ";
 	
 	private static final String SELECT_BY_ID = "Select "
-			+ "id, user_id, recipe_id, recipe_name, ingredient_id, ingredient_name, "
-			+ "amount, unit, category, is_purchased, created_at "
-			+ "From shopping_list_items "
-			+ "Where id = ? And user_id = ? ";
+			+ "id, userId, recipeId, recipeName, ingredientId, ingredientName, "
+			+ "amount, unit, category, isPurchased, createdAt "
+			+ "From ShoppingListItem "
+			+ "Where id = ? And userId = ? ";
 
 	
-	private static final String INSERT_ITEM = "INSERT INTO shopping_list_items"
-			+ " (user_id, recipe_id, recipe_name, ingredient_id, ingredient_name,"
-			+ "amount, unit, category, is_purchased)"
+	private static final String INSERT_ITEM = "INSERT INTO ShoppingListItem"
+			+ " (userId, recipeId, recipeName, ingredientId, ingredientName,"
+			+ "amount, unit, category, isPurchased)"
 			+ " VALUES (?,?,?,?,?,?,?,?,?)";
 	
 	private static final String UPDATE_ITEM = 
-	        "UPDATE shopping_list_items " +
-	        "SET ingredient_name = ?, amount = ?, unit = ?, category = ?, is_purchased = ? " +
-	        "WHERE id = ? AND user_id = ?";
+	        "UPDATE ShoppingListItem " +
+	        "SET ingredientName = ?, amount = ?, unit = ?, category = ?, isPurchased = ? " +
+	        "WHERE id = ? AND userId = ?";
 	    
 	    private static final String UPDATE_PURCHASED_STATUS = 
-	        "UPDATE shopping_list_items " +
-	        "SET is_purchased = ? " +
-	        "WHERE id = ? AND user_id = ?";
+	        "UPDATE ShoppingListItem " +
+	        "SET isPurchased = ? " +
+	        "WHERE id = ? AND userId = ?";
 	    
 	    private static final String DELETE_ITEM = 
-	        "DELETE FROM shopping_list_items " +
-	        "WHERE id = ? AND user_id = ?";
+	        "DELETE FROM ShoppingListItem " +
+	        "WHERE id = ? AND userId = ?";
 	    
 	    private static final String SELECT_PURCHASED_ITEMS = 
-	        "SELECT id, user_id, recipe_id, recipe_name, ingredient_id, ingredient_name, " +
-	        "amount, unit, category, is_purchased, created_at " +
-	        "FROM shopping_list_items " +
-	        "WHERE user_id = ? AND is_purchased = TRUE";
+	        "SELECT id, userId, recipeId, recipeName, ingredientId, ingredientName, " +
+	        "amount, unit, category, isPurchased, createdAt " +
+	        "FROM ShoppingListItem " +
+	        "WHERE userId = ? AND isPurchased = TRUE";
 	    
 	    private static final String DELETE_PURCHASED_ITEMS = 
-	        "DELETE FROM shopping_list_items " +
-	        "WHERE user_id = ? AND is_purchased = TRUE";
+	        "DELETE FROM ShoppingListItem " +
+	        "WHERE userId = ? AND isPurchased = TRUE";
 	    
 	    private ShoppingListItem buildShoppingItem(ResultSet rs) throws SQLException {
 	    	ShoppingListItem shoppingItem = new ShoppingListItem();
 	    	shoppingItem.setId(rs.getInt("id"));	
-	    	shoppingItem.setUserId(rs.getInt("user_id"));	 	  
-	    	shoppingItem.setRecipeId(rs.getObject("recipe_id") != null ? rs.getInt("recipe_id") : null);	 
-	    	shoppingItem.setRecipeName(rs.getString("recipe_name"));	 
-	    	shoppingItem.setIngredientId(rs.getObject("ingredient_id") != null ? rs.getInt("ingredient_id") : null);	 
-	    	shoppingItem.setIngredientName(rs.getString("ingredient_name"));	 
+	    	shoppingItem.setUserId(rs.getInt("userId"));	 	  
+	    	shoppingItem.setRecipeId(rs.getObject("recipeId") != null ? rs.getInt("recipeId") : null);	 
+	    	shoppingItem.setRecipeName(rs.getString("recipeName"));	 
+	    	shoppingItem.setIngredientId(rs.getObject("ingredientId") != null ? rs.getInt("ingredientId") : null);	 
+	    	shoppingItem.setIngredientName(rs.getString("ingredientName"));	 
 	    	shoppingItem.setAmount(rs.getDouble("amount")); 
 	    	shoppingItem.setUnit(rs.getString("unit"));
 	    	shoppingItem.setCategory(rs.getString("category"));
-	    	shoppingItem.setIsPurchased(rs.getBoolean("is_purchased"));
-	    	shoppingItem.setCreatedAt(rs.getTimestamp("created_at"));	
+	    	shoppingItem.setIsPurchased(rs.getBoolean("isPurchased"));
+	    	shoppingItem.setCreatedAt(rs.getTimestamp("createdAt"));	
 			return shoppingItem;
 		 }
 	    
@@ -102,7 +102,7 @@ public class ShoppingListItemDAO {
 	    	Connection conn = null;
 			PreparedStatement psmt = null;
 			ResultSet rs = null;
-			List<ShoppingListItem> list = new LinkedList<>();
+
 			try {
 				conn = DBUtil.getConnection();
 				psmt = conn.prepareStatement(SELECT_BY_ID);

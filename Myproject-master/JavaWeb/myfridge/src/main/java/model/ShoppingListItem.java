@@ -7,17 +7,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class ShoppingListItem {
 	private Integer id;
-	@SerializedName("user_id")
 	private Integer userId;
-	@SerializedName("recipe_id")
 	private Integer recipeId;
-	@SerializedName("recipe_name")
 	private String recipeName;
-	@SerializedName("ingredient_id")
 	private Integer ingredientId;
-	@SerializedName("ingredient_name")
 	private String ingredientName;
-	@SerializedName("quantity")
 	private Double amount;
 	private String unit;
     private String category; 

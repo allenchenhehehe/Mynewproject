@@ -12,13 +12,13 @@ import model.ShoppingListItem;
 
 public class ShoppingListItemService {
 	
-	private ShoppingListItemDAO shoppingListDao;
+	private ShoppingListItemDAO shoppingListItemDao;
 	private FridgeItemDAO fridgeItemDAO;
 	private FridgeItemService fridgeItemService;
     private IngredientDAO ingredientDAO;
     
 	public  ShoppingListItemService() {
-		this.shoppingListDao = new ShoppingListItemDAO();
+		this.shoppingListItemDao = new ShoppingListItemDAO();
 		this.fridgeItemDAO = new FridgeItemDAO();
 		this.fridgeItemService = new FridgeItemService();
         this.ingredientDAO = new IngredientDAO();
@@ -29,7 +29,7 @@ public class ShoppingListItemService {
 			throw new IllegalArgumentException("使用者 ID 不可為空");
 		}
 		try {
-			List<ShoppingListItem> list = shoppingListDao.findByUserId(userId);
+			List<ShoppingListItem> list = shoppingListItemDao.findByUserId(userId);
 			return list;
 		}catch(Exception e) {
 			System.err.println("查詢購物清單失敗: " + e.getMessage());
@@ -68,7 +68,7 @@ public class ShoppingListItemService {
                 item.setIsPurchased(false);
             }
             
-            return shoppingListDao.insertItem(item);
+            return shoppingListItemDao.insertItem(item);
             
         } catch (Exception e) {
             System.err.println("新增購物項目失敗: " + e.getMessage());
@@ -104,7 +104,7 @@ public class ShoppingListItemService {
         
         try {
             // 設定使用者 ID
-        	ShoppingListItem update = shoppingListDao.updateItem(userId, id, updateItem);
+        	ShoppingListItem update = shoppingListItemDao.updateItem(userId, id, updateItem);
         	if (update == null) {
                 throw new RuntimeException("找不到此購物項目或無權修改");
             }   
@@ -130,7 +130,7 @@ public class ShoppingListItemService {
               
         try {
             // 設定使用者 ID
-        	ShoppingListItem update = shoppingListDao.updatePurchasedItem(userId, id, isPurchased);
+        	ShoppingListItem update = shoppingListItemDao.updatePurchasedItem(userId, id, isPurchased);
         	if (update == null) {
                 throw new RuntimeException("找不到此購物項目或無權修改");
             }   
@@ -151,7 +151,7 @@ public class ShoppingListItemService {
         }
         
         try {
-            int rows = shoppingListDao.deleteItem(userId, id);       
+            int rows = shoppingListItemDao.deleteItem(userId, id);       
             if (rows == 0) {
                 throw new RuntimeException("找不到此購物項目或無權刪除");
             }
@@ -169,7 +169,7 @@ public class ShoppingListItemService {
 	    
 	    try {
 	        // 1. 查詢已購買的項目
-	        List<ShoppingListItem> purchasedItems = shoppingListDao.findPurchasedItem(userId);
+	        List<ShoppingListItem> purchasedItems = shoppingListItemDao.findPurchasedItem(userId);
 	        
 	        if (purchasedItems.isEmpty()) {
 	            return 0;
@@ -222,7 +222,7 @@ public class ShoppingListItemService {
 	        }
 	        
 	        // 3. 刪除已購買的購物項目
-	        int deletedCount = shoppingListDao.deletePurchasedItem(userId);
+	        int deletedCount = shoppingListItemDao.deletePurchasedItem(userId);
 	        
 	        System.out.println("成功加入 " + addedCount + " 個項目到冰箱,刪除 " + deletedCount + " 個購物項目");
 	        

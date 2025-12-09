@@ -81,11 +81,11 @@ public class ShoppingListItemServlet extends HttpServlet {
 				req.setCharacterEncoding("UTF-8");
 			    resp.setCharacterEncoding("UTF-8");
 				HttpSession session = req.getSession(false);
-				if(session == null || session.getAttribute("userId") == null){
+				if(session == null || session.getAttribute("id") == null){
 					 sendErrorResponse(resp, 401, "請先登入");
 			         return;
 				}
-				Integer userId = (Integer)session.getAttribute("userId");
+				Integer userId = (Integer)session.getAttribute("id");
 				try {
 					List<ShoppingListItem> items = service.getShoppingList(userId);
 					//回傳json
@@ -102,11 +102,11 @@ public class ShoppingListItemServlet extends HttpServlet {
 				req.setCharacterEncoding("UTF-8");
 			    resp.setCharacterEncoding("UTF-8");
 				HttpSession session = req.getSession(false);
-				if(session == null || session.getAttribute("userId") == null){
+				if(session == null || session.getAttribute("id") == null){
 					 sendErrorResponse(resp, 401, "請先登入");
 			         return;
 				}
-				Integer userId = (Integer) session.getAttribute("userId");		        
+				Integer userId = (Integer) session.getAttribute("id");		        
 		        String pathInfo = req.getPathInfo();   
 		        if (pathInfo != null && pathInfo.equals("/clear-purchased")) {
 		            handleClearPurchased(req, resp, userId);
@@ -125,21 +125,21 @@ public class ShoppingListItemServlet extends HttpServlet {
             ShoppingListItem item = new ShoppingListItem();
             
             // 選填欄位
-            if (json.has("recipe_id") && !json.get("recipe_id").isJsonNull()) {
-                item.setRecipeId(json.get("recipe_id").getAsInt());
+            if (json.has("recipeId") && !json.get("recipeId").isJsonNull()) {
+                item.setRecipeId(json.get("recipeId").getAsInt());
             }
             
-            if (json.has("recipe_name") && !json.get("recipe_name").isJsonNull()) {
-                item.setRecipeName(json.get("recipe_name").getAsString());
+            if (json.has("recipeName") && !json.get("recipeName").isJsonNull()) {
+                item.setRecipeName(json.get("recipeName").getAsString());
             }
             
-            if (json.has("ingredient_id") && !json.get("ingredient_id").isJsonNull()) {
-                item.setIngredientId(json.get("ingredient_id").getAsInt());
+            if (json.has("ingredientId") && !json.get("ingredientId").isJsonNull()) {
+                item.setIngredientId(json.get("ingredientId").getAsInt());
             }
             
             // 必填欄位
-            item.setIngredientName(json.get("ingredient_name").getAsString());
-            item.setAmount(json.get("quantity").getAsDouble());
+            item.setIngredientName(json.get("ingredientName").getAsString());
+            item.setAmount(json.get("amount").getAsDouble());
             item.setUnit(json.get("unit").getAsString());
             item.setCategory(json.get("category").getAsString());
             
@@ -183,11 +183,11 @@ public class ShoppingListItemServlet extends HttpServlet {
 			req.setCharacterEncoding("UTF-8");
 		    resp.setCharacterEncoding("UTF-8");
 			HttpSession session = req.getSession(false);
-			if(session == null || session.getAttribute("userId") == null){
+			if(session == null || session.getAttribute("id") == null){
 				 sendErrorResponse(resp, 401, "請先登入");
 		         return;
 			}
-			Integer userId = (Integer)session.getAttribute("userId");
+			Integer userId = (Integer)session.getAttribute("id");
 			String pathInfo = req.getPathInfo();  
 	        if (pathInfo == null || pathInfo.equals("/")) {
 	        	sendErrorResponse(resp, 400, "缺少項目 ID");
@@ -202,11 +202,11 @@ public class ShoppingListItemServlet extends HttpServlet {
 //	        	System.out.println("解析到的 ID: " + id);
 	        	JsonObject json = parseJsonRequest(req);
 	        	ShoppingListItem update = new ShoppingListItem();
-	        	update.setIngredientName(json.get("ingredient_name").getAsString());
-	        	update.setAmount(json.get("quantity").getAsDouble());
+	        	update.setIngredientName(json.get("ingredientName").getAsString());
+	        	update.setAmount(json.get("amount").getAsDouble());
 	        	update.setUnit(json.get("unit").getAsString());
 	        	update.setCategory(json.get("category").getAsString());
-	        	update.setIsPurchased(json.get("is_purchased").getAsBoolean());
+	        	update.setIsPurchased(json.get("isPurchased").getAsBoolean());
 	        	ShoppingListItem updated = service.updateItem(userId, id, update);
 	        	sendJsonResponse(resp, 200, updated);
 	        	
@@ -240,12 +240,12 @@ public class ShoppingListItemServlet extends HttpServlet {
 	    resp.setCharacterEncoding("UTF-8");
         // 檢查 Session
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (session == null || session.getAttribute("id") == null) {
             sendErrorResponse(resp, 401, "請先登入");
             return;
         }
         
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = (Integer) session.getAttribute("id");
         String pathInfo = req.getPathInfo();
         
         if (pathInfo == null || pathInfo.equals("/")) {
@@ -259,7 +259,7 @@ public class ShoppingListItemServlet extends HttpServlet {
             
             //使用輔助方法解析 JSON
             JsonObject json = parseJsonRequest(req);
-            Boolean isPurchased = json.get("is_purchased").getAsBoolean();
+            Boolean isPurchased = json.get("isPurchased").getAsBoolean();
             
             //呼叫 Service
             ShoppingListItem updated = service.togglePurchase(userId, id, isPurchased);
@@ -284,11 +284,11 @@ public class ShoppingListItemServlet extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 	    resp.setCharacterEncoding("UTF-8");
 		HttpSession session = req.getSession(false);
-		if(session == null || session.getAttribute("userId") == null){
+		if(session == null || session.getAttribute("id") == null){
 			 sendErrorResponse(resp, 401, "請先登入");
 	         return;
 		}
-		Integer userId =  (Integer)session.getAttribute("userId");
+		Integer userId =  (Integer)session.getAttribute("id");
 		String pathInfo = req.getPathInfo();   
         if (pathInfo == null || pathInfo.equals("/")) {
         	sendErrorResponse(resp, 400, "缺少項目 ID");
