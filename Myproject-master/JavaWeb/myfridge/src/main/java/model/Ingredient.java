@@ -2,16 +2,16 @@ package model;
 
 public class Ingredient {
 	private Integer id;
-	private String ingredientname;
+	private String ingredientName;
 	private String category;
-	private Integer shelflifedays;
+	private Integer shelfLifeDays;
 	
 	public Ingredient() {}
-	public Ingredient(Integer id, String ingredientname, String category, Integer shelflifedays) {
+	public Ingredient(Integer id, String ingredientName, String category, Integer shelfLifeDays) {
 		this.id = id;
-		this.ingredientname = ingredientname;
+		this.ingredientName = ingredientName;
 		this.category = category;
-		this.shelflifedays = shelflifedays;
+		this.shelfLifeDays = shelfLifeDays;
 	}
 	public Integer getId() {
 		return id;
@@ -20,10 +20,10 @@ public class Ingredient {
 		this.id = id;
 	}
 	public String getIngredientName() {
-		return ingredientname;
+		return ingredientName;
 	}
 	public void setIngredientName(String ingredientname) {
-		this.ingredientname = ingredientname;
+		this.ingredientName = ingredientname;
 	}
 	public String getCategory() {
 		return category;
@@ -32,10 +32,10 @@ public class Ingredient {
 		this.category = category;
 	}
 	public Integer getShelfLifeDays() {
-		return shelflifedays;
+		return shelfLifeDays;
 	}
 	public void setShelfLifeDays(Integer shelflifedays) {
-		this.shelflifedays = shelflifedays;
+		this.shelfLifeDays = shelflifedays;
 	}
  
 	

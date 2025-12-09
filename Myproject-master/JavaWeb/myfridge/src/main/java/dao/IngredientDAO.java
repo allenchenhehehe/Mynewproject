@@ -14,15 +14,15 @@ import model.Recipe;
 
 public class IngredientDAO {
 	//sql statement
-	private static final String SELECT_ALL = "SELECT * FROM INGREDIENTS";
+	private static final String SELECT_ALL = "SELECT * FROM INGREDIENT";
 	
-	private static final String SELECT_BY_ID = "SELECT * FROM INGREDIENTS WHERE ID=?";
+	private static final String SELECT_BY_ID = "SELECT * FROM INGREDIENT WHERE ID=?";
 	
-	private static final String SELECT_BY_NAME = "SELECT * FROM INGREDIENTS"
-			+ " WHERE INGREDIENT_NAME=?";
+	private static final String SELECT_BY_NAME = "SELECT * FROM INGREDIENT"
+			+ " WHERE INGREDIENTNAME=?";
 	
-	private static final String INSERT_INGREDIENT = "INSERT INTO INGREDIENTS"
-			+ " (INGREDIENT_NAME,CATEGORY,SHELF_LIFE_DAYS) VALUES (?,?,?)";
+	private static final String INSERT_INGREDIENT = "INSERT INTO INGREDIENT"
+			+ " (INGREDIENTNAME,CATEGORY,SHELFLIFEDAYS) VALUES (?,?,?)";
 	
 	//default constructor
 	public IngredientDAO() {};
@@ -31,9 +31,9 @@ public class IngredientDAO {
 	private Ingredient buildIngredient(ResultSet rs) throws SQLException {
 		Ingredient ingredient = new Ingredient();
 		ingredient.setId(rs.getInt("id"));		 	  
-		ingredient.setIngredientName(rs.getString("ingredient_name"));	 
+		ingredient.setIngredientName(rs.getString("ingredientName"));	 
 		ingredient.setCategory(rs.getString("category"));	 
-		ingredient.setShelfLifeDays(rs.getInt("shelf_life_days"));	 
+		ingredient.setShelfLifeDays(rs.getInt("shelfLifeDays"));	 
 		return ingredient;
 	 }
 	

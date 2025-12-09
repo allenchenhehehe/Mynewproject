@@ -39,11 +39,11 @@ CREATE TABLE Ingredient (
 		'bean',         -- 豆類
         'other'        -- 其他
     ) NOT NULL COMMENT '食材分類',
-    shelf_life_days INT COMMENT '預設保存天數'
+    shelfLifeDays INT COMMENT '預設保存天數'
 ) COMMENT='所有食材資訊表' ENGINE=InnoDB;
 
 -- 示例資料
-INSERT INTO myfridge.Ingredient (ingredientName, category, shelf_life_days) VALUES
+INSERT INTO myfridge.Ingredient (ingredientName, category, shelfLifeDays) VALUES
 ('番茄', 'vegetable', 7),           -- 1
 ('雞蛋', 'egg', 30),                 -- 2
 ('雞肉', 'meat', 3),                 -- 3

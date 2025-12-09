@@ -98,11 +98,11 @@ public class FridgeItemServlet extends HttpServlet {
     private Integer getUserIdFromSession(HttpServletRequest req, HttpServletResponse resp)
     		throws IOException {
     	HttpSession session = req.getSession(false);
-    	if(session == null|| session.getAttribute("userId")==null) {
+    	if(session == null|| session.getAttribute("id")==null) {
     		sendErrorResponse(resp,401,"尚未登入!");
     		return null;
     	}
-    	return (Integer)session.getAttribute("userId");
+    	return (Integer)session.getAttribute("id");
     }
     
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
