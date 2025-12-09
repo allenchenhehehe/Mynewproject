@@ -2,9 +2,11 @@
 import { ref, defineEmits } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { useAuthStore } from '@/stores/authStore'
 
 const emit = defineEmits(['navigate'])
 const isMenuOpen = ref(false)
+const authStore = useAuthStore()
 
 const menuItems = [
     { label: '收藏食譜', action: 'favorites' },
@@ -30,21 +32,22 @@ function handleMenuClick(action) {
     isMenuOpen.value = false
 }
 
-function logout() {
-    // 清除 localStorage 的認證信息
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    localStorage.removeItem('userId')
+async function logout() {
+    console.log('🚪 開始登出...')
+    console.log('登出前 authStatus:', authStore.authStatus)
     
-    // 顯示登出成功提示
+    // 顯示登出提示
     toast.success('已登出！', {
         autoClose: 1500,
     })
     
-    // 導航回首頁
-    setTimeout(() => {
-        emit('navigate', 'Home')
-    }, 500)
+    // 呼叫 authStore 的 logout (這會清除所有狀態並設定 authStatus = STATUS_LOGIN)
+    await authStore.logout()
+    
+    console.log('登出後 authStatus:', authStore.authStatus)
+    console.log('登出完成')
+    
+
 }
 </script>
 

@@ -6,13 +6,43 @@ const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
-const emits = defineEmits(['navbar', 'signup', 'forgetpassword', 'admin'])
+const errorVisible = ref(false)
+const emits = defineEmits(['signup', 'forgetpassword', 'admin'])
 
 async function login() {
-    const isLoginSuccessful = true
-    if (isLoginSuccessful) {
-        emits('navbar')
-    }
+  // 清除之前的錯誤
+  errorMessage.value = ''
+  
+  // 驗證輸入
+  if (!email.value || !password.value) {
+    showErrorTemporarily('請輸入 Email 和密碼')
+    return
+  }
+  
+  // 呼叫 authStore 登入
+  const result = await authStore.login(email.value, password.value)
+  
+  if (!result.success) {
+    // 登入失敗,顯示錯誤訊息
+    showErrorTemporarily(result.error)
+  }
+  // 登入成功後 authStore 會自動切換到 STATUS_APP
+  // App.vue 會自動切換到主系統
+}
+function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
+  errorMessage.value = message
+  errorVisible.value = true
+  
+  // 在指定時間後清除
+  setTimeout(() => {
+    errorVisible.value = false
+    
+    // 動畫結束後才清除訊息
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 500)  // 等待淡出動畫完成 (0.3秒)
+    
+  }, duration)
 }
 
 </script>
@@ -26,6 +56,20 @@ async function login() {
                 <div class="text-center mb-4">
                     <h1 class="text-5xl font-black uppercase tracking-tighter mb-2">LOGIN</h1>
                     <p class="text-md text-gray-600 font-bold uppercase tracking-wide">歡迎回到 Stock & Stove</p>
+                </div>
+                <div 
+                    v-if="errorMessage" 
+                    class="bg-red-100 border-2 border-red-500 text-red-700 px-4 py-3 font-bold flex items-center justify-center"
+                >
+                     {{ errorMessage }}
+                </div>
+
+                <!-- ✅ Loading 狀態 -->
+                <div 
+                    v-if="authStore.loading" 
+                    class="bg-blue-100 border-2 border-blue-500 text-blue-700 px-4 py-3 font-bold text-center"
+                >
+                     登入中...
                 </div>
 
                 <!-- 表單 -->

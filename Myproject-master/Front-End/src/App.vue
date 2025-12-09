@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import Login from './components/Users/Login.vue'
 import SignUp from './components/Users/SignUp.vue'
 import Navbar from './components/Users/Navbar.vue'
@@ -49,6 +49,19 @@ const goToAdminLogin = () => {
   // 設定為管理員登入狀態
   authStore.setAuthStatus(STATUS_ADMIN)
 }
+onMounted(async () => {
+  console.log('App mounted, checking auth...')
+  
+  // 如果 localStorage 有 user,驗證 Session 是否還有效
+  if (authStore.authStatus === STATUS_APP) {
+    const isValid = await authStore.checkAuth()
+    
+    if (!isValid) {
+      console.log('Session 已過期,回到登入頁')
+      // checkAuth() 已經設定 authStatus = STATUS_LOGIN
+    }
+  }
+})
 </script>
 
 <template>
