@@ -14,19 +14,19 @@ DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS comments;
 
 -- 1. users(使用者資訊) 
-CREATE TABLE users (
+CREATE TABLE User (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(20) NOT NULL UNIQUE COMMENT '使用者名稱',
+    userName VARCHAR(20) NOT NULL UNIQUE COMMENT '使用者名稱',
     email VARCHAR(40) NOT NULL UNIQUE COMMENT '電子郵件',
     password VARCHAR(255) NOT NULL COMMENT '密碼（加密存儲）',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間'
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間'
 ) COMMENT='使用者帳號資訊表',ENGINE=InnoDB;
 
 -- 2. ingredients (材料相關資訊)
-CREATE TABLE ingredients (
+CREATE TABLE Ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    ingredient_name VARCHAR(20) NOT NULL UNIQUE COMMENT '食材名稱',
+    ingredienName VARCHAR(20) NOT NULL UNIQUE COMMENT '食材名稱',
     category ENUM(
         'vegetable',   -- 蔬菜
         'fruit',       -- 水果
@@ -43,7 +43,7 @@ CREATE TABLE ingredients (
 ) COMMENT='所有食材資訊表' ENGINE=InnoDB;
 
 -- 示例資料
-INSERT INTO myfridge.ingredients (ingredient_name, category, shelf_life_days) VALUES
+INSERT INTO myfridge.Ingredient (ingredientName, category, shelf_life_days) VALUES
 ('番茄', 'vegetable', 7),           -- 1
 ('雞蛋', 'egg', 30),                 -- 2
 ('雞肉', 'meat', 3),                 -- 3

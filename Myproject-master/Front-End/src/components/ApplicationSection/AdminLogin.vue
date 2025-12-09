@@ -118,11 +118,9 @@ function goBack() {
 <script setup>
 import { ref } from 'vue'
 import { useAdminStore } from '@/stores/adminStore'
-import { useNavigationStore } from '@/stores/navigationStore'
-import { useAuthStore, STATUS_LOGIN } from '@/stores/authStore'
+import { useAuthStore, STATUS_LOGIN, STATUS_ADMIN_PANEL } from '@/stores/authStore'
 
 const adminStore = useAdminStore()
-const navStore = useNavigationStore()
 const authStore = useAuthStore()
 
 const username = ref('admin')
@@ -143,7 +141,7 @@ async function handleLogin() {
     const result = await adminStore.login(username.value, password.value)
     
     if (result.success) {
-      navStore.goToAdminPanel()  // 登入成功 → 跳轉後台
+      authStore.setAuthStatus(STATUS_ADMIN_PANEL)  // 登入成功 → 跳轉後台
     } else {
       errorMessage.value = result.error || '登入失敗'
     }
@@ -157,7 +155,6 @@ async function handleLogin() {
 function goBack() {
   // ✅ 回到使用者登入頁面
   authStore.setAuthStatus(STATUS_LOGIN)
-  navStore.goHome()
 }
 </script>
 

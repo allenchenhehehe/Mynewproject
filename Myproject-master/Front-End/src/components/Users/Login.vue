@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
 
+const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
+const errorMessage = ref('')
 const emits = defineEmits(['navbar', 'signup', 'forgetpassword', 'admin'])
 
 async function login() {

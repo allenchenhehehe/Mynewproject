@@ -19,7 +19,9 @@ import {
   STATUS_LOGIN,
   STATUS_SIGNUP,
   STATUS_APP,
-  STATUS_FORGET_PASSWORD
+  STATUS_FORGET_PASSWORD,
+  STATUS_ADMIN,
+  STATUS_ADMIN_PANEL
 } from './stores'
 import { useNavigationStore } from './stores'
 import { useFridgeStore } from './stores'
@@ -41,6 +43,12 @@ const gotoSignup = () => authStore.setAuthStatus(STATUS_SIGNUP)
 const gotoLogin = () => authStore.setAuthStatus(STATUS_LOGIN)
 const gotoApp = () => authStore.setAuthStatus(STATUS_APP)
 const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
+const goToAdminLogin = () => {
+  // 先登出使用者
+  authStore.logout()
+  // 設定為管理員登入狀態
+  authStore.setAuthStatus(STATUS_ADMIN)
+}
 </script>
 
 <template>
@@ -49,7 +57,7 @@ const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
     @signup="gotoSignup" 
     @navbar="gotoApp" 
     @forgetpassword="gotoForget" 
-    @admin="navStore.goToAdminLogin()"
+    @admin="goToAdminLogin"
   />
   <SignUp 
     v-if="authStore.authStatus === STATUS_SIGNUP"
@@ -91,8 +99,8 @@ const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
     />
   </div>
   <!--  新增:管理員登入 -->
-  <AdminLogin v-if="navStore.currentPage === 'AdminLogin'" />
+  <AdminLogin v-if="authStore.authStatus === STATUS_ADMIN" />
   
   <!--  新增:管理員後台 -->
-  <AdminPanel v-if="navStore.currentPage === 'AdminPanel'" />
+  <AdminPanel v-if="authStore.authStatus === STATUS_ADMIN_PANEL" />
 </template>

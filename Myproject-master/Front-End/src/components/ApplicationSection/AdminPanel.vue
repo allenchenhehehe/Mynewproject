@@ -126,11 +126,9 @@ function handleLogout() {
 <script setup>
 import { ref } from 'vue'
 import { useAdminStore } from '@/stores/adminStore'
-import { useNavigationStore } from '@/stores/navigationStore'
 import { useAuthStore, STATUS_LOGIN } from '@/stores/authStore'
 
 const adminStore = useAdminStore()
-const navStore = useNavigationStore()
 const authStore = useAuthStore()
 
 const activeTab = ref('favorites')
@@ -139,7 +137,7 @@ function handleLogout() {
   if (confirm('確定要登出嗎?')) {
     adminStore.logout()
     authStore.setAuthStatus(STATUS_LOGIN)  // ✅ 回到使用者登入狀態
-    navStore.goHome()
+
   }
 }
 </script>

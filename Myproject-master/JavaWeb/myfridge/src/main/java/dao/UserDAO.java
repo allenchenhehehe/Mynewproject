@@ -10,7 +10,7 @@ import util.DBUtil;
 
 public class UserDAO {
 	private static final String SELECT_ALL = 
-			"SELECT * FROM USERS";
+			"SELECT * FROM USER";
 	public List<User> findAll(){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -23,11 +23,11 @@ public class UserDAO {
 			while(rs.next()) {
 				User user = new User(
 						rs.getInt("id"), 
-						rs.getString("username"),
+						rs.getString("userName"),
 						rs.getString("email"),
 						rs.getString("password"),
-						rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-					    rs.getTimestamp("updated_at") != null ? rs.getTimestamp("updated_at").toLocalDateTime() : null
+						rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
+					    rs.getTimestamp("updatedAt") != null ? rs.getTimestamp("updatedAt").toLocalDateTime() : null
 						);
 				list.add(user);
 			}
@@ -41,7 +41,7 @@ public class UserDAO {
 	}
 	
 	private static final String SELECT_BY_ID = 
-			"SELECT * FROM USERS WHERE ID = ?";
+			"SELECT * FROM USER WHERE ID = ?";
 	public User findById(Integer id){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -54,11 +54,11 @@ public class UserDAO {
 			if(rs.next()) {
 				return new User(
 						rs.getInt("id"), 
-						rs.getString("username"),
+						rs.getString("userName"),
 						rs.getString("email"),
 						rs.getString("password"),
-						rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-					    rs.getTimestamp("updated_at") != null ? rs.getTimestamp("updated_at").toLocalDateTime() : null
+						rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
+					    rs.getTimestamp("updatedAt") != null ? rs.getTimestamp("updatedAt").toLocalDateTime() : null
 						);
 			}
 			return null;	
@@ -70,7 +70,7 @@ public class UserDAO {
 	}
 	
 	private static final String SELECT_BY_EMAIL = 
-			"SELECT * FROM USERS  WHERE EMAIL = ?";
+			"SELECT * FROM USER  WHERE EMAIL = ?";
 	public User findByEmail(String email){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -83,11 +83,11 @@ public class UserDAO {
 			if(rs.next()) {
 				return new User(
 						rs.getInt("id"), 
-						rs.getString("username"),
+						rs.getString("userName"),
 						rs.getString("email"),
 						rs.getString("password"),
-						rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-					    rs.getTimestamp("updated_at") != null ? rs.getTimestamp("updated_at").toLocalDateTime() : null
+						rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
+					    rs.getTimestamp("updatedAt") != null ? rs.getTimestamp("updatedAt").toLocalDateTime() : null
 						);
 			}
 			return null;	
@@ -99,7 +99,7 @@ public class UserDAO {
 	}
 	
 	private static final String INSERT_USER= 
-			"INSERT INTO USERS (USERNAME,EMAIL,PASSWORD) VALUES (?,?,?)";
+			"INSERT INTO USER (USERNAME,EMAIL,PASSWORD) VALUES (?,?,?)";
 	public User insert(User user) {
 	    Connection conn = null;
 	    PreparedStatement psmt = null;

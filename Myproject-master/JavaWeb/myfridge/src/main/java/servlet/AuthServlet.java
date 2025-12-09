@@ -59,18 +59,18 @@ public class AuthServlet extends HttpServlet {
 				LoginRequest loginReq = gson.fromJson(getRequestBody(req), LoginRequest.class);
 				User user = userService.login(loginReq.email, loginReq.password);
 				HttpSession session = req.getSession(true);
-				session.setAttribute("userId",user.getId());
+				session.setAttribute("id",user.getId());
 				session.setAttribute("userName",user.getUserName());
-				session.setAttribute("userEmail",user.getEmail());			
+				session.setAttribute("email",user.getEmail());			
 				user.setPassword(null);
 				out.println(gson.toJson(user));
 			}else if("/register".equals(pathInfo)) {
 				User newUser = gson.fromJson(getRequestBody(req), User.class);
 				User savedUser = userService.register(newUser);
 				HttpSession session = req.getSession(true);
-				session.setAttribute("userId",savedUser.getId());
+				session.setAttribute("id",savedUser.getId());
 				session.setAttribute("userName",savedUser.getUserName());
-				session.setAttribute("userEmail",savedUser.getEmail());
+				session.setAttribute("email",savedUser.getEmail());
 				savedUser.setPassword(null);
 				resp.setStatus(HttpServletResponse.SC_CREATED);
 				out.println(gson.toJson(savedUser));

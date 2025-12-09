@@ -11,6 +11,7 @@ import model.FridgeItem;
 import model.ShoppingItem;
 
 public class ShoppingListService {
+	
 	private ShoppingListDAO shoppingListDao;
 	private FridgeItemDAO fridgeItemDAO;
 	private FridgeItemService fridgeItemService;

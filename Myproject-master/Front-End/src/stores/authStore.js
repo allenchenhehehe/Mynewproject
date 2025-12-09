@@ -6,10 +6,23 @@ export const STATUS_LOGIN = 'login'
 export const STATUS_SIGNUP = 'signup'
 export const STATUS_APP = 'app'
 export const STATUS_FORGET_PASSWORD = 'forgetPassword'
+export const STATUS_ADMIN = 'admin'
+export const STATUS_ADMIN_PANEL = 'adminPanel'
 
 export const useAuthStore = defineStore('auth', () => {
+  const initAuthStatus = () => {
+    const token = localStorage.getItem('token')
+    const adminUser = localStorage.getItem('adminUser')
+    
+    if (adminUser) {
+      return STATUS_ADMIN_PANEL  // 管理員已登入
+    } else if (token) {
+      return STATUS_APP  // 一般使用者已登入
+    }
+    return STATUS_LOGIN  // 未登入
+  }
   // State
-  const authStatus = ref(STATUS_LOGIN)
+  const authStatus = ref(initAuthStatus())
   const currentUser = ref(null)
   const token = ref(localStorage.getItem('token') || null)
 
@@ -20,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
       currentUser.value = JSON.parse(storedUser)
     } catch (e) {
       console.error('無法解析儲存的使用者資訊', e)
+      localStorage.removeItem('user')
     }
   }
 
@@ -90,6 +104,6 @@ export const useAuthStore = defineStore('auth', () => {
     signup,
     logout,
     setAuthStatus,
-    forgetPassword
+    forgetPassword 
   }
 })
