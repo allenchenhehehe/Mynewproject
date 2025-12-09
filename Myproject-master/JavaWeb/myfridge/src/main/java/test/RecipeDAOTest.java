@@ -22,7 +22,7 @@ public class RecipeDAOTest {
                 System.out.println("描述: " + r.getDescription());
                 System.out.println("難度: " + r.getDifficulty() + " 星");
                 System.out.println("烹飪時間: " + r.getCookingTime() + " 分鐘");
-                System.out.println("圖片: " + r.getImageURL());
+                System.out.println("圖片: " + r.getImageUrl());
                 System.out.println("食材數量: " + (r.getIngredients() != null ? r.getIngredients().size() : 0) + " 種");
                 
                 // 檢查每個食譜是否有食材
