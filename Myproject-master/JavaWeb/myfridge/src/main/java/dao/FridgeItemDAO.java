@@ -17,12 +17,12 @@ import util.DBUtil;
 
 public class FridgeItemDAO {
 	private static final String SELECT_BY_USER_ID = 
-			"SELECT f.id, f.user_id, f.ingredient_id, f.amount, f.unit, " +
-	        "f.purchased_date, f.expired_date, " +
-	        "i.ingredient_name, i.category " +
-	        "FROM fridge_items f " +
-	        "JOIN ingredients i ON f.ingredient_id = i.id " +
-	        "WHERE f.user_id = ?";
+			"SELECT f.id, f.userId, f.ingredientId, f.amount, f.unit, " +
+	        "f.purchasedDate, f.expiredDate, " +
+	        "i.ingredientName, i.category " +
+	        "FROM FridgeItem f " +
+	        "JOIN Ingredient i ON f.ingredientId = i.id " +
+	        "WHERE f.userId = ?";
 	public List<FridgeItem> findByUserId(Integer userId) {
 		 	Connection conn = null;
 		    PreparedStatement psmt = null;
@@ -36,14 +36,14 @@ public class FridgeItemDAO {
 		        while(rs.next()) {
 					FridgeItem item = new FridgeItem(
 							rs.getInt("id"),
-							rs.getInt("user_id"),
-							rs.getInt("ingredient_id"),
+							rs.getInt("userId"),
+							rs.getInt("ingredientId"),
 							rs.getDouble("amount"),
 							rs.getString("unit"),
-							rs.getDate("purchased_date").toLocalDate(),
-							rs.getDate("expired_date") != null ?
-									rs.getDate("expired_date").toLocalDate():null,
-							rs.getString("ingredient_name"),
+							rs.getDate("purchasedDate").toLocalDate(),
+							rs.getDate("expiredDate") != null ?
+									rs.getDate("expiredDate").toLocalDate():null,
+							rs.getString("ingredientName"),
 							rs.getString("category")
 					);
 					list.add(item);
@@ -58,11 +58,11 @@ public class FridgeItemDAO {
 	    }
 	
 	private static final String SELECT_BY_ID = 
-			"SELECT f.id, f.user_id, f.ingredient_id, f.amount, f.unit, " +
-	        "f.purchased_date, f.expired_date, " +
-	        "i.ingredient_name, i.category " +
-	        "FROM fridge_items f " +
-	        "JOIN ingredients i ON f.ingredient_id = i.id " +
+			"SELECT f.id, f.userId, f.ingredientId, f.amount, f.unit, " +
+	        "f.purchasedDate, f.expiredDate, " +
+	        "i.ingredientName, i.category " +
+	        "FROM FridgeItem f " +
+	        "JOIN Ingredient i ON f.ingredientId = i.id " +
 	        "WHERE f.id = ?";
 	public FridgeItem findById(Integer id) {
 		 	Connection conn = null;
@@ -77,14 +77,14 @@ public class FridgeItemDAO {
 		        if(rs.next()) {
 					FridgeItem item = new FridgeItem(
 							rs.getInt("id"),
-							rs.getInt("user_id"),
-							rs.getInt("ingredient_id"),
+							rs.getInt("userId"),
+							rs.getInt("ingredientId"),
 							rs.getDouble("amount"),
 							rs.getString("unit"),
-							rs.getDate("purchased_date").toLocalDate(),
-							rs.getDate("expired_date") != null ?
-									rs.getDate("expired_date").toLocalDate():null,
-							rs.getString("ingredient_name"),
+							rs.getDate("purchasedDate").toLocalDate(),
+							rs.getDate("expiredDate") != null ?
+									rs.getDate("expiredDate").toLocalDate():null,
+							rs.getString("ingredientName"),
 							rs.getString("category")					
 					);
 					return item;
@@ -99,7 +99,7 @@ public class FridgeItemDAO {
 	    }
 	
 	private static final String INSERT_ITEM = 
-			"INSERT INTO FRIDGE_ITEMS(USER_ID,INGREDIENT_ID,AMOUNT,UNIT,PURCHASED_DATE,EXPIRED_DATE)"
+			"INSERT INTO FRIDGEITEM(USERID,INGREDIENTID,AMOUNT,UNIT,PURCHASEDDATE,EXPIREDDATE)"
 			+ " VALUES(?,?,?,?,?,?)";
 	public FridgeItem insert(FridgeItem item) {
 			Connection conn = null;
@@ -136,7 +136,7 @@ public class FridgeItemDAO {
 	}
 	
 	private static final String DELETE_ITEM= 
-			"DELETE  FROM FRIDGE_ITEMS WHERE ID=? AND user_id = ?";
+			"DELETE  FROM FRIDGEITEM WHERE ID=? AND userId = ?";
 	public boolean deleteItem(Integer userId, Integer id) {
 		Connection conn = null;
 	    PreparedStatement psmt = null;
@@ -165,8 +165,8 @@ public class FridgeItemDAO {
 	}
 	
 	private static final String UPDATE_ITEM= 
-			"UPDATE FRIDGE_ITEMS SET "
-			+ "AMOUNT=?, UNIT=?, PURCHASED_DATE=?, EXPIRED_DATE=? WHERE ID=? AND user_id = ?";
+			"UPDATE FRIDGEITEM SET "
+			+ "AMOUNT=?, UNIT=?, PURCHASEDDATE=?, EXPIREDDATE=? WHERE ID=? AND userId = ?";
 	public FridgeItem updateItem(FridgeItem item) {
 		Connection conn = null;
 		PreparedStatement psmt = null;

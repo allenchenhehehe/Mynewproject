@@ -133,13 +133,13 @@ public class FridgeItemServlet extends HttpServlet {
 			}
 			String requestBody = getRequestBody(req);
 			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
-			String ingredientName = json.get("name").getAsString();
+			String ingredientName = json.get("ingredientName").getAsString();
 			String category = json.get("category").getAsString();
-			Double amount = json.get("quantity").getAsDouble();
+			Double amount = json.get("amount").getAsDouble();
 			String unit = json.get("unit").getAsString();
-			String purchasedDateStr = json.get("purchased_date").getAsString();
-			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
-	                ? json.get("expired_date").getAsString() : null;
+			String purchasedDateStr = json.get("purchasedDate").getAsString();
+			String expiredDateStr = json.has(" expiredDate") && !json.get(" expiredDate").isJsonNull()
+	                ? json.get(" expiredDate").getAsString() : null;
 			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
 			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
 	                ? LocalDate.parse(expiredDateStr): null;
@@ -170,11 +170,11 @@ public class FridgeItemServlet extends HttpServlet {
 			String requestBody = getRequestBody(req);
 			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
 			
-			Double amount = json.get("quantity").getAsDouble();
+			Double amount = json.get("amount").getAsDouble();
 			String unit = json.get("unit").getAsString();
-			String purchasedDateStr = json.get("purchased_date").getAsString();
-			String expiredDateStr = json.has("expired_date") && !json.get("expired_date").isJsonNull()
-	                ? json.get("expired_date").getAsString() : null;
+			String purchasedDateStr = json.get("purchasedDate").getAsString();
+			String expiredDateStr = json.has("expiredDate") && !json.get("expiredDate").isJsonNull()
+	                ? json.get("expiredDate").getAsString() : null;
 			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
 			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
 	                ? LocalDate.parse(expiredDateStr): null;

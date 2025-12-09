@@ -86,18 +86,18 @@ INSERT INTO myfridge.Ingredient (ingredientName, category, shelfLifeDays) VALUES
 ('糖', 'seasoning', 999);            -- 40
 
 -- 3. 冰箱庫存表 存儲使用者冰箱中的食材庫存
-CREATE TABLE fridge_items (
+CREATE TABLE FridgeItem (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL COMMENT '使用者 ID',
-    ingredient_id INT NOT NULL COMMENT '食材 ID',
+    userId INT NOT NULL COMMENT '使用者 ID',
+    ingredientId INT NOT NULL COMMENT '食材 ID',
     amount DECIMAL(10, 2) NOT NULL DEFAULT 1 COMMENT '數量',
     unit VARCHAR(10) NOT NULL COMMENT '單位',
-    purchased_date DATE NOT NULL COMMENT '購買日期',
-    expired_date DATE COMMENT '過期日期',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT,
-    INDEX idx_user_id (user_id),
-    INDEX idx_expired_date (expired_date)
+    purchasedDate DATE NOT NULL COMMENT '購買日期',
+    expiredDate DATE COMMENT '過期日期',
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (ingredientId) REFERENCES Ingredient(id) ON DELETE RESTRICT,
+    INDEX idx_user_id (userId),
+    INDEX idx_expired_date (expiredDate)
 ) COMMENT='冰箱庫存表',ENGINE=InnoDB;
 
 -- 4. 食譜表 存儲所有食譜的基本資訊
