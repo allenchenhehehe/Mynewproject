@@ -15,18 +15,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import model.ShoppingItem;
-import service.ShoppingListService;
+import model.ShoppingListItem;
+import service.ShoppingListItemService;
 
 @WebServlet("/api/shopping-list/*")
-public class ShoppingListServlet extends HttpServlet {
+public class ShoppingListItemServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ShoppingListService service;
+	private ShoppingListItemService service;
     private Gson gson;
     
     @Override
     public void init() throws ServletException {
-        this.service = new ShoppingListService();
+        this.service = new ShoppingListItemService();
         this.gson = new Gson();
     }
     private void setCrossHeader(HttpServletResponse resp) {
@@ -87,7 +87,7 @@ public class ShoppingListServlet extends HttpServlet {
 				}
 				Integer userId = (Integer)session.getAttribute("userId");
 				try {
-					List<ShoppingItem> items = service.getShoppingList(userId);
+					List<ShoppingListItem> items = service.getShoppingList(userId);
 					//回傳json
 					sendJsonResponse(resp, 200, items); 
 				}catch (Exception e) {
@@ -122,7 +122,7 @@ public class ShoppingListServlet extends HttpServlet {
             JsonObject json = parseJsonRequest(req);
             
             // 建立 ShoppingItem
-            ShoppingItem item = new ShoppingItem();
+            ShoppingListItem item = new ShoppingListItem();
             
             // 選填欄位
             if (json.has("recipe_id") && !json.get("recipe_id").isJsonNull()) {
@@ -144,7 +144,7 @@ public class ShoppingListServlet extends HttpServlet {
             item.setCategory(json.get("category").getAsString());
             
             // 呼叫 Service
-            ShoppingItem added = service.addItem(userId, item);
+            ShoppingListItem added = service.addItem(userId, item);
             
             //使用輔助方法回傳 JSON
             sendJsonResponse(resp, 201, added);
@@ -201,13 +201,13 @@ public class ShoppingListServlet extends HttpServlet {
 	        	Integer id = Integer.parseInt(pathInfo.substring(1));
 //	        	System.out.println("解析到的 ID: " + id);
 	        	JsonObject json = parseJsonRequest(req);
-	        	ShoppingItem update = new ShoppingItem();
+	        	ShoppingListItem update = new ShoppingListItem();
 	        	update.setIngredientName(json.get("ingredient_name").getAsString());
 	        	update.setAmount(json.get("quantity").getAsDouble());
 	        	update.setUnit(json.get("unit").getAsString());
 	        	update.setCategory(json.get("category").getAsString());
 	        	update.setIsPurchased(json.get("is_purchased").getAsBoolean());
-	        	ShoppingItem updated = service.updateItem(userId, id, update);
+	        	ShoppingListItem updated = service.updateItem(userId, id, update);
 	        	sendJsonResponse(resp, 200, updated);
 	        	
 	        }catch (NumberFormatException e) {
@@ -262,7 +262,7 @@ public class ShoppingListServlet extends HttpServlet {
             Boolean isPurchased = json.get("is_purchased").getAsBoolean();
             
             //呼叫 Service
-            ShoppingItem updated = service.togglePurchase(userId, id, isPurchased);
+            ShoppingListItem updated = service.togglePurchase(userId, id, isPurchased);
             
             //使用輔助方法回傳 JSON
             sendJsonResponse(resp, 200, updated);

@@ -7,7 +7,7 @@ public class Recipe {
 	private Integer userId;
 	private String title;
 	private String description;
-	private String imageURL;
+	private String imageUrl;
 	private Integer cookingTime;
 	private Integer difficulty;
 	private String step;
@@ -16,14 +16,14 @@ public class Recipe {
 
 	
 	public Recipe() {}
-	public Recipe(Integer id, Integer userId, String title, String description, String imageURL, Integer cookingTime,
+	public Recipe(Integer id, Integer userId, String title, String description, String imageUrl, Integer cookingTime,
 			Integer difficulty, String step, Boolean isPublic) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.title = title;
 		this.description = description;
-		this.imageURL = imageURL;
+		this.imageUrl = imageUrl;
 		this.cookingTime = cookingTime;
 		this.difficulty = difficulty;
 		this.step = step;
@@ -54,11 +54,11 @@ public class Recipe {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getImageURL() {
-		return imageURL;
+	public String getImageUrl() {
+		return imageUrl;
 	}
-	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
+	public void setImageUrl(String imageURL) {
+		this.imageUrl = imageURL;
 	}
 	public Integer getCookingTime() {
 		return cookingTime;

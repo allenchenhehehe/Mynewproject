@@ -66,24 +66,24 @@ public class RecipeServlet extends HttpServlet {
     private JsonObject recipeToJson(Recipe recipe) {
     	JsonObject json = new JsonObject();
     	json.addProperty("id", recipe.getId());
-        json.addProperty("user_id", recipe.getUserId());
-        json.addProperty("creator_id", recipe.getUserId() != null ? recipe.getUserId() : 0);  // 前端用 creator_id
+        json.addProperty("userId", recipe.getUserId());
+        json.addProperty("creatorId", recipe.getUserId() != null ? recipe.getUserId() : 0);  // 前端用 creator_id
         json.addProperty("title", recipe.getTitle());
         json.addProperty("description", recipe.getDescription());
-        json.addProperty("image_url", recipe.getImageURL());
-        json.addProperty("cooking_time", recipe.getCookingTime());
+        json.addProperty("imageUrl", recipe.getImageUrl());
+        json.addProperty("cookingTime", recipe.getCookingTime());
         json.addProperty("difficulty", recipe.getDifficulty());
         json.addProperty("step", recipe.getStep());
-        json.addProperty("is_public", recipe.getIsPublic());
+        json.addProperty("isPublic", recipe.getIsPublic());
         
      // 轉換 ingredients (amount → quantity)
         JsonArray ingredientsArray = new JsonArray();
         if (recipe.getIngredients() != null) {
             for (RecipeIngredient ing : recipe.getIngredients()) {
                 JsonObject ingJson = new JsonObject();
-                ingJson.addProperty("ingredient_id", ing.getIngredientId());
-                ingJson.addProperty("ingredient_name", ing.getIngredientName());
-                ingJson.addProperty("quantity", ing.getAmount());  //amount → quantity
+                ingJson.addProperty("ingredientId", ing.getIngredientId());
+                ingJson.addProperty("ingredientName", ing.getIngredientName());
+                ingJson.addProperty("amount", ing.getAmount());  //amount → quantity
                 ingJson.addProperty("unit", ing.getUnit());
                 ingJson.addProperty("category", ing.getCategory());
                 ingredientsArray.add(ingJson);

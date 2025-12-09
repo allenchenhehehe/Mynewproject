@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ShoppingItem {
+public class ShoppingListItem {
 	private Integer id;
 	@SerializedName("user_id")
 	private Integer userId;
@@ -24,8 +24,8 @@ public class ShoppingItem {
     private Boolean isPurchased;
     private Timestamp createdAt;
     
-    public ShoppingItem() {}
-	public ShoppingItem(Integer id, Integer userId, Integer recipeId, String recipeName, Integer ingredientId,
+    public ShoppingListItem() {}
+	public ShoppingListItem(Integer id, Integer userId, Integer recipeId, String recipeName, Integer ingredientId,
 			String ingredientName, Double amount, String unit, String category, Boolean isPurchased,
 			Timestamp createdAt) {
 		super();
@@ -41,7 +41,7 @@ public class ShoppingItem {
 		this.isPurchased = isPurchased;
 		this.createdAt = createdAt;
 	}
-	public ShoppingItem(Integer userId, Integer recipeId, String recipeName, Integer ingredientId,
+	public ShoppingListItem(Integer userId, Integer recipeId, String recipeName, Integer ingredientId,
 			String ingredientName, Double amount, String unit, String category) {
 		super();
 		this.userId = userId;

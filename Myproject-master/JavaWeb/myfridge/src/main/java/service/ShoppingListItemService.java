@@ -6,30 +6,30 @@ import java.util.List;
 
 import dao.FridgeItemDAO;
 import dao.IngredientDAO;
-import dao.ShoppingListDAO;
+import dao.ShoppingListItemDAO;
 import model.FridgeItem;
-import model.ShoppingItem;
+import model.ShoppingListItem;
 
-public class ShoppingListService {
+public class ShoppingListItemService {
 	
-	private ShoppingListDAO shoppingListDao;
+	private ShoppingListItemDAO shoppingListDao;
 	private FridgeItemDAO fridgeItemDAO;
 	private FridgeItemService fridgeItemService;
     private IngredientDAO ingredientDAO;
     
-	public  ShoppingListService() {
-		this.shoppingListDao = new ShoppingListDAO();
+	public  ShoppingListItemService() {
+		this.shoppingListDao = new ShoppingListItemDAO();
 		this.fridgeItemDAO = new FridgeItemDAO();
 		this.fridgeItemService = new FridgeItemService();
         this.ingredientDAO = new IngredientDAO();
 	}
 	
-	public List<ShoppingItem> getShoppingList(Integer userId){
+	public List<ShoppingListItem> getShoppingList(Integer userId){
 		if(userId == null) {
 			throw new IllegalArgumentException("使用者 ID 不可為空");
 		}
 		try {
-			List<ShoppingItem> list = shoppingListDao.findByUserId(userId);
+			List<ShoppingListItem> list = shoppingListDao.findByUserId(userId);
 			return list;
 		}catch(Exception e) {
 			System.err.println("查詢購物清單失敗: " + e.getMessage());
@@ -37,7 +37,7 @@ public class ShoppingListService {
 		}	
 	}
 	
-	public ShoppingItem addItem(Integer userId, ShoppingItem item) {
+	public ShoppingListItem addItem(Integer userId, ShoppingListItem item) {
         if (userId == null) {
             throw new IllegalArgumentException("使用者 ID 不可為空");
         }
@@ -76,7 +76,7 @@ public class ShoppingListService {
         }
     }
 	
-	public ShoppingItem updateItem(Integer userId, Integer id, ShoppingItem updateItem) {
+	public ShoppingListItem updateItem(Integer userId, Integer id, ShoppingListItem updateItem) {
         if (userId == null) {
             throw new IllegalArgumentException("使用者 ID 不可為空");
         }
@@ -104,7 +104,7 @@ public class ShoppingListService {
         
         try {
             // 設定使用者 ID
-        	ShoppingItem update = shoppingListDao.updateItem(userId, id, updateItem);
+        	ShoppingListItem update = shoppingListDao.updateItem(userId, id, updateItem);
         	if (update == null) {
                 throw new RuntimeException("找不到此購物項目或無權修改");
             }   
@@ -115,7 +115,7 @@ public class ShoppingListService {
         }
     }
 	
-	public ShoppingItem togglePurchase(Integer userId, Integer id, Boolean isPurchased) {
+	public ShoppingListItem togglePurchase(Integer userId, Integer id, Boolean isPurchased) {
         if (userId == null) {
             throw new IllegalArgumentException("使用者 ID 不可為空");
         }
@@ -130,7 +130,7 @@ public class ShoppingListService {
               
         try {
             // 設定使用者 ID
-        	ShoppingItem update = shoppingListDao.updatePurchasedItem(userId, id, isPurchased);
+        	ShoppingListItem update = shoppingListDao.updatePurchasedItem(userId, id, isPurchased);
         	if (update == null) {
                 throw new RuntimeException("找不到此購物項目或無權修改");
             }   
@@ -169,7 +169,7 @@ public class ShoppingListService {
 	    
 	    try {
 	        // 1. 查詢已購買的項目
-	        List<ShoppingItem> purchasedItems = shoppingListDao.findPurchasedItem(userId);
+	        List<ShoppingListItem> purchasedItems = shoppingListDao.findPurchasedItem(userId);
 	        
 	        if (purchasedItems.isEmpty()) {
 	            return 0;
@@ -178,7 +178,7 @@ public class ShoppingListService {
 	        int addedCount = 0;
 	        
 	        // 2. 逐一加入冰箱
-	        for (ShoppingItem item : purchasedItems) {
+	        for (ShoppingListItem item : purchasedItems) {
 	            try {
 	                Integer ingredientId;
 	                

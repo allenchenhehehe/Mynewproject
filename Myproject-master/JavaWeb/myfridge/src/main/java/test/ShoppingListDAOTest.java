@@ -2,19 +2,19 @@ package test;
 
 import java.util.List;
 
-import dao.ShoppingListDAO;
-import model.ShoppingItem;
+import dao.ShoppingListItemDAO;
+import model.ShoppingListItem;
 
 public class ShoppingListDAOTest {
     
     public static void main(String[] args) {
-        ShoppingListDAO dao = new ShoppingListDAO();
+        ShoppingListItemDAO dao = new ShoppingListItemDAO();
         Integer testUserId = 1;  // 假設測試使用者 ID 是 1
         
         System.out.println("========== 測試 1: insertItem() - 新增購物項目 ==========");
         try {
             // 測試 1: 新增有 recipe_id 的項目
-            ShoppingItem item1 = new ShoppingItem();
+            ShoppingListItem item1 = new ShoppingListItem();
             item1.setUserId(testUserId);
             item1.setRecipeId(1);  // 來自食譜「番茄炒蛋」
             item1.setRecipeName("番茄炒蛋");
@@ -25,11 +25,11 @@ public class ShoppingListDAOTest {
             item1.setCategory("vegetable");
             item1.setIsPurchased(false);
             
-            ShoppingItem inserted1 = dao.insertItem(item1);
+            ShoppingListItem inserted1 = dao.insertItem(item1);
             System.out.println("✅ 新增成功 ID: " + inserted1.getId() + " - " + inserted1.getIngredientName());
             
             // 測試 2: 新增手動加入的項目 (無 recipe_id)
-            ShoppingItem item2 = new ShoppingItem();
+            ShoppingListItem item2 = new ShoppingListItem();
             item2.setUserId(testUserId);
             item2.setRecipeId(null);  // 手動加入
             item2.setRecipeName(null);
@@ -40,7 +40,7 @@ public class ShoppingListDAOTest {
             item2.setCategory("meat");
             item2.setIsPurchased(false);
             
-            ShoppingItem inserted2 = dao.insertItem(item2);
+            ShoppingListItem inserted2 = dao.insertItem(item2);
             System.out.println("✅ 新增成功 ID: " + inserted2.getId() + " - " + inserted2.getIngredientName());
             
         } catch (Exception e) {
@@ -50,10 +50,10 @@ public class ShoppingListDAOTest {
         
         System.out.println("\n========== 測試 2: findByUserId() - 查詢購物清單 ==========");
         try {
-            List<ShoppingItem> items = dao.findByUserId(testUserId);
+            List<ShoppingListItem> items = dao.findByUserId(testUserId);
             System.out.println("✅ 查詢到 " + items.size() + " 個項目:");
             
-            for (ShoppingItem item : items) {
+            for (ShoppingListItem item : items) {
                 System.out.println("  - ID:" + item.getId() + 
                                  " | " + item.getIngredientName() + 
                                  " " + item.getAmount() + item.getUnit() +
@@ -68,7 +68,7 @@ public class ShoppingListDAOTest {
         
         System.out.println("\n========== 測試 3: findById() - 查詢單一項目 ==========");
         try {
-            ShoppingItem item = dao.findById(1, testUserId);
+            ShoppingListItem item = dao.findById(1, testUserId);
             
             if (item != null) {
                 System.out.println("✅ 查詢成功:");
@@ -88,7 +88,7 @@ public class ShoppingListDAOTest {
         
         System.out.println("\n========== 測試 4: updatePurchasedStatus() - 標記已購買 ==========");
         try {
-            ShoppingItem updated = dao.updatePurchasedItem(testUserId, 1, true);
+            ShoppingListItem updated = dao.updatePurchasedItem(testUserId, 1, true);
             
             if (updated != null) {
                 System.out.println("✅ 更新成功: " + updated.getIngredientName() + 
@@ -103,14 +103,14 @@ public class ShoppingListDAOTest {
         
         System.out.println("\n========== 測試 5: updateItem() - 更新項目 ==========");
         try {
-            ShoppingItem updateData = new ShoppingItem();
+            ShoppingListItem updateData = new ShoppingListItem();
             updateData.setIngredientName("大番茄");  // 改名字
             updateData.setAmount(3.0);  // 改數量
             updateData.setUnit("顆");
             updateData.setCategory("vegetable");
             updateData.setIsPurchased(false);
             
-            ShoppingItem updated = dao.updateItem(testUserId, 1, updateData);
+            ShoppingListItem updated = dao.updateItem(testUserId, 1, updateData);
             
             if (updated != null) {
                 System.out.println("✅ 更新成功: " + updated.getIngredientName() + 
@@ -129,10 +129,10 @@ public class ShoppingListDAOTest {
             dao.updatePurchasedItem(testUserId, 1, true);
             dao.updatePurchasedItem(testUserId, 2, true);
             
-            List<ShoppingItem> purchased = dao.findPurchasedItem(testUserId);
+            List<ShoppingListItem> purchased = dao.findPurchasedItem(testUserId);
             System.out.println("✅ 已購買項目有 " + purchased.size() + " 個:");
             
-            for (ShoppingItem item : purchased) {
+            for (ShoppingListItem item : purchased) {
                 System.out.println("  - " + item.getIngredientName() + 
                                  " " + item.getAmount() + item.getUnit());
             }
@@ -161,7 +161,7 @@ public class ShoppingListDAOTest {
             System.out.println("✅ 刪除 " + rows + " 個已購買項目");
             
             // 檢查是否清空
-            List<ShoppingItem> remaining = dao.findByUserId(testUserId);
+            List<ShoppingListItem> remaining = dao.findByUserId(testUserId);
             System.out.println("剩餘 " + remaining.size() + " 個未購買項目");
             
         } catch (Exception e) {
@@ -170,7 +170,7 @@ public class ShoppingListDAOTest {
         
         System.out.println("\n========== 測試 9: 權限檢查 - 無法查看他人項目 ==========");
         try {
-            ShoppingItem item = dao.findById(1, 999);  // 錯誤的 user_id
+            ShoppingListItem item = dao.findById(1, 999);  // 錯誤的 user_id
             
             if (item == null) {
                 System.out.println("✅ 測試通過: 無法查看他人的購物項目");

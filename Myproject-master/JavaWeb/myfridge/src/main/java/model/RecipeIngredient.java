@@ -68,7 +68,7 @@ public class RecipeIngredient {
 		return amount;
 	}
 
-	public void setAmount(double amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 

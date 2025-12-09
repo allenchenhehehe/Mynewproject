@@ -3,17 +3,17 @@ CREATE DATABASE MyFridge CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE MyFridge;
 
 -- Clear out the old table, if they existed at all.
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS ingredients;
 DROP TABLE IF EXISTS fridge_items;
-DROP TABLE IF EXISTS recipes;
-DROP TABLE IF EXISTS recipe_ingredients;
+DROP TABLE IF EXISTS Recipe;
+DROP TABLE IF EXISTS RecipeIngredient;
 DROP TABLE IF EXISTS shopping_lists;
 DROP TABLE IF EXISTS shopping_list_items;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS comments;
 
--- 1. users(使用者資訊) 
+-- 1. User(使用者資訊) 
 CREATE TABLE User (
     id INT PRIMARY KEY AUTO_INCREMENT,
     userName VARCHAR(20) NOT NULL UNIQUE COMMENT '使用者名稱',
@@ -26,7 +26,7 @@ CREATE TABLE User (
 -- 2. ingredients (材料相關資訊)
 CREATE TABLE Ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    ingredienName VARCHAR(20) NOT NULL UNIQUE COMMENT '食材名稱',
+    ingredientName VARCHAR(20) NOT NULL UNIQUE COMMENT '食材名稱',
     category ENUM(
         'vegetable',   -- 蔬菜
         'fruit',       -- 水果
@@ -96,35 +96,35 @@ CREATE TABLE FridgeItem (
     expiredDate DATE COMMENT '過期日期',
     FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredientId) REFERENCES Ingredient(id) ON DELETE RESTRICT,
-    INDEX idx_user_id (userId),
+    INDEX idx_userId (userId),
     INDEX idx_expired_date (expiredDate)
 ) COMMENT='冰箱庫存表',ENGINE=InnoDB;
 
 -- 4. 食譜表 存儲所有食譜的基本資訊
-CREATE TABLE recipes (
+CREATE TABLE Recipe (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT COMMENT '使用者 ID（null 表示系統食譜）',
+    userId INT COMMENT '使用者 ID（null 表示系統食譜）',
     title VARCHAR(100) NOT NULL COMMENT '食譜名稱',
     description TEXT COMMENT '食譜描述',
-    image_url VARCHAR(255) COMMENT '食譜圖片 URL（public 資料夾的相對路徑）',
-    cooking_time INT COMMENT '烹飪時間（分鐘）',
+    imageUrl VARCHAR(255) COMMENT '食譜圖片 URL（public 資料夾的相對路徑）',
+    cookingTime INT COMMENT '烹飪時間（分鐘）',
     difficulty INT COMMENT '難度等級（1-5）',
     step TEXT COMMENT '詳細步驟',
-    is_public BOOLEAN DEFAULT TRUE COMMENT '是否公開食譜',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id)
+    isPublic BOOLEAN DEFAULT TRUE COMMENT '是否公開食譜',
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+    INDEX idx_userId (userId)
 ) COMMENT='食譜表',ENGINE=InnoDB;
 -- 清空舊資料 (如果需要)
 -- SET FOREIGN_KEY_CHECKS = 0;
--- DELETE FROM myfridge.recipe_ingredients WHERE recipe_id > 0;
--- DELETE FROM myfridge.recipes WHERE id > 0;
+-- DELETE FROM myfridge.RecipeIngredient WHERE recipeId > 0;
+-- DELETE FROM myfridge.Recipe WHERE id > 0;
 -- DELETE FROM myfridge.ingredients WHERE id > 0;
 -- ALTER TABLE myfridge.ingredients AUTO_INCREMENT = 1;
--- ALTER TABLE myfridge.recipes AUTO_INCREMENT = 1;
--- ALTER TABLE myfridge.recipe_ingredients AUTO_INCREMENT = 1;
+-- ALTER TABLE myfridge.Recipe AUTO_INCREMENT = 1;
+-- ALTER TABLE myfridge.RecipeIngredient AUTO_INCREMENT = 1;
 -- SET FOREIGN_KEY_CHECKS = 1; 
 -- 插入 12 個食譜
-INSERT INTO myfridge.recipes (user_id, title, description, image_url, cooking_time, difficulty, step, is_public) VALUES
+INSERT INTO myfridge.Recipe (userId, title, description, imageUrl, cookingTime, difficulty, step, isPublic) VALUES
 
 -- 食譜 1: 番茄炒蛋
 (NULL, '番茄炒蛋', '簡單快手菜，營養豐富，酸甜開胃的家常經典。', '/TomatoEgg.webp', 12, 3, 
@@ -269,138 +269,138 @@ INSERT INTO myfridge.recipes (user_id, title, description, image_url, cooking_ti
 5. 搭配擺盤：將肉絲盛出放在盤中，旁邊配上切好的蔥白絲和黃瓜絲，搭配薄薄的豆腐皮或春餅捲著吃。', TRUE);
 
 -- 5. 食譜食材表（多對多關聯） 存儲每個食譜需要的食材和份量
-CREATE TABLE recipe_ingredients (
+CREATE TABLE RecipeIngredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    recipe_id INT NOT NULL COMMENT '食譜 ID',
-    ingredient_id INT NOT NULL COMMENT '食材 ID',
+    recipeId INT NOT NULL COMMENT '食譜 ID',
+    ingredientId INT NOT NULL COMMENT '食材 ID',
     amount DECIMAL(10, 2) NOT NULL COMMENT '需要的數量',
     unit VARCHAR(5) NOT NULL COMMENT '單位',
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT,
-    UNIQUE KEY unique_recipe_ingredient (recipe_id, ingredient_id),
-    INDEX idx_recipe_id (recipe_id),
-    INDEX idx_ingredient_id (ingredient_id)
+    FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE CASCADE,
+    FOREIGN KEY (ingredientId) REFERENCES Ingredient(id) ON DELETE RESTRICT,
+    UNIQUE KEY unique_recipe_ingredient (recipeId, ingredientId),
+    INDEX idx_recipeId (recipeId),
+    INDEX idx_ingredientId (ingredientId)
 ) COMMENT='食譜和食材的關聯表',ENGINE=InnoDB;
 
 -- 食譜 1: 番茄炒蛋
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (1, 1, 2, '個'),   -- 番茄
 (1, 2, 3, '個'),   -- 雞蛋
 (1, 6, 1, '匙');   -- 蔥花
 
 -- 食譜 2: 紅燒肉
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (2, 15, 500, '克'), -- 五花肉
 (2, 16, 30, '克'),  -- 冰糖
 (2, 7, 3, '匙');    -- 醬油
 
 -- 食譜 3: 宮保雞丁
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (3, 17, 300, '克'), -- 雞胸肉
 (3, 18, 50, '克'),  -- 花生米
 (3, 19, 10, '克');  -- 乾辣椒/花椒
 
 -- 食譜 4: 麻婆豆腐
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (4, 20, 1, '塊'),   -- 嫩豆腐
 (4, 21, 100, '克'), -- 牛肉/豬肉末
 (4, 22, 2, '匙');   -- 豆瓣醬
 
 -- 食譜 5: 魚香肉絲
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (5, 23, 250, '克'), -- 豬里脊肉
 (5, 24, 100, '克'), -- 木耳/筍絲
 (5, 25, 1, '匙');   -- 泡椒
 
 -- 食譜 6: 蒜蓉清炒時蔬
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (6, 13, 500, '克'), -- 時令蔬菜
 (6, 14, 3, '瓣'),   -- 大蒜
 (6, 8, 1, '茶匙'); -- 鹽
 
 -- 食譜 7: 可樂雞翅
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (7, 29, 8, '個'),   -- 雞中翅
 (7, 28, 300, '毫升'), -- 可樂
 (7, 7, 2, '匙');    -- 醬油
 
 -- 食譜 8: 清蒸魚
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (8, 30, 500, '克'), -- 新鮮活魚
 (8, 31, 50, '克'),  -- 蔥薑絲
 (8, 32, 3, '匙');   -- 蒸魚豉油
 
 -- 食譜 9: 酸辣土豆絲
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (9, 33, 2, '個'),   -- 土豆
 (9, 34, 3, '匙'),   -- 白醋
 (9, 19, 5, '個');   -- 乾辣椒/花椒
 
 -- 食譜 10: 木須肉
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (10, 4, 150, '克'), -- 豬肉
 (10, 2, 2, '個'),   -- 雞蛋
 (10, 35, 100, '克'); -- 黃瓜
 
 -- 食譜 11: 醬爆肉片
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (11, 4, 250, '克'), -- 豬肉
 (11, 36, 3, '匙'),  -- 甜麵醬
 (11, 38, 1, '個');  -- 青椒
 
 -- 食譜 12: 京醬肉絲
-INSERT INTO myfridge.recipe_ingredients (recipe_id, ingredient_id, amount, unit) VALUES
+INSERT INTO myfridge.RecipeIngredient (recipeId, ingredientId, amount, unit) VALUES
 (12, 23, 250, '克'), -- 豬里脊肉
 (12, 36, 4, '匙'),   -- 甜麵醬
 (12, 39, 1, '根');   -- 大蔥白
 
 -- 6. 購物清單項目表 存儲購物清單中的個別食材
-CREATE TABLE shopping_list_items (
+CREATE TABLE ShoppingListItem (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL COMMENT '使用者 ID',
-    recipe_id INT COMMENT '來自哪個食譜（null=手動新增）',
-    recipe_name VARCHAR(50) COMMENT '食譜名稱（冗餘存儲，方便顯示）',
-    ingredient_id INT COMMENT '食材 ID（可為 null，支援自訂食材名）',
-    ingredient_name VARCHAR(20) NOT NULL COMMENT '食材名稱',
+    userId INT NOT NULL COMMENT '使用者 ID',
+    recipeId INT COMMENT '來自哪個食譜（null=手動新增）',
+    recipeName VARCHAR(50) COMMENT '食譜名稱（冗餘存儲，方便顯示）',
+    ingredientId INT COMMENT '食材 ID（可為 null，支援自訂食材名）',
+    ingredientName VARCHAR(20) NOT NULL COMMENT '食材名稱',
     amount DECIMAL(10, 2) NOT NULL DEFAULT 1,
     unit VARCHAR(10) NOT NULL,
     category VARCHAR(20),
-    is_purchased BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE SET NULL,
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE SET NULL,
-    INDEX idx_user_id (user_id),
-    INDEX idx_is_purchased (is_purchased)
+    isPurchased BOOLEAN DEFAULT FALSE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE SET NULL,
+    FOREIGN KEY (ingredientId) REFERENCES Ingredient(id) ON DELETE SET NULL,
+    INDEX idx_userId (userId),
+    INDEX idx_isPurchased (isPurchased)
 ) COMMENT='購物清單項目表',ENGINE=InnoDB;
 
 -- 7. 收藏食譜表 存儲使用者收藏的食譜
-CREATE TABLE favorites (
+CREATE TABLE Favorite (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL COMMENT '使用者 ID',
-    recipe_id INT NOT NULL COMMENT '食譜 ID',
-    saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏時間',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_user_recipe (user_id, recipe_id) COMMENT '同一使用者不能重複收藏同一食譜',
-    INDEX idx_user_id (user_id),
-    INDEX idx_recipe_id (recipe_id),
-    INDEX idx_saved_at (saved_at)
+    userId INT NOT NULL COMMENT '使用者 ID',
+    recipeId INT NOT NULL COMMENT '食譜 ID',
+    savedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏時間',
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_recipe (userId, recipeId) COMMENT '同一使用者不能重複收藏同一食譜',
+    INDEX idx_userId (userId),
+    INDEX idx_recipeId (recipeId),
+    INDEX idx_savedAt (savedAt)
 ) COMMENT='使用者收藏食譜表',ENGINE=InnoDB;
 
 -- 8. 評論表 存儲使用者對食譜的評論
-CREATE TABLE comments (
+CREATE TABLE Comment (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL COMMENT '使用者 ID',
-    recipe_id INT NOT NULL COMMENT '食譜 ID',
+    userId INT NOT NULL COMMENT '使用者 ID',
+    recipeId INT NOT NULL COMMENT '食譜 ID',
     rating INT NOT NULL COMMENT '評分（1-5）',
     text TEXT NOT NULL COMMENT '評論內容',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id),
-    INDEX idx_recipe_id (recipe_id),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間',
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipeId) REFERENCES Recipe(id) ON DELETE CASCADE,
+    INDEX idx_userId (userId),
+    INDEX idx_recipeId (recipeId),
     INDEX idx_rating (rating),
-    INDEX idx_created_at (created_at)
+    INDEX idx_createdAt (createdAt)
 ) COMMENT='食譜評論表',ENGINE=InnoDB;

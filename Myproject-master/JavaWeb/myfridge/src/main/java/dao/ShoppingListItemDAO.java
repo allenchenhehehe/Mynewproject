@@ -13,10 +13,10 @@ import model.FridgeItem;
 import model.Ingredient;
 import model.Recipe;
 import model.RecipeIngredient;
-import model.ShoppingItem;
+import model.ShoppingListItem;
 import util.DBUtil;
 
-public class ShoppingListDAO {
+public class ShoppingListItemDAO {
 	private static final String SELECT_BY_USER_ID = "Select "
 			+ "id, user_id, recipe_id, recipe_name, ingredient_id, ingredient_name, "
 			+ "amount, unit, category, is_purchased, created_at "
@@ -60,8 +60,8 @@ public class ShoppingListDAO {
 	        "DELETE FROM shopping_list_items " +
 	        "WHERE user_id = ? AND is_purchased = TRUE";
 	    
-	    private ShoppingItem buildShoppingItem(ResultSet rs) throws SQLException {
-	    	ShoppingItem shoppingItem = new ShoppingItem();
+	    private ShoppingListItem buildShoppingItem(ResultSet rs) throws SQLException {
+	    	ShoppingListItem shoppingItem = new ShoppingListItem();
 	    	shoppingItem.setId(rs.getInt("id"));	
 	    	shoppingItem.setUserId(rs.getInt("user_id"));	 	  
 	    	shoppingItem.setRecipeId(rs.getObject("recipe_id") != null ? rs.getInt("recipe_id") : null);	 
@@ -76,18 +76,18 @@ public class ShoppingListDAO {
 			return shoppingItem;
 		 }
 	    
-	    public List<ShoppingItem> findByUserId(Integer userId){
+	    public List<ShoppingListItem> findByUserId(Integer userId){
 	    	Connection conn = null;
 			PreparedStatement psmt = null;
 			ResultSet rs = null;
-			List<ShoppingItem> list = new LinkedList<>();
+			List<ShoppingListItem> list = new LinkedList<>();
 			try {
 				conn = DBUtil.getConnection();
 				psmt = conn.prepareStatement(SELECT_BY_USER_ID);
 				psmt.setInt(1, userId);
 				rs = psmt.executeQuery();
 				while(rs.next()) {
-					ShoppingItem item = buildShoppingItem(rs);
+					ShoppingListItem item = buildShoppingItem(rs);
 					list.add(item);
 				}
 			}catch(SQLException se) {
@@ -98,11 +98,11 @@ public class ShoppingListDAO {
 			return list;
 	    }
 	    
-	    public ShoppingItem findById(Integer id, Integer userId){
+	    public ShoppingListItem findById(Integer id, Integer userId){
 	    	Connection conn = null;
 			PreparedStatement psmt = null;
 			ResultSet rs = null;
-			List<ShoppingItem> list = new LinkedList<>();
+			List<ShoppingListItem> list = new LinkedList<>();
 			try {
 				conn = DBUtil.getConnection();
 				psmt = conn.prepareStatement(SELECT_BY_ID);
@@ -110,7 +110,7 @@ public class ShoppingListDAO {
 				psmt.setInt(2, userId);				
 				rs = psmt.executeQuery();
 				if	(rs.next()) {
-					ShoppingItem item = buildShoppingItem(rs);
+					ShoppingListItem item = buildShoppingItem(rs);
 					return item;
 				}
 				return null;
@@ -121,7 +121,7 @@ public class ShoppingListDAO {
 			}
 	    }
 	    
-	    public ShoppingItem insertItem(ShoppingItem item) {
+	    public ShoppingListItem insertItem(ShoppingListItem item) {
 			Connection conn = null;
 		    PreparedStatement psmt = null;
 		    ResultSet rs = null;
@@ -154,7 +154,7 @@ public class ShoppingListDAO {
 		    }
 		}
 	    
-	    public ShoppingItem updateItem(Integer userId, Integer id, ShoppingItem item) {
+	    public ShoppingListItem updateItem(Integer userId, Integer id, ShoppingListItem item) {
 			Connection conn = null;
 			PreparedStatement psmt = null;
 			ResultSet rs = null;
@@ -182,7 +182,7 @@ public class ShoppingListDAO {
 		    }
 		}
 	    
-	    public ShoppingItem updatePurchasedItem(Integer userId, Integer id, Boolean isPurchased) {
+	    public ShoppingListItem updatePurchasedItem(Integer userId, Integer id, Boolean isPurchased) {
 			Connection conn = null;
 			PreparedStatement psmt = null;
 			ResultSet rs = null;
@@ -231,18 +231,18 @@ public class ShoppingListDAO {
 		    }
 		}
 	    
-	    public List<ShoppingItem> findPurchasedItem(Integer userId){
+	    public List<ShoppingListItem> findPurchasedItem(Integer userId){
 	    	Connection conn = null;
 			PreparedStatement psmt = null;
 			ResultSet rs = null;
-			List<ShoppingItem> list = new LinkedList<>();
+			List<ShoppingListItem> list = new LinkedList<>();
 			try {
 				conn = DBUtil.getConnection();
 				psmt = conn.prepareStatement(SELECT_PURCHASED_ITEMS);
 				psmt.setInt(1, userId);
 				rs = psmt.executeQuery();
 				while(rs.next()) {
-					ShoppingItem item = buildShoppingItem(rs);
+					ShoppingListItem item = buildShoppingItem(rs);
 					list.add(item);
 				}
 			}catch(SQLException se) {

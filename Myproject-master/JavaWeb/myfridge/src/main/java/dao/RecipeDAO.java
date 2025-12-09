@@ -14,44 +14,44 @@ import util.DBUtil;
 
 public class RecipeDAO {
 	private static final String SELECT_ALL = "Select "
-			+ "id, user_id, title, description,image_url, cooking_time, "
-			+ "difficulty, step, is_public "
-			+ "From recipes "
-			+ "Where is_public = True "
+			+ "id, userId, title, description,imageUrl, cookingTime, "
+			+ "difficulty, step, isPublic "
+			+ "From Recipe "
+			+ "Where isPublic = True "
 			+ "Order By id ";
 	
 	private static final String SELECT_BY_ID = "Select "
-			+ "id, user_id, title, description,image_url, cooking_time,"
-			+ "difficulty, step, is_public "
-			+ "From recipes "
+			+ "id, userId, title, description,imageUrl, cookingTime,"
+			+ "difficulty, step, isPublic "
+			+ "From Recipe "
 			+ "Where id =? ";
 	
 	private static final String SELECT_INGREDIENTS_BY_RECIPE_ID = 
-	        "SELECT ri.id, ri.recipe_id, ri.ingredient_id, ri.amount, ri.unit, " +
-	        "i.ingredient_name, i.category " +
-	        "FROM recipe_ingredients ri " +
-	        "JOIN ingredients i ON ri.ingredient_id = i.id " +
-	        "WHERE ri.recipe_id = ?";
+	        "SELECT ri.id, ri.recipeId, ri.ingredientId, ri.amount, ri.unit, " +
+	        "i.ingredientName, i.category " +
+	        "FROM RecipeIngredient ri " +
+	        "JOIN Ingredient i ON ri.ingredientId = i.id " +
+	        "WHERE ri.recipeId = ?";
 	
 	 private static final String SEARCH_BY_KEYWORD = "Select "
-			 + "id, user_id, title, description,image_url, cooking_time, "
-			 + "difficulty, step, is_public "
-			 + "From recipes "
-			 + "Where is_public = True "
+			 + "id, userId, title, description,imageUrl, cookingTime, "
+			 + "difficulty, step, isPublic "
+			 + "From Recipe "
+			 + "Where isPublic = True "
 			 + "And (title like ? or description like ?) "
 			 + "Order By id";
 	 
 	 private Recipe buildRecipe(ResultSet rs) throws SQLException {
 		 Recipe recipe = new Recipe();
 		 recipe.setId(rs.getInt("id"));	
-		 recipe.setUserId(rs.getInt("user_id"));	 	  
+		 recipe.setUserId(rs.getInt("userId"));	 	  
 		 recipe.setTitle(rs.getString("title"));	 
 		 recipe.setDescription(rs.getString("description"));	 
-		 recipe.setImageURL(rs.getString("image_url"));	 
-		 recipe.setCookingTime(rs.getInt("cooking_time"));	 
+		 recipe.setImageUrl(rs.getString("imageUrl"));	 
+		 recipe.setCookingTime(rs.getInt("cookingTime"));	 
 		 recipe.setDifficulty(rs.getInt("difficulty"));	 
 		 recipe.setStep(rs.getString("step"));	 
-		 recipe.setIsPublic(rs.getBoolean("is_public"));	
+		 recipe.setIsPublic(rs.getBoolean("isPublic"));	
 		 return recipe;
 	 }
 	 
@@ -67,11 +67,11 @@ public class RecipeDAO {
 				while(rs.next()) {
 					RecipeIngredient ingredient = new RecipeIngredient(
 							rs.getInt("id"),
-							rs.getInt("recipe_id"),
-							rs.getInt("ingredient_id"),
+							rs.getInt("recipeId"),
+							rs.getInt("ingredientId"),
 							rs.getDouble("amount"),
 							rs.getString("unit"),
-							rs.getString("ingredient_name"),
+							rs.getString("ingredientName"),
 							rs.getString("category")				
 					);
 					ingredients.add(ingredient);
@@ -117,7 +117,7 @@ public class RecipeDAO {
 			ResultSet rs = null;
 			try {
 				conn = DBUtil.getConnection();
-				//假設我要做番茄炒蛋(recipe_id = 1)
+				//假設我要做番茄炒蛋(recipeId = 1)
 				psmt = conn.prepareStatement(SELECT_BY_ID);
 				psmt.setInt(1, id);
 				rs = psmt.executeQuery();
@@ -178,10 +178,10 @@ public class RecipeDAO {
 			try {
 				conn = DBUtil.getConnection();
 				StringBuilder sql = new StringBuilder( "Select "
-						+ "id, user_id, title, description, image_url, cooking_time, "
-						+ "difficulty, step, is_public "
-						+ "From recipes "
-						+ "Where is_public = True ");
+						+ "id, userId, title, description, imageUrl, cookingTime, "
+						+ "difficulty, step, isPublic "
+						+ "From Recipe "
+						+ "Where isPublic = True ");
 				List<Object> params = new LinkedList();
 				if(difficulty != null) {
 					sql.append(" And difficulty = ? ");
@@ -189,12 +189,12 @@ public class RecipeDAO {
 					
 				}
 				if(minCookingTime != null) {
-					sql.append(" AND cooking_time >= ?");
+					sql.append(" AND cookingTime >= ?");
 					params.add(minCookingTime);
 					
 				}
 				if(maxCookingTime != null) {
-					sql.append(" AND cooking_time <= ?");
+					sql.append(" AND cookingTime <= ?");
 					params.add(maxCookingTime);
 					
 				}		
