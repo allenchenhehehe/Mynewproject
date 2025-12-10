@@ -38,7 +38,7 @@ async function logout() {
     
     // 顯示登出提示
     toast.success('已登出！', {
-        autoClose: 1500,
+        autoClose: 500,
     })
     
     // 呼叫 authStore 的 logout (這會清除所有狀態並設定 authStatus = STATUS_LOGIN)

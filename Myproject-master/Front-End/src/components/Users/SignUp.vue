@@ -1,17 +1,65 @@
 <script setup>
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
 
+const authStore = useAuthStore()
 const emits = defineEmits(['login'])
+
 const email = ref('')
 const username = ref('')
 const password = ref('')
+const errorMessage = ref('')
+const errorVisible = ref(false)
 
 async function signup() {
-    const isSignUpSuccessful = true
-    if (isSignUpSuccessful) {
-        emits('login')
-        console.log("模擬註冊成功。觸發 'login' 事件，導航到登入畫面。")
+    errorMessage.value = ''
+
+    // 驗證輸入
+    if (!username.value || !email.value || !password.value) {
+    showErrorTemporarily('請填寫所有欄位')
+    return
     }
+
+    // 驗證 email 格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email.value)) {
+    showErrorTemporarily('Email 格式不正確')
+    return
+    }
+
+    // 驗證密碼長度
+    if (password.value.length < 6) {
+    showErrorTemporarily('密碼至少需要 6 個字元')
+    return
+    }
+
+    // 呼叫 authStore 註冊
+    const result = await authStore.signup({
+        userName: username.value,
+        email: email.value,
+        password: password.value
+    })
+
+    if (!result.success) {
+    errorMessage.value = result.error
+    }
+    // 註冊成功後 authStore 會自動切換到 STATUS_APP
+    // App.vue 會自動切換到主系統
+}
+function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
+  errorMessage.value = message
+  errorVisible.value = true
+  
+  // 在指定時間後清除
+  setTimeout(() => {
+    errorVisible.value = false
+    
+    // 動畫結束後才清除訊息
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 500)  // 等待淡出動畫完成 (0.3秒)
+    
+  }, duration)
 }
 </script>
 
@@ -24,6 +72,14 @@ async function signup() {
                 <div class="text-center mb-4">
                     <h1 class="text-5xl font-black uppercase tracking-tighter mb-2">SIGN UP</h1>
                     <p class="text-sm text-gray-600 font-bold uppercase tracking-wide">加入 Stock & Stove 社區</p>
+                </div>
+
+                <!-- 錯誤訊息 -->
+                <div 
+                    v-if="errorMessage" 
+                    class="bg-red-100 border-2 border-red-500 text-red-700 px-4 py-3 font-bold flex items-center justify-center"
+                >
+                    {{ errorMessage }}
                 </div>
 
                 <!-- 表單 -->

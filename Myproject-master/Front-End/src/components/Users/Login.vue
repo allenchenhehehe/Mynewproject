@@ -64,7 +64,7 @@ function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
                      {{ errorMessage }}
                 </div>
 
-                <!-- ✅ Loading 狀態 -->
+                <!-- Loading 狀態 -->
                 <div 
                     v-if="authStore.loading" 
                     class="bg-blue-100 border-2 border-blue-500 text-blue-700 px-4 py-3 font-bold text-center"
