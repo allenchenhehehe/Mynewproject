@@ -1,10 +1,14 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useFridgeStore } from '@/stores'
+
+onMounted(async () => {
+  console.log('MyFridge mounted, 載入冰箱資料...')
+  await fridgeStore.fetchItems()
+})
 
 // 使用 fridgeStore
 const fridgeStore = useFridgeStore()
-
 const categories = [
     { key: 'expiring', name: '即將過期', color: 'bg-red-100' },
     { key: 'vegetable', name: '蔬菜', color: 'bg-green-100' },
@@ -17,15 +21,6 @@ const categories = [
     { key: 'seafood', name: '海鮮', color: 'bg-blue-100' },
     { key: 'other', name: '其他', color: 'bg-gray-200' },
 ]
-
-const ingredients = ref(categorizeIngredients(fridgeStore.fridgeItems || []))
-
-// 監聽 store 中的 fridgeItems 變化
-watch(() => fridgeStore.fridgeItems, (newItems) => {
-    console.log('MyFridge 數據更新:', newItems)
-    ingredients.value = categorizeIngredients(newItems || [])
-}, { deep: true })
-
 const expandedCategories = ref({
     expiring: true,
     vegetable: false,
@@ -38,8 +33,6 @@ const expandedCategories = ref({
     seafood: false,
     other: false,
 })
-
-const isAddModalOpen = ref(false)
 const newIngredient = ref({
     name: '',
     category: 'vegetable',
@@ -48,9 +41,62 @@ const newIngredient = ref({
     purchased_date: new Date().toISOString().split('T')[0],
     expired_date: '',
 })
-
+const ingredients = ref(categorizeIngredients(fridgeStore.fridgeItems || []))
 const isEditModalOpen = ref(false)
 const editIngredient = ref(null)
+const isAddModalOpen = ref(false)
+
+// 監聽 store 中的 fridgeItems 變化
+watch(() => fridgeStore.fridgeItems, (newItems) => {
+    console.log('MyFridge 數據更新:', newItems)
+    ingredients.value = categorizeIngredients(newItems || [])
+}, { deep: true })
+
+async function addIngredient() {
+    if (!newIngredient.value.name) return alert('請輸入食材名稱!')
+    if (newIngredient.value.quantity <= 0) return alert('數量必須大於 0!')
+    if (!newIngredient.value.expired_date) return alert('請輸入過期日期!')
+    if (newIngredient.value.purchased_date > newIngredient.value.expired_date) return alert('購買日期不得晚於過期日期!')
+
+    // 使用 fridgeStore 的 addItem 方法
+    const result = await fridgeStore.addItem(newIngredient.value)
+    
+    if (result.success) {
+        closeAddModal()
+    } else {
+        alert('新增失敗: ' + result.error)
+    }
+}
+
+async function saveEdit(updatedData) {
+    if (updatedData.purchased_date > updatedData.expired_date) {
+        alert('購買日期不能晚於過期日期')
+        return
+    }
+    if (updatedData.quantity <= 0) { 
+        alert('數量必須大於 0!')
+        return
+    }
+    
+    // 使用 fridgeStore 的 updateItem 方法
+    const result = await fridgeStore.updateItem(updatedData.id, updatedData)
+    
+    if (result.success) {
+        closeEditModal()
+    } else {
+        alert('更新失敗: ' + result.error)
+    }
+}
+
+async function deleteIngredient(ingredientId) {
+    if (!confirm('確定要刪除這個食材嗎?')) return
+    
+    const result = await fridgeStore.deleteItem(ingredientId)
+    
+    if (!result.success) {
+        alert('刪除失敗: ' + result.error)
+    }
+}
 
 function categorizeIngredients(data) {
     const categorized = {}
@@ -68,15 +114,23 @@ function toggleCategory(key) {
     expandedCategories.value[key] = !expandedCategories.value[key]
 }
 
-function deleteIngredient(ingredientId) {
-    if (confirm('確定要刪除這個食材嗎?')) {
-        fridgeStore.deleteItem(ingredientId)
-    }
-}
-
 function openEditModal(ingredient) {
-    editIngredient.value = { ...ingredient }
+    editIngredient.value = {
+        id: ingredient.id,
+        ingredient_id: ingredient.ingredient_id,
+        name: ingredient.name,
+        category: ingredient.category,
+        quantity: ingredient.quantity,
+        unit: ingredient.unit,
+        purchased_date: ingredient.purchased_date,
+        expired_date: ingredient.expired_date
+    }
+    console.log('開啟編輯 Modal:', editIngredient.value)
     isEditModalOpen.value = true
+}
+function closeEditModal() {
+    editIngredient.value = null
+    isEditModalOpen.value = false
 }
 
 function openAddModal() {
@@ -91,39 +145,8 @@ function openAddModal() {
     }
 }
 
-function closeEditModal() {
-    editIngredient.value = null
-    isEditModalOpen.value = false
-}
-
 function closeAddModal() {
     isAddModalOpen.value = false
-}
-
-function saveEdit(updatedData) {
-    if (updatedData.purchased_date > updatedData.expired_date) {
-        alert('購買日期不能晚於過期日期')
-        return
-    }
-    if (updatedData.quantity <= 0) { 
-        alert('數量必須大於 0!')
-        return
-    }
-    
-    // 使用 fridgeStore 的 updateItem 方法
-    fridgeStore.updateItem(updatedData.id, updatedData)
-    closeEditModal()
-}
-
-function addIngredient() {
-    if (!newIngredient.value.name) return alert('請輸入食材名稱!')
-    if (newIngredient.value.quantity <= 0) return alert('數量必須大於 0!')
-    if (!newIngredient.value.expired_date) return alert('請輸入過期日期!')
-    if (newIngredient.value.purchased_date > newIngredient.value.expired_date) return alert('購買日期不得晚於過期日期!')
-
-    // 使用 fridgeStore 的 addItem 方法
-    fridgeStore.addItem(newIngredient.value)
-    closeAddModal()
 }
 
 function groupByName(data) {
@@ -154,6 +177,10 @@ function isExpired(expiredDate) {
 
 <template>
     <div class="mt-28 max-w-5xl mx-auto px-6 pb-20 font-sans text-black">
+
+        <div v-if="fridgeStore.error" class="bg-red-100 border-4 border-black p-4 mb-6 font-bold text-red-700 flex justify-center items-center">
+            {{ fridgeStore.error }}
+        </div>
         
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
             <h1 class="text-5xl font-black uppercase tracking-tighter text-stroke-black relative inline-block">

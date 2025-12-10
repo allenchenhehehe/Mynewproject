@@ -1,73 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import axios from 'axios'
 
-// Mock 數據 - 冰箱食材
-const mockFridgeData = [
-    {
-        id: 1,
-        ingredient_id: 1,
-        name: '洋蔥',
-        category: 'vegetable',
-        quantity: 5,
-        unit: '個',
-        purchased_date: '2025-11-03',
-        expired_date: '2025-11-12',
-    },
-    {
-        id: 2,
-        ingredient_id: 2,
-        name: '雞肉',
-        category: 'meat',
-        quantity: 200,
-        unit: '克',
-        purchased_date: '2025-11-05',
-        expired_date: '2025-11-30',
-    },
-    {
-        id: 3,
-        ingredient_id: 3,
-        name: '雞蛋',
-        category: 'egg',
-        quantity: 5,
-        unit: '顆',
-        purchased_date: '2025-11-08',
-        expired_date: '2025-11-30',
-    },
-    {
-        id: 4,
-        ingredient_id: 4,
-        name: '番茄',
-        category: 'vegetable',
-        quantity: 5,
-        unit: '個',
-        purchased_date: '2025-11-03',
-        expired_date: '2025-11-30',
-    },
-    {
-        id: 5,
-        ingredient_id: 4,
-        name: '番茄',
-        category: 'vegetable',
-        quantity: 3,
-        unit: '個',
-        purchased_date: '2025-11-30',
-        expired_date: '2025-12-5',
-    },
-    {
-        id: 6,
-        ingredient_id: 101,
-        name: '蔥花',
-        category: 'vegetable',
-        quantity: 3,
-        unit: '匙',
-        purchased_date: '2025-11-30',
-        expired_date: '2025-12-5',
-    },
-]
+const API_BASE_URL = 'http://localhost:8080/myfridge/api'
 
 export const useFridgeStore = defineStore('fridge', () => {
   // State
-  const fridgeItems = ref([...mockFridgeData])
+  const fridgeItems = ref([])
+  const loading = ref(false)
+  const error = ref(null)
 
   // Getters
   const itemCount = computed(() => fridgeItems.value.length)
@@ -103,76 +44,203 @@ export const useFridgeStore = defineStore('fridge', () => {
   })
 
   // Actions
-  function addItem(item) {
-    const newItem = {
-      id: Date.now(),
-      ...item
+
+  async function fetchItems() {
+    loading.value = true
+    error.value = null
+
+    try {
+      console.log('載入冰箱食材...')
+
+      const response = await axios.get(
+        `${API_BASE_URL}/fridge-items`,
+        { withCredentials: true }
+      )
+
+      console.log('載入成功:', response.data)
+
+      // 轉換後端資料格式為前端格式
+      fridgeItems.value = response.data.map(item => ({
+        id: item.id,
+        ingredient_id: item.ingredientId,
+        name: item.ingredientName,
+        category: item.category,
+        quantity: item.amount,
+        unit: item.unit,
+        purchased_date: item.purchasedDate,
+        expired_date: item.expiredDate
+      }))
+      return { success: true }
+
+    } catch (err) {
+      console.error('載入失敗:', err)
+      error.value = err.response?.data?.error || '載入失敗'
+      return { success: false, error: error.value }
+
+    } finally {
+      loading.value = false
     }
-    fridgeItems.value.push(newItem)
-    console.log('新增食材到冰箱:', item.name)
   }
 
-  function deleteItem(itemId) {
-    const index = fridgeItems.value.findIndex((item) => item.id === itemId)
-    if (index > -1) {
-      const deletedItem = fridgeItems.value[index]
-      fridgeItems.value.splice(index, 1)
-      console.log('刪除食材:', deletedItem.name)
+  async function addItem(item) {
+    loading.value = true
+    error.value = null
+
+    try {
+      console.log('新增食材:', item)
+
+      const response = await axios.post(
+        `${API_BASE_URL}/fridge-items`,
+        {
+          ingredientName: item.name,
+          category: item.category,
+          amount: item.quantity,
+          unit: item.unit,
+          purchasedDate: item.purchased_date,
+          expiredDate: item.expired_date || null
+        },
+        { withCredentials: true }
+      )
+
+      console.log('新增成功:', response.data)
+
+      // 重新載入列表
+      await fetchItems()
+
+      return { success: true, data: response.data }
+
+    } catch (err) {
+      console.error('新增失敗:', err)
+      error.value = err.response?.data?.error || '新增失敗'
+      return { success: false, error: error.value }
+
+    } finally {
+      loading.value = false
     }
   }
 
-  function updateItem(itemId, updatedData) {
-    const item = fridgeItems.value.find((item) => item.id === itemId)
-    if (item) {
-      Object.assign(item, updatedData)
-      console.log('更新食材:', item.name)
+  async function updateItem(itemId, updatedData) {
+    loading.value = true
+    error.value = null
+
+    try {
+      console.log('更新食材:', itemId, updatedData)
+
+      const response = await axios.put(
+        `${API_BASE_URL}/fridge-items/${itemId}`,
+        {
+          amount: updatedData.quantity,
+          unit: updatedData.unit,
+          purchasedDate: updatedData.purchased_date,
+          expiredDate: updatedData.expired_date || null
+        },
+        { withCredentials: true }
+      )
+
+      console.log('更新成功:', response.data)
+
+      // 重新載入列表
+      await fetchItems()
+
+      return { success: true }
+
+    } catch (err) {
+      console.error('更新失敗:', err)
+      error.value = err.response?.data?.error || '更新失敗'
+      return { success: false, error: error.value }
+
+    } finally {
+      loading.value = false
     }
   }
 
-  function updateFridge(items) {
-    // 清空冰箱並添加新的食材清單
-    fridgeItems.value = items.map((item) => ({
-      id: item.id || Date.now() + Math.random(),
-      ...item
-    }))
-    console.log('更新冰箱清單，現有', fridgeItems.value.length, '個食材')
+  async function deleteItem(itemId) {
+    loading.value = true
+    error.value = null
+
+    try {
+      console.log('刪除食材:', itemId)
+
+      await axios.delete(
+        `${API_BASE_URL}/fridge-items/${itemId}`,
+        { withCredentials: true }
+      )
+
+      console.log('刪除成功')
+
+      // 重新載入列表
+      await fetchItems()
+
+      return { success: true }
+
+    } catch (err) {
+      console.error(' 刪除失敗:', err)
+      error.value = err.response?.data?.error || '刪除失敗'
+      return { success: false, error: error.value }
+
+    } finally {
+      loading.value = false
+    }
   }
 
-  function addMultipleItems(itemsArray) {
-    itemsArray.forEach((item) => {
-      addItem(item)
-    })
+  async function clearExpiredItems() {
+    const expiredItemIds = expiredItems.value.map(item => item.id)
+
+    if (expiredItemIds.length === 0) {
+      return { success: true, message: '沒有過期食材' }
+    }
+
+    loading.value = true
+
+    try {
+      // 逐一刪除過期食材
+      for (const id of expiredItemIds) {
+        await axios.delete(
+          `${API_BASE_URL}/fridge-items/${id}`,
+          { withCredentials: true }
+        )
+      }
+
+      console.log(`清除了 ${expiredItemIds.length} 個過期食材`)
+
+      // 重新載入列表
+      await fetchItems()
+
+      return { success: true, count: expiredItemIds.length }
+
+    } catch (err) {
+      console.error('清除失敗:', err)
+      error.value = err.response?.data?.error || '清除失敗'
+      return { success: false, error: error.value }
+
+    } finally {
+      loading.value = false
+    }
   }
 
   function getItemsByCategory(category) {
     return fridgeItems.value.filter((item) => item.category === category)
   }
 
-  function clearExpiredItems() {
-    const beforeCount = fridgeItems.value.length
-    fridgeItems.value = fridgeItems.value.filter((item) => {
-      if (!item.expired_date) return true
-      const expiryDate = new Date(item.expired_date)
-      const today = new Date()
-      return expiryDate >= today
-    })
-    console.log('清除過期食材，刪除了', beforeCount - fridgeItems.value.length, '個項目')
-  }
+
+ 
+
 
   return {
     // State
     fridgeItems,
+    loading,
+    error,
     // Getters
     itemCount,
     categorizedItems,
     expiringItems,
     expiredItems,
     // Actions
+    fetchItems,
     addItem,
     deleteItem,
     updateItem,
-    updateFridge,
-    addMultipleItems,
     getItemsByCategory,
     clearExpiredItems
   }

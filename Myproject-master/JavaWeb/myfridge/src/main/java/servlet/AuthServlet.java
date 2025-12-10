@@ -100,6 +100,7 @@ public class AuthServlet extends HttpServlet {
         String email;
         String password;
     }
+    
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         

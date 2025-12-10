@@ -138,8 +138,8 @@ public class FridgeItemServlet extends HttpServlet {
 			Double amount = json.get("amount").getAsDouble();
 			String unit = json.get("unit").getAsString();
 			String purchasedDateStr = json.get("purchasedDate").getAsString();
-			String expiredDateStr = json.has(" expiredDate") && !json.get(" expiredDate").isJsonNull()
-	                ? json.get(" expiredDate").getAsString() : null;
+			String expiredDateStr = json.has("expiredDate") && !json.get("expiredDate").isJsonNull()
+	                ? json.get("expiredDate").getAsString() : null;
 			LocalDate purchasedDate = LocalDate.parse(purchasedDateStr);
 			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
 	                ? LocalDate.parse(expiredDateStr): null;
@@ -168,8 +168,7 @@ public class FridgeItemServlet extends HttpServlet {
 			
 			Integer id = Integer.parseInt(pathInfo.substring(1));
 			String requestBody = getRequestBody(req);
-			JsonObject json = gson.fromJson(requestBody, JsonObject.class);
-			
+			JsonObject json = gson.fromJson(requestBody, JsonObject.class);			
 			Double amount = json.get("amount").getAsDouble();
 			String unit = json.get("unit").getAsString();
 			String purchasedDateStr = json.get("purchasedDate").getAsString();
