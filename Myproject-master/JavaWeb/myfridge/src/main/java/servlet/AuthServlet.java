@@ -216,14 +216,7 @@ public class AuthServlet extends HttpServlet {
         System.out.println("註冊請求: " + newUser.getEmail());
         
         // 註冊使用者
-        User savedUser = userService.register(newUser);
-        
-        // 建立 Session
-        HttpSession session = req.getSession(true);
-        session.setAttribute("id", savedUser.getId());  // ← 統一用 userId
-        session.setAttribute("email", savedUser.getEmail());
-        session.setAttribute("userName", savedUser.getUserName());
-        
+        User savedUser = userService.register(newUser);     
         System.out.println("註冊成功,User ID: " + savedUser.getId());
         
         // 移除密碼後回傳

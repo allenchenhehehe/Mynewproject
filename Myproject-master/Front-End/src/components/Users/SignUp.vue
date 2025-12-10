@@ -9,6 +9,7 @@ const email = ref('')
 const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
+const successMessage = ref('')
 const errorVisible = ref(false)
 
 async function signup() {
@@ -40,11 +41,16 @@ async function signup() {
         password: password.value
     })
 
-    if (!result.success) {
-    errorMessage.value = result.error
-    }
-    // 註冊成功後 authStore 會自動切換到 STATUS_APP
-    // App.vue 會自動切換到主系統
+        if (result.success) {
+            //註冊成功，顯示訊息並跳轉到登入頁
+            successMessage.value = '註冊成功！即將跳轉到登入頁面...'
+
+            setTimeout(() => {
+                emits('login')  // 跳回登入頁面
+            }, 1000)
+        } else {
+            errorMessage.value = result.error
+        }
 }
 function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
   errorMessage.value = message
@@ -72,6 +78,14 @@ function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
                 <div class="text-center mb-4">
                     <h1 class="text-5xl font-black uppercase tracking-tighter mb-2">SIGN UP</h1>
                     <p class="text-sm text-gray-600 font-bold uppercase tracking-wide">加入 Stock & Stove 社區</p>
+                </div>
+
+                <!--  成功訊息 -->
+                <div 
+                    v-if="successMessage" 
+                    class="bg-green-100 border-2 border-green-500 text-green-700 px-4 py-3 font-bold flex items-center justify-center"
+                >
+                     {{ successMessage }}
                 </div>
 
                 <!-- 錯誤訊息 -->

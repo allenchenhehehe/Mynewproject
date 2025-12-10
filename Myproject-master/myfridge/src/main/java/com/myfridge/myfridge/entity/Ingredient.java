@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "ingredients")
+@Table(name = "ingredient")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ingredient {
@@ -23,14 +23,14 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Integer id;
 
-    @Column(name = "ingredient_name",nullable = false, unique = true, length = 20)
+    @Column(name = "ingredientName",nullable = false, unique = true, length = 20)
     private String ingredientName;
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Column(name = "shelf_life_days")
+    @Column(name = "shelfLifeDays")
     private Integer shelfLifeDays;
     public enum Category{
         vegetable,

@@ -19,6 +19,6 @@ public class IngredientService {
     }
 
     public Ingredient findById(@PathVariable Integer id){
-        return ingredientRepository.findById(id).orElse(null);
+        return ingredientRepository.findById(id).orElse(new Ingredient());
     }
 }

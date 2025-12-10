@@ -137,14 +137,6 @@ export const useAuthStore = defineStore('auth', () => {
       )
       
       console.log('註冊成功:', response.data)
-      
-      // 儲存使用者資訊
-      currentUser.value = response.data
-      localStorage.setItem('user', JSON.stringify(response.data))
-      
-      // 切換到 APP 狀態
-      authStatus.value = STATUS_APP
-      
       return { success: true, user: response.data }
       
     } catch (err) {
