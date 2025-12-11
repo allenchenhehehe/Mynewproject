@@ -1,18 +1,28 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useUserStore } from '@/stores'
+import { ref, computed, onMounted } from 'vue'
 
-// 使用 userStore
-const userStore = useUserStore()
+import { useCommentStore } from '@/stores'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
+// 使用 stores
+const commentStore = useCommentStore()
+
+
 
 const sortBy = ref('recent') // recent, rating, likes
 const editingId = ref(null)
+const editRating = ref(0)
 const editText = ref('')
 
+onMounted(async () => {
+    await commentStore.fetchUserComments()
+})
+
 const sortedComments = computed(() => {
-    if (!userStore.allComments || userStore.allComments.length === 0) return []
+    if (!commentStore.userComments || commentStore.userComments.length === 0) return []
     
-    let sorted = [...userStore.allComments]
+    let sorted = [...commentStore.userComments]
     
     switch(sortBy.value) {
         case 'recent':
@@ -21,48 +31,84 @@ const sortedComments = computed(() => {
         case 'rating':
             sorted.sort((a, b) => b.rating - a.rating)
             break
-        case 'likes':
-            sorted.sort((a, b) => (b.likes || 0) - (a.likes || 0))
-            break
     }
     
     return sorted
 })
 
 const stats = computed(() => {
-    if (!userStore.allComments || userStore.allComments.length === 0) {
+    if (!commentStore.userComments || commentStore.userComments.length === 0) {
         return {
             total: 0,
             avgRating: 0,
-            totalLikes: 0
         }
     }
     return {
-        total: userStore.allComments.length,
-        avgRating: (userStore.allComments.reduce((sum, c) => sum + c.rating, 0) / userStore.allComments.length).toFixed(1),
-        totalLikes: userStore.allComments.reduce((sum, c) => sum + (c.likes || 0), 0)
+        total: commentStore.userComments.length,
+        avgRating: (commentStore.userComments.reduce((sum, c) => sum + c.rating, 0) / commentStore.userComments.length).toFixed(1),
     }
 })
 
 function startEdit(comment) {
     editingId.value = comment.id
+    editRating.value = comment.rating
     editText.value = comment.text
 }
 
 function cancelEdit() {
     editingId.value = null
+    editRating.value = 0
     editText.value = ''
 }
 
-function saveEdit(id) {
-    userStore.updateComment(id, editText.value)
-    cancelEdit()
+async function saveEdit(comment) {
+    const result = await commentStore.updateComment(
+        comment.id,
+        comment.recipeId,
+        editRating.value,
+        editText.value
+    )
+
+    if (result.success) {
+        toast.success('評論更新成功', {
+            autoClose: 1000,
+        })
+        cancelEdit()
+        // 重新載入使用者評論
+        await commentStore.fetchUserComments()
+    } else {
+        toast.error(result.error || '更新失敗', {
+            autoClose: 1000,
+        })
+    }
 }
 
-function deleteComment(id) {
-    if (confirm('確定要刪除這則評論嗎？')) {
-        userStore.deleteComment(id)
+async function deleteComment(id) {
+   if (confirm('確定要刪除這則評論嗎？')) {
+        const result = await commentStore.deleteComment(comment.id, comment.recipeId)
+        
+        if (result.success) {
+            toast.success('評論刪除成功', {
+                autoClose: 1000,
+            })
+            // 重新載入使用者評論
+            await commentStore.fetchUserComments()
+        } else {
+            toast.error(result.error || '刪除失敗', {
+                autoClose: 1000,
+            })
+        }
     }
+}
+
+function formatDate(dateString) {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return date.toLocaleDateString('zh-TW', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit' 
+    })
 }
 </script>
 
@@ -105,7 +151,6 @@ function deleteComment(id) {
                     v-for="option in [
                         { label: '最新評論', value: 'recent' },
                         { label: '評分排序', value: 'rating' },
-                        { label: '點讚排序', value: 'likes' }
                     ]"
                     :key="option.value"
                     @click="sortBy = option.value"
@@ -147,21 +192,38 @@ function deleteComment(id) {
                                 </span>
                             </div>
                         </div>
-                        <!-- 點讚 -->
-                        <div class="text-center border-l-2 border-black pl-4">
-                            <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">點讚</div>
-                            <div class="font-black text-2xl">{{ comment.likes }}</div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- 評論文本 -->
-                <div v-if="editingId === comment.id">
+                
+
+                <!-- 編輯模式 -->
+                <div v-if="editingId === comment.id" class="space-y-4">
+
+                    <!-- 評分選擇 -->
+                    <div>
+                        <label class="font-bold text-sm uppercase block mb-2">評分</label>
+                        <div class="flex gap-2">
+                            <button
+                                v-for="n in 5"
+                                :key="n"
+                                @click="editRating = n"
+                                :class="n <= editRating ? 'text-amber-400 scale-110' : 'text-gray-300'"
+                                class="text-4xl cursor-pointer transition-all hover:scale-125"
+                            >
+                                ★
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 評論文本 -->
                     <textarea
                         v-model="editText"
                         class="w-full border-2 border-black p-3 font-bold bg-white focus:bg-yellow-50 focus:outline-none focus:shadow-[2px_2px_0px_0px_black] transition-all h-24 resize-none mb-4"
                     />
                 </div>
+
+                <!-- 顯示模式 -->
                 <p v-else class="text-gray-700 leading-relaxed mb-4 font-bold">
                     {{ comment.text }}
                 </p>
@@ -171,9 +233,10 @@ function deleteComment(id) {
                     <button 
                         v-if="editingId === comment.id"
                         @click="saveEdit(comment.id)"
+                        :disabled="commentStore.loading"
                         class="flex-1 bg-green-400 text-black border-2 border-black font-black py-2 px-3 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-sm"
                     >
-                        保存
+                       {{ commentStore.loading ? '保存中...' : '保存' }}
                     </button>
                     <button 
                         v-else
@@ -191,6 +254,7 @@ function deleteComment(id) {
                     </button>
                     <button 
                         @click="deleteComment(comment.id)"
+                        :disabled="commentStore.loading"
                         class="flex-1 bg-red-300 text-black border-2 border-black font-black py-2 px-3 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-sm"
                     >
                         刪除
@@ -200,7 +264,7 @@ function deleteComment(id) {
         </div>
 
         <!-- 空狀態 -->
-        <div v-if="userStore.allComments.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
+        <div v-if="commentStore.userComments.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
             <p class="font-black text-2xl mb-2">還沒有任何評論</p>
             <p class="text-gray-700 font-semibold">快去食譜頁面分享你的想法吧！</p>
         </div>

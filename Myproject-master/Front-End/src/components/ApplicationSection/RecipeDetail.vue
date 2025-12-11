@@ -7,6 +7,8 @@ import { useFridgeStore } from '@/stores'
 import { useUserStore } from '@/stores'
 import { useShoppingStore } from '@/stores'
 import { useFavoriteStore } from '@/stores'
+import { useCommentStore } from '@/stores' 
+import { useAuthStore } from '@/stores'
 
 // 使用 stores
 const navStore = useNavigationStore()
@@ -14,17 +16,15 @@ const fridgeStore = useFridgeStore()
 const userStore = useUserStore()
 const shoppingStore = useShoppingStore()
 const favoriteStore = useFavoriteStore()
+const commentStore = useCommentStore()
+const authStore = useAuthStore() 
 
 const userRating = ref(0)
 const commentText = ref('')
 const isFavorited = ref(false)
 
 const recipe = computed(() => navStore.selectedRecipe)
-
-const comments = computed(() => {
-    if (!recipe.value) return []
-    return userStore.allComments.filter(comment => comment.recipeId === recipe.value.id)
-})
+const comments = computed(() => commentStore.comments)
 
 // 監聽 recipe 變化，頁面滾到頂部，檢查收藏狀態
 watch(() => recipe.value?.id, async (newId) => {
@@ -32,6 +32,7 @@ watch(() => recipe.value?.id, async (newId) => {
         window.scrollTo(0, 0)
         // 檢查是否已收藏（從 store 的本地列表檢查，不發請求）
         isFavorited.value = favoriteStore.isFavorited(newId)
+        await commentStore.fetchCommentsByRecipe(newId)
     }
 }, { immediate: true })
 
@@ -39,6 +40,7 @@ onMounted(async () => {
     await favoriteStore.fetchFavorites()
     if (recipe.value) {
         isFavorited.value = favoriteStore.isFavorited(recipe.value.id)
+        await commentStore.fetchCommentsByRecipe(recipe.value.id)
     }
 })
 
@@ -98,7 +100,7 @@ function getHavingIngredients() {
     })
 }
 
-function submitComment() {
+async function submitComment() {
     if (!recipe.value) return
     
     if (!commentText.value.trim() || userRating.value === 0) {
@@ -108,31 +110,38 @@ function submitComment() {
         return
     }
 
-    const newComment = {
-        id: Date.now(),
-        recipeId: recipe.value.id,
-        recipeTitle: recipe.value.title,
-        author: '你',
-        rating: userRating.value,
-        text: commentText.value,
-        date: new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString().split('T')[0],
-        likes: 0
+    const result = await commentStore.addComment(
+        recipe.value.id,
+        userRating.value,
+        commentText.value
+    )
+
+    if (result.success) {
+        commentText.value = ''
+        userRating.value = 0
+        await commentStore.fetchCommentsByRecipe(recipe.value.id)
+        toast.success('評論已發佈！', {
+            autoClose: 1000,
+        })
+    } else {
+        toast.error(result.error || '發佈失敗', {
+            autoClose: 1000,
+        })
     }
-
-    userStore.addComment(newComment)
-    commentText.value = ''
-    userRating.value = 0
-
-    toast.success('評論已發佈！', {
-        autoClose: 1000,
-    })
 }
 
 function getAverageRating() {
-    if (comments.value.length === 0) return 0
-    const sum = comments.value.reduce((acc, comment) => acc + comment.rating, 0)
-    return (sum / comments.value.length).toFixed(1)
+   return commentStore.getAverageRating()
+}
+
+function formatDate(dateString) {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return date.toLocaleDateString('zh-TW', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit' 
+    })
 }
 </script>
 
@@ -336,9 +345,10 @@ function getAverageRating() {
                     <!-- 提交按鈕 -->
                     <button
                         @click="submitComment"
+                        :disabled="commentStore.loading"
                         class="w-full border-2 border-black bg-green-400 text-black font-black py-3 px-6 uppercase tracking-wide shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
                     >
-                        發佈評論
+                         {{ commentStore.loading ? '發佈中...' : '發佈評論' }}
                     </button>
                 </div>
 
@@ -352,8 +362,8 @@ function getAverageRating() {
                         <!-- 評論頭部 -->
                         <div class="flex justify-between items-start mb-2">
                             <div>
-                                <div class="font-black text-lg">{{ comment.author }}</div>
-                                <div class="text-xs text-gray-600 font-bold">{{ comment.date }}</div>
+                                <div class="font-black text-lg">{{ comment.userName }}</div>
+                                <div class="text-xs text-gray-600 font-bold">{{ formatDate(comment.createdAt) }}</div>
                             </div>
                             <div class="flex gap-0.5">
                                 <span 
