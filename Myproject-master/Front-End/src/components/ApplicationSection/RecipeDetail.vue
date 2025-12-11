@@ -30,8 +30,8 @@ const comments = computed(() => {
 watch(() => recipe.value?.id, async (newId) => {
     if (newId) {
         window.scrollTo(0, 0)
-        // 檢查是否已收藏
-        isFavorited.value = await favoriteStore.checkFavorite(newId)
+        // 檢查是否已收藏（從 store 的本地列表檢查，不發請求）
+        isFavorited.value = favoriteStore.isFavorited(newId)
     }
 }, { immediate: true })
 

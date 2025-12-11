@@ -110,7 +110,7 @@ public class FavoriteServlet extends HttpServlet {
                 return;
 			}
 			
-			//1. GET /api/favorites - 取得使用者的所有收藏 ==========
+			//1. GET /api/favorites - 取得使用者的所有收藏 
 			if(pathInfo == null || pathInfo.equals("/")) {
 				List<Favorite> favs = service.getFavorites(userId);
 				JsonArray ja = favoritesToJsonArray(favs);

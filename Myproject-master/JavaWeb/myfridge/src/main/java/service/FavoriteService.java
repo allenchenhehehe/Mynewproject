@@ -7,7 +7,6 @@ import model.Favorite;
 
 public class FavoriteService {
 	private FavoriteDAO favoriteDAO;
-	private Favorite favorite;
 	
 	public FavoriteService() {
 		this.favoriteDAO = new FavoriteDAO();
