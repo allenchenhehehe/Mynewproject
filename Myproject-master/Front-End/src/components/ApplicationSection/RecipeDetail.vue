@@ -1,75 +1,77 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { useNavigationStore } from '@/stores'
 import { useFridgeStore } from '@/stores'
 import { useUserStore } from '@/stores'
 import { useShoppingStore } from '@/stores'
+import { useFavoriteStore } from '@/stores'
 
 // 使用 stores
 const navStore = useNavigationStore()
 const fridgeStore = useFridgeStore()
 const userStore = useUserStore()
 const shoppingStore = useShoppingStore()
+const favoriteStore = useFavoriteStore()
 
 const userRating = ref(0)
 const commentText = ref('')
+const isFavorited = ref(false)
 
 const recipe = computed(() => navStore.selectedRecipe)
-
-const isFavorited = computed({
-    get() {
-        return userStore.isFavorited(recipe.value?.id)
-    },
-    set(value) {
-        if (recipe.value) {
-            if (value) {
-                userStore.addFavorite(recipe.value)
-            } else {
-                userStore.removeFavorite(recipe.value.id)
-            }
-        }
-    }
-})
 
 const comments = computed(() => {
     if (!recipe.value) return []
     return userStore.allComments.filter(comment => comment.recipeId === recipe.value.id)
 })
 
-// 監聽 recipe 變化，頁面滾到頂部
-watch(() => recipe.value?.id, () => {
-    window.scrollTo(0, 0)
+// 監聽 recipe 變化，頁面滾到頂部，檢查收藏狀態
+watch(() => recipe.value?.id, async (newId) => {
+    if (newId) {
+        window.scrollTo(0, 0)
+        // 檢查是否已收藏
+        isFavorited.value = await favoriteStore.checkFavorite(newId)
+    }
+}, { immediate: true })
+
+onMounted(async () => {
+    await favoriteStore.fetchFavorites()
+    if (recipe.value) {
+        isFavorited.value = favoriteStore.isFavorited(recipe.value.id)
+    }
 })
 
 function handleGoBack() {
     navStore.goBackToRecipes()
 }
 
-function toggleFavorite() {
-    isFavorited.value = !isFavorited.value
-    toast.success(isFavorited.value ? '已收藏食譜！' : '已取消收藏', {
-        autoClose: 1000,
-    })
+async function toggleFavorite() {
+    if (!recipe.value) return
+    const result = await favoriteStore.toggleFavorite(recipe.value.id)
+    
+    if (result.success) {
+        isFavorited.value = result.isFavorited
+        toast.success(result.message, {
+            autoClose: 1000,
+        })
+    } else {
+        toast.error(result.error || '操作失敗', {
+            autoClose: 1000,
+        })
+    }
 }
 
 function addAllToShoppingList() {
     if (!recipe.value) return
     
-    const timestamp = Date.now()
-    const itemsToAdd = recipe.value.ingredients.map((ingredient, index) => ({
-        id: timestamp + index,
-        ingredient_id: null,
-        ingredient_name: ingredient.ingredient_name,
-        category: ingredient.category || 'other',
-        quantity: ingredient.quantity,
-        unit: ingredient.unit,
-        is_purchased: false,
-    }))
+    shoppingStore.addToShoppingList(
+        recipe.value.ingredients, 
+        recipe.value.title, 
+        recipe.value.id
+    )
     
-    shoppingStore.addToShoppingList(itemsToAdd, recipe.value.title, recipe.value.id)
-    toast.success(`已將 ${itemsToAdd.length} 項食材添加到購物清單！`, {
+    toast.success(`已將 ${recipe.value.ingredients.length} 項食材添加到購物清單！`, {
         autoClose: 1000,
     })
 }

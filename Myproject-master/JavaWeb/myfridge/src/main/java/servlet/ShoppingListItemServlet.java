@@ -64,6 +64,7 @@ public class ShoppingListItemServlet extends HttpServlet {
         out.print(gson.toJson(error));
         out.flush();
     }
+    
     private JsonObject parseJsonRequest(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
