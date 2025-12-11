@@ -11,6 +11,7 @@ const password = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
 const errorVisible = ref(false)
+const passwordVisible = ref(false)
 
 async function signup() {
     errorMessage.value = ''
@@ -66,6 +67,9 @@ function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
     }, 500)  // 等待淡出動畫完成 (0.3秒)
     
   }, duration)
+}
+function togglePasswordVisibility() {
+    passwordVisible.value = !passwordVisible.value
 }
 </script>
 
@@ -133,9 +137,14 @@ function showErrorTemporarily(message, duration = 1000) {  // 預設 1 秒
                             <Icon icon="mdi:lock" class="text-3xl text-black" />
                             <input
                                 v-model="password"
-                                type="password"
+                                :type="passwordVisible ? 'text' : 'password'"
                                 placeholder="設定密碼..."
                                 class="flex-1 bg-transparent outline-none font-bold text-black placeholder-gray-500"
+                            />
+                            <Icon 
+                                :icon="passwordVisible ? 'mdi:eye-off' : 'mdi:eye'" 
+                                class="text-3xl text-black cursor-pointer hover:text-gray-600 transition-colors"
+                                @click="togglePasswordVisibility"
                             />
                         </div>
                     </div>

@@ -22,13 +22,11 @@ const isActive = (pageName) => {
 // 處理頁面切換
 const handlePageChange = (pageName) => {
     navStore.goToPage(pageName)
-    console.log('Navbar 導航到:', pageName)
     isMenuOpen.value = false
 }
 
 // 接收 AccountMenu 的導航事件
 const handleAccountMenuNavigate = (page) => {
-    console.log('AccountMenu 導航到:', page)
     handlePageChange(page)
 }
 </script>

@@ -50,14 +50,11 @@ export const useFridgeStore = defineStore('fridge', () => {
     error.value = null
 
     try {
-      console.log('載入冰箱食材...')
 
       const response = await axios.get(
         `${API_BASE_URL}/fridge-items`,
         { withCredentials: true }
       )
-
-      console.log('載入成功:', response.data)
 
       // 轉換後端資料格式為前端格式
       fridgeItems.value = response.data.map(item => ({
@@ -87,7 +84,6 @@ export const useFridgeStore = defineStore('fridge', () => {
     error.value = null
 
     try {
-      console.log('新增食材:', item)
 
       const response = await axios.post(
         `${API_BASE_URL}/fridge-items`,
@@ -101,8 +97,6 @@ export const useFridgeStore = defineStore('fridge', () => {
         },
         { withCredentials: true }
       )
-
-      console.log('新增成功:', response.data)
 
       // 重新載入列表
       await fetchItems()
@@ -124,7 +118,6 @@ export const useFridgeStore = defineStore('fridge', () => {
     error.value = null
 
     try {
-      console.log('更新食材:', itemId, updatedData)
 
       const response = await axios.put(
         `${API_BASE_URL}/fridge-items/${itemId}`,
@@ -136,8 +129,6 @@ export const useFridgeStore = defineStore('fridge', () => {
         },
         { withCredentials: true }
       )
-
-      console.log('更新成功:', response.data)
 
       // 重新載入列表
       await fetchItems()
@@ -159,14 +150,11 @@ export const useFridgeStore = defineStore('fridge', () => {
     error.value = null
 
     try {
-      console.log('刪除食材:', itemId)
 
       await axios.delete(
         `${API_BASE_URL}/fridge-items/${itemId}`,
         { withCredentials: true }
       )
-
-      console.log('刪除成功')
 
       // 重新載入列表
       await fetchItems()
@@ -201,8 +189,6 @@ export const useFridgeStore = defineStore('fridge', () => {
         )
       }
 
-      console.log(`清除了 ${expiredItemIds.length} 個過期食材`)
-
       // 重新載入列表
       await fetchItems()
 
@@ -221,10 +207,6 @@ export const useFridgeStore = defineStore('fridge', () => {
   function getItemsByCategory(category) {
     return fridgeItems.value.filter((item) => item.category === category)
   }
-
-
- 
-
 
   return {
     // State

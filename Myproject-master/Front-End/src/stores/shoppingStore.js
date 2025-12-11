@@ -72,13 +72,9 @@ export const useShoppingStore = defineStore('shopping', () => {
         { withCredentials: true }
       )
 
-      console.log('後端回傳:', response.data)
-
       // 將後端的扁平結構轉換為前端的分組結構
       const grouped = groupByRecipe(response.data)
       shoppingList.value = grouped
-
-      console.log('分組後:', shoppingList.value)
 
       return { success: true }
 
@@ -138,7 +134,6 @@ export const useShoppingStore = defineStore('shopping', () => {
     error.value = null
 
     try {
-      console.log('新增購物項目:', item)
 
       const response = await axios.post(
         `${API_BASE_URL}/shopping-list`,
@@ -153,8 +148,6 @@ export const useShoppingStore = defineStore('shopping', () => {
         },
         { withCredentials: true }
       )
-
-      console.log('新增成功:', response.data)
 
       // 重新載入列表
       await fetchItems()
@@ -194,15 +187,12 @@ export const useShoppingStore = defineStore('shopping', () => {
     try {
         const newStatus = targetItem.is_purchased
 
-        console.log('切換購買狀態:', itemId, '→', newStatus)
-
         const response = await axios.patch(
             `${API_BASE_URL}/shopping-list/${itemId}`,
             { isPurchased: newStatus },
             { withCredentials: true }
         )
 
-        console.log('更新成功:', response.data)
         return { success: true }
 
     } catch (err) {
@@ -225,14 +215,11 @@ export const useShoppingStore = defineStore('shopping', () => {
     error.value = null
 
     try {
-      console.log('刪除購物項目:', itemId)
 
       await axios.delete(
         `${API_BASE_URL}/shopping-list/${itemId}`,
         { withCredentials: true }
       )
-
-      console.log('刪除成功')
 
       // 重新載入列表
       await fetchItems()
@@ -256,15 +243,12 @@ export const useShoppingStore = defineStore('shopping', () => {
 
     //清除已購買項目放到冰箱
     try {
-      console.log('清除已購買項目...')
 
       const response = await axios.post(
         `${API_BASE_URL}/shopping-list/clear-purchased`,
         {},
         { withCredentials: true }
       )
-
-      console.log('清除成功:', response.data)
 
       // 重新載入列表
       await fetchItems()
@@ -291,7 +275,6 @@ export const useShoppingStore = defineStore('shopping', () => {
       error.value = null
 
       try {
-        console.log('從食譜新增:', recipeName, items)
 
         // 逐一新增每個食材
         for (const item of items) {
@@ -310,8 +293,6 @@ export const useShoppingStore = defineStore('shopping', () => {
           )
         }
 
-        console.log('新增成功')
-
         // 重新載入列表
         await fetchItems()
 
@@ -329,7 +310,6 @@ export const useShoppingStore = defineStore('shopping', () => {
 
   function clearShoppingList() {
     shoppingList.value = []
-    console.log('清空購物清單')
   }
 
   return {

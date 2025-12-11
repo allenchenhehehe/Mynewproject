@@ -17,11 +17,9 @@ const menuItems = [
 function handleMenuClick(action) {
     switch(action) {
         case 'favorites':
-            console.log('導航到收藏食譜')
             emit('navigate', 'Favorites')
             break
         case 'comments':
-            console.log('導航到我的評論')
             emit('navigate', 'MyComments')
             break
         case 'logout':
@@ -33,8 +31,6 @@ function handleMenuClick(action) {
 }
 
 async function logout() {
-    console.log('🚪 開始登出...')
-    console.log('登出前 authStatus:', authStore.authStatus)
     
     // 顯示登出提示
     toast.success('已登出！', {
@@ -43,10 +39,6 @@ async function logout() {
     
     // 呼叫 authStore 的 logout (這會清除所有狀態並設定 authStatus = STATUS_LOGIN)
     await authStore.logout()
-    
-    console.log('登出後 authStatus:', authStore.authStatus)
-    console.log('登出完成')
-    
 
 }
 </script>

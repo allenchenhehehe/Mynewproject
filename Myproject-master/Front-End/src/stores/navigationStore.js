@@ -10,13 +10,11 @@ export const useNavigationStore = defineStore('navigation', () => {
   function goToPage(pageName) {
     currentPage.value = pageName
     window.scrollTo(0, 0)
-    console.log('導航到頁面:', pageName)
   }
 
   function goToRecipeDetail(recipe) {
     selectedRecipe.value = recipe
     currentPage.value = 'RecipeDetail'
-    console.log('查看食譜詳情:', recipe.title)
   }
 
   function goBackToRecipes() {

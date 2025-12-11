@@ -33,8 +33,6 @@ export const useFavoriteStore = defineStore('favorite', () => {
         { withCredentials: true }
       )
 
-      console.log('後端回傳:', response.data)
-
       // 轉換後端資料格式為前端格式
       favorites.value = response.data.map(fav => ({
         id: fav.id,
@@ -49,8 +47,6 @@ export const useFavoriteStore = defineStore('favorite', () => {
         recipeCookingTime: fav.cookingTime,
         recipeDifficulty: fav.difficulty
       }))
-
-      console.log('轉換後:', favorites.value)
 
       return { success: true }
 
@@ -75,8 +71,6 @@ export const useFavoriteStore = defineStore('favorite', () => {
         { withCredentials: true }
       )
 
-      console.log('收藏狀態:', response.data.isFavorited)
-
       return response.data.isFavorited
 
     } catch (err) {
@@ -93,15 +87,12 @@ export const useFavoriteStore = defineStore('favorite', () => {
     error.value = null
 
     try {
-      console.log('切換收藏狀態:', recipeId)
 
       const response = await axios.post(
         `${API_BASE_URL}/favorites/toggle/${recipeId}`,
         {},
         { withCredentials: true }
       )
-
-      console.log('切換成功:', response.data)
 
       // 更新本地收藏列表
       await fetchFavorites()
@@ -135,8 +126,6 @@ export const useFavoriteStore = defineStore('favorite', () => {
         `${API_BASE_URL}/favorites/${recipeId}`,
         { withCredentials: true }
       )
-
-      console.log('刪除成功')
 
       // 更新本地收藏列表
       await fetchFavorites()

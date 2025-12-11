@@ -47,14 +47,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function checkAuth() {
   try {
-    console.log('檢查登入狀態...')
     
     const response = await axios.get(
       `${API_BASE_URL}/auth/check`,
       { withCredentials: true }
     )
-    
-    console.log('已登入:', response.data)
     
     // 更新使用者資訊
     currentUser.value = response.data
@@ -119,12 +116,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signup(userData) {
-     loading.value = true
+    loading.value = true
     error.value = null
     
     try {
-      console.log('嘗試註冊:', userData.email)
-      
+  
       const response = await axios.post(
         `${API_BASE_URL}/auth/register`,
         userData,
@@ -136,7 +132,6 @@ export const useAuthStore = defineStore('auth', () => {
         }
       )
       
-      console.log('註冊成功:', response.data)
       return { success: true, user: response.data }
       
     } catch (err) {
@@ -158,8 +153,6 @@ export const useAuthStore = defineStore('auth', () => {
         {},
         { withCredentials: true }
       )
-      
-      console.log('登出成功')
       
     } catch (err) {
       console.error('登出請求失敗:', err)

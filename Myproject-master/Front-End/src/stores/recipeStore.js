@@ -29,8 +29,6 @@ export const useRecipeStore = defineStore('recipe', () => {
         { withCredentials: true }
       )
 
-      console.log('後端回傳:', response.data)
-
       // 轉換後端資料格式為前端格式
       recipes.value = response.data.map(recipe => ({
         id: recipe.id,
@@ -50,8 +48,6 @@ export const useRecipeStore = defineStore('recipe', () => {
           category: ing.category
         }))
       }))
-
-      console.log('轉換後:', recipes.value)
 
       return { success: true }
 
@@ -76,8 +72,6 @@ export const useRecipeStore = defineStore('recipe', () => {
         `${API_BASE_URL}/recipes/${id}`,
         { withCredentials: true }
       )
-
-      console.log('食譜詳情:', response.data)
 
       // 轉換格式
       const recipe = {
@@ -130,8 +124,6 @@ export const useRecipeStore = defineStore('recipe', () => {
           withCredentials: true
         }
       )
-
-      console.log(' 搜尋結果:', response.data)
 
       // 轉換格式
       recipes.value = response.data.map(recipe => ({
@@ -193,8 +185,6 @@ export const useRecipeStore = defineStore('recipe', () => {
           withCredentials: true
         }
       )
-
-      console.log('篩選結果:', response.data)
 
       // 轉換格式
       recipes.value = response.data.map(recipe => ({
