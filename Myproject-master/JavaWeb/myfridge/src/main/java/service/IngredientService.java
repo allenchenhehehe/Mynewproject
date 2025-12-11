@@ -17,4 +17,10 @@ public class IngredientService {
 	public Ingredient getIngreById(Integer id) {
 		return ingredientDAO.findById(id);
 	}
+	public Ingredient getIngreByName(String name) {
+		return ingredientDAO.findByName(name);
+	}
+	public Ingredient addIngre(Ingredient ingre) {
+		return ingredientDAO.insert(ingre);
+	}
 }

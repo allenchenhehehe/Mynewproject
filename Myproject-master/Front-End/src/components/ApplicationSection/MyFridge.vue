@@ -3,7 +3,6 @@ import { ref, watch, onMounted } from 'vue'
 import { useFridgeStore } from '@/stores'
 
 onMounted(async () => {
-  console.log('MyFridge mounted, 載入冰箱資料...')
   await fridgeStore.fetchItems()
 })
 

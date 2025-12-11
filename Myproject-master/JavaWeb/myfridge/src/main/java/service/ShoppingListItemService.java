@@ -9,6 +9,7 @@ import dao.IngredientDAO;
 import dao.ShoppingListItemDAO;
 import model.FridgeItem;
 import model.ShoppingListItem;
+import model.Ingredient;
 
 public class ShoppingListItemService {
 	
@@ -16,12 +17,14 @@ public class ShoppingListItemService {
 	private FridgeItemDAO fridgeItemDAO;
 	private FridgeItemService fridgeItemService;
     private IngredientDAO ingredientDAO;
+    private IngredientService ingredientService;
     
 	public  ShoppingListItemService() {
 		this.shoppingListItemDao = new ShoppingListItemDAO();
 		this.fridgeItemDAO = new FridgeItemDAO();
 		this.fridgeItemService = new FridgeItemService();
         this.ingredientDAO = new IngredientDAO();
+        this.ingredientService = new IngredientService();
 	}
 	
 	public List<ShoppingListItem> getShoppingList(Integer userId){
@@ -57,6 +60,20 @@ public class ShoppingListItemService {
         
         if (item.getUnit() == null || item.getUnit().trim().isEmpty()) {
             throw new IllegalArgumentException("單位不可為空");
+        }
+        
+        if(item.getIngredientId()==null) {
+        	Ingredient exist = ingredientService.getIngreByName(item.getIngredientName());
+        	if(exist != null) {
+        		item.setIngredientId(exist.getId());
+        	}else {
+        		Ingredient newIngredient = new Ingredient();
+        		newIngredient.setIngredientName(item.getIngredientName());
+        		newIngredient.setCategory(item.getCategory());
+        		newIngredient.setShelfLifeDays(fridgeItemService.getDefaultShelfLife(item.getCategory()));
+        		Ingredient saved = ingredientService.addIngre(newIngredient);
+        		item.setIngredientId(saved.getId());
+        	}
         }
         
         try {
@@ -180,17 +197,14 @@ public class ShoppingListItemService {
 	        // 2. 逐一加入冰箱
 	        for (ShoppingListItem item : purchasedItems) {
 	            try {
-	                Integer ingredientId;
+	                Integer ingredientId = item.getIngredientId();
 	                
-	                if (item.getIngredientId() != null) {
-	                    // 已經有 ingredient_id
-	                    ingredientId = item.getIngredientId();
-	                } else {
-	                    //這裡只是確保 ingredients 表有這個食材
-	                    ingredientId = ingredientDAO.findOrCreate(
+	                if (ingredientId == null) {
+	                    // 應該都要有 ingredient_id
+	                	ingredientId = ingredientDAO.findOrCreate(
 	                        item.getIngredientName(), 
 	                        item.getCategory()
-	                    );
+		                );
 	                }
 	                
 	                // 建立 FridgeItem

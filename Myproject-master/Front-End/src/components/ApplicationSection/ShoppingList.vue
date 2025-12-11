@@ -1,11 +1,15 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useShoppingStore } from '@/stores'
 import { useFridgeStore } from '@/stores'
 
 // 使用 stores
 const shoppingStore = useShoppingStore()
 const fridgeStore = useFridgeStore()
+
+onMounted(async () => {
+  await shoppingStore.fetchItems()
+})
 
 const itemName = ref('')
 const itemQuantity = ref(1)
@@ -46,7 +50,7 @@ const stats = computed(() => {
     }
 })
 
-// 只計算食材（不含調味料、油類等）
+// 計算食材
 const foodStats = computed(() => {
     const foodCategories = ['vegetable', 'fruit', 'meat', 'egg', 'seafood', 'bean','oil','seasoning', 'other']
     let total = 0
@@ -67,15 +71,21 @@ const foodStats = computed(() => {
     }
 })
 
-function deleteItem(itemId) {
-    shoppingStore.deleteItem(itemId)
+async function deleteItem(itemId) {
+    if (!confirm('確定要刪除嗎?')) return
+    
+    const result = await shoppingStore.deleteItem(itemId)
+    
+    if (!result.success) {
+        alert('刪除失敗: ' + result.error)
+    }
 }
 
-function togglePurchased(itemId) {
+async function togglePurchased(itemId) {
     shoppingStore.togglePurchased(itemId)
 }
 
-function addItem() {
+async function addItem() {
     if (itemName.value.trim() === '') {
         alert('食材輸入不可為空白!')
         return
@@ -87,35 +97,42 @@ function addItem() {
         category: itemCategory.value,
         is_purchased: false,
     }
-    shoppingStore.addManualItem(newItem)
-    itemName.value = ''
-    itemQuantity.value = 1
-    itemUnit.value = '個'
-    itemCategory.value = 'vegetable'
+
+    const result = await shoppingStore.addManualItem(newItem)
+
+    if (result.success) {
+        itemName.value = ''
+        itemQuantity.value = 1
+        itemUnit.value = '個'
+        itemCategory.value = 'vegetable'
+    } else {
+        alert('新增失敗: ' + result.error)
+    }
 }
 
-function clearPurchased() {
-    const purchasedItems = shoppingStore.clearPurchased()
-    // 將已購買的食材添加到冰箱
-    purchasedItems.forEach((item) => {
-        fridgeStore.addItem({
-            ingredient_id: item.ingredient_id || null,
-            name: item.ingredient_name,
-            category: item.category || 'other',
-            quantity: item.quantity,
-            unit: item.unit,
-            purchased_date: new Date().toISOString().split('T')[0],
-            expired_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                .toISOString()
-                .split('T')[0]
-        })
-    })
+async function clearPurchased() {
+    if (!confirm('確定要清除已購買的食材並加入冰箱嗎?')) return
+    
+    const result = await shoppingStore.clearPurchased()
+    
+    if (result.success) {
+        alert(`成功將 ${result.count} 個食材加入冰箱！`)
+        // 重新載入冰箱資料
+        await fridgeStore.fetchItems()
+    } else {
+        alert('清除失敗: ' + result.error)
+    }
 }
 </script>
 
 <template>
     <div class="mt-28 max-w-6xl mx-auto px-6 pb-20 font-sans text-black">
         
+        <div v-if="shoppingStore.error" 
+             class="bg-red-100 border-4 border-black p-4 mb-6 font-bold text-red-700 flex justify-center items-center">
+            {{ shoppingStore.error }}
+        </div>
+
         <!-- 標題 -->
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
             <h1 class="text-5xl font-black uppercase tracking-tighter relative inline-block">
