@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRecipeStore } from '@/stores'
 import { useFridgeStore } from '@/stores'
 import { useNavigationStore } from '@/stores'
@@ -9,10 +9,22 @@ const recipeStore = useRecipeStore()
 const fridgeStore = useFridgeStore()
 const navStore = useNavigationStore()
 
+onMounted(async () => {
+  await recipeStore.fetchRecipes()
+})
+
 const filterByMyIngredient = ref(false)
 const selectByCookingTime = ref('all')
 const selectByDifficulty = ref('all')
 const searchQuery = ref('')
+
+watch(searchQuery, async (newVal) => {
+  if (newVal.trim()) {
+    await recipeStore.searchRecipes(newVal)
+  } else {
+    await recipeStore.fetchRecipes()
+  }
+})
 
 const fridgeIngredientMap = computed(() => {
   const map = {}
@@ -35,14 +47,6 @@ function canMakeRecipe(recipe) {
 
 const filterRecipes = computed(() => {
     let result = recipeStore.recipes
-  
-  // 按搜尋篩選
-  if (searchQuery.value.trim()) {
-    result = result.filter((recipe) => 
-      recipe.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  }
 
   // 按食材篩選
   if (filterByMyIngredient.value) {
@@ -83,6 +87,12 @@ function handleCookRecipe(recipe) {
 
 <template>
     <div class="mt-28 max-w-7xl mx-auto px-6 pb-20 font-sans text-black">
+
+         <!-- 錯誤訊息 -->
+        <div v-if="recipeStore.error" 
+             class="bg-red-100 border-4 border-black p-4 mb-6 font-bold text-red-700 flex justify-center items-center">
+            {{ recipeStore.error }}
+        </div>
         
         <!-- 標題 -->
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
