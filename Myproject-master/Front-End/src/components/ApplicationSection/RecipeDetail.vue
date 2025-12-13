@@ -37,6 +37,7 @@ watch(() => recipe.value?.id, async (newId) => {
 }, { immediate: true })
 
 onMounted(async () => {
+    await fridgeStore.fetchItems()
     await favoriteStore.fetchFavorites()
     if (recipe.value) {
         isFavorited.value = favoriteStore.isFavorited(recipe.value.id)
@@ -82,7 +83,7 @@ function getMissingIngredients() {
     if (!recipe.value) return []
     
     return recipe.value.ingredients.filter((recipeIng) => {
-        return !fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_name === recipeIng.ingredient_name)
+        return !fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.name === recipeIng.ingredient_name)
     })
 }
 
@@ -96,7 +97,7 @@ function getHavingIngredients() {
     if (!recipe.value) return []
     
     return recipe.value.ingredients.filter((recipeIng) => {
-        return fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.ingredient_name === recipeIng.ingredient_name)
+        return fridgeStore.fridgeItems.some((fridgeItem) => fridgeItem.name === recipeIng.ingredient_name)
     })
 }
 
@@ -143,6 +144,8 @@ function formatDate(dateString) {
         day: '2-digit' 
     })
 }
+
+
 </script>
 
 <template>

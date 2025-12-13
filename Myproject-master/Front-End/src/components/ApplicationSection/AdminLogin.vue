@@ -164,7 +164,7 @@ function goBack() {
       
       <!-- Logo -->
       <div class="text-center mb-6">
-        <div class="text-6xl mb-2">🔐</div>
+
         <h1 class="text-4xl font-black uppercase tracking-tighter mb-1">
           ADMIN LOGIN
         </h1>
@@ -176,7 +176,7 @@ function goBack() {
         v-if="errorMessage"
         class="bg-red-100 border-2 border-red-500 text-red-700 px-4 py-3 mb-6 font-bold"
       >
-        ⚠️ {{ errorMessage }}
+         {{ errorMessage }}
       </div>
 
       <!-- 登入表單 -->
@@ -217,11 +217,11 @@ function goBack() {
       </form>
 
       <!-- Demo 提示 -->
-      <div class="mt-6 text-center">
+      <!-- <div class="mt-6 text-center">
         <div class="bg-yellow-100 border-2 border-black px-3 py-2 text-xs font-bold inline-block">
           🎮 DEMO: admin / admin123
         </div>
-      </div>
+      </div> -->
 
       <!-- 返回按鈕 -->
       <button

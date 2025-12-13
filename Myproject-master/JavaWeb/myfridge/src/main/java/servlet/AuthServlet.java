@@ -133,11 +133,13 @@ public class AuthServlet extends HttpServlet {
         Integer userId = (Integer) session.getAttribute("id");
         String email = (String) session.getAttribute("email");
         String userName = (String) session.getAttribute("userName");
+        String role = (String) session.getAttribute("userRole");
         
         Map<String, Object> user = new HashMap<>();
         user.put("id", userId);
         user.put("email", email);
         user.put("userName", userName);
+        user.put("role", role);
         
         sendSuccess(resp, user);
     }
@@ -195,6 +197,7 @@ public class AuthServlet extends HttpServlet {
         session.setAttribute("id", user.getId());  // ← 統一用 userId
         session.setAttribute("email", user.getEmail());
         session.setAttribute("userName", user.getUserName());
+        session.setAttribute("userRole", user.getRole());
         
         System.out.println("登入成功,Session ID: " + session.getId());
         System.out.println("   User ID: " + user.getId());

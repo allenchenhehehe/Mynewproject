@@ -175,6 +175,17 @@ export const useAuthStore = defineStore('auth', () => {
     authStatus.value = STATUS_FORGET_PASSWORD
   }
 
+  // 新增一個只清除 Token 和狀態的函式
+  function clearUserLocalState() {
+    currentUser.value = null
+    localStorage.removeItem('user')
+  }
+
+  function forceLogoutUser() {
+  clearUserLocalState()
+  // ⭕ 注意：這裡不設定 authStatus，讓呼叫者決定下一個狀態
+}
+
   return {
     // State
     authStatus,
@@ -190,6 +201,8 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     setAuthStatus,
     forgetPassword,
-    checkAuth
+    checkAuth,
+    clearUserLocalState,
+    forceLogoutUser
   }
 })

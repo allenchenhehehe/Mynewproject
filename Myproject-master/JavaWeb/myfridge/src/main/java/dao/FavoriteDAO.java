@@ -14,6 +14,13 @@ import model.ShoppingListItem;
 import util.DBUtil;
 
 public class FavoriteDAO {
+	private static final String SELECT_ALL = 
+			"SELECT f.id, f.userId, f.recipeId, f.savedAt, " + 
+			"u.userName, r.title AS recipeTitle " +
+			"FROM Favorite f " +
+			"JOIN User u ON f.userId = u.id " +
+			"JOIN Recipe r ON f.recipeId = r.id " + 
+			"ORDER BY f.savedAt DESC";
 	private static final String SELECT_BY_USER_ID = 
 			"Select f.id, f.userId, f.recipeId, f.savedAt, " + 
 			"r.title, r.description, r.imageUrl, r.cookingTime, r.difficulty " +
@@ -46,6 +53,40 @@ public class FavoriteDAO {
 		favorite.setDifficulty(rs.getInt("difficulty"));
 		return favorite;
 	 }
+	//管理員專用的 buildFavorite（包含 userName 和 recipeTitle）
+	private Favorite buildFavoriteForAdmin(ResultSet rs) throws SQLException {
+		Favorite favorite = new Favorite();
+		favorite.setId(rs.getInt("id"));	
+		favorite.setUserId(rs.getInt("userId"));	 	  
+		favorite.setRecipeId(rs.getInt("recipeId"));	 
+		favorite.setSavedAt(rs.getTimestamp("savedAt"));
+		favorite.setUserName(rs.getString("userName"));
+		favorite.setRecipeTitle(rs.getString("recipeTitle"));
+		return favorite;
+	}
+	
+	//查詢所有收藏（管理員用)
+	public List<Favorite> findAll() {
+		Connection conn = null;
+	    PreparedStatement psmt = null;
+	    ResultSet rs = null;
+	    List<Favorite> list = new LinkedList<>();
+	    try {
+	        conn = DBUtil.getConnection();
+	        psmt = conn.prepareStatement(SELECT_ALL);
+	        rs = psmt.executeQuery();
+	        while(rs.next()) {
+	        	Favorite favorite = buildFavoriteForAdmin(rs);
+				list.add(favorite);
+			}
+	    } catch(SQLException se) {
+	    	se.printStackTrace();
+		    throw new RuntimeException("查詢所有收藏失敗", se);
+	    } finally {
+	        DBUtil.close(conn, psmt, rs);
+	    }
+	    return list;
+	}
 	
 	//使用者的所有收藏
 	public List<Favorite> findByUserId(Integer userId){

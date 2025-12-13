@@ -45,7 +45,8 @@ const gotoApp = () => authStore.setAuthStatus(STATUS_APP)
 const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
 const goToAdminLogin = () => {
   // 先登出使用者
-  authStore.logout()
+  //authStore.logout()
+  authStore.forceLogoutUser()
   // 設定為管理員登入狀態
   authStore.setAuthStatus(STATUS_ADMIN)
 }

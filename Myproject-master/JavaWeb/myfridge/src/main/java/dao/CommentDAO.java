@@ -13,9 +13,18 @@ import java.util.List;
 import model.Comment;
 import model.Favorite;
 import model.FridgeItem;
+import model.Recipe;
+import model.RecipeIngredient;
 import util.DBUtil;
 
 public class CommentDAO {
+	private static final String SELECT_ALL = 
+			"SELECT c.id, c.userId, c.recipeId, c.rating, c.text, c.createdAt, c.updatedAt, " +
+			"u.userName, r.title AS recipeTitle " +
+			"FROM Comment c " +
+			"JOIN User u ON c.userId = u.id " +
+			"JOIN Recipe r ON c.recipeId = r.id " +
+			"ORDER BY c.createdAt DESC";
 	private static final String SELECT_BY_RECIPE_ID = 
 			"Select c.id, c.userId, c.recipeId, c.rating, c.text, c.createdAt, c.updatedAt, " +
 			"u.userName, r.title AS recipeTitle " +
@@ -38,6 +47,8 @@ public class CommentDAO {
 	        "UPDATE Comment SET rating = ?, text = ? WHERE id = ? AND userId = ?";
 	private static final String DELETE = 
 	        "DELETE FROM Comment WHERE id = ? AND userId = ?";
+	private static final String DELETE_BY_ADMIN = 
+	        "DELETE FROM Comment WHERE id = ?";
 	
 	private Comment buildComment(ResultSet rs) throws SQLException {
 		Comment comment = new Comment();
@@ -52,6 +63,27 @@ public class CommentDAO {
 		comment.setRecipeTitle(rs.getString("recipeTitle"));	
 		return comment;
 	 }
+	
+	public List<Comment> findAll(){
+		Connection conn = null;
+		PreparedStatement psmt = null;
+		ResultSet rs = null;
+		List<Comment> list = new LinkedList<>();
+		try {
+			conn = DBUtil.getConnection();
+			psmt = conn.prepareStatement(SELECT_ALL);
+			rs = psmt.executeQuery();
+			while(rs.next()) {
+				Comment comment = buildComment(rs);
+				list.add(comment);
+			}
+		}catch(SQLException se) {
+			throw new RuntimeException("查詢食譜失敗" + se.getMessage());
+		}finally {
+			DBUtil.close(conn, psmt, rs);
+		}
+		return list;		
+	}
 	
 	public List<Comment> findByUserId(Integer userId){
 		Connection conn = null;
@@ -83,9 +115,6 @@ public class CommentDAO {
 	    try {
 	        conn = DBUtil.getConnection();
 	        psmt = conn.prepareStatement(SELECT_BY_RECIPE_ID);
-	        psmt.setInt(1, recipeId);
-	        psmt.setInt(1, recipeId);
-	        psmt.setInt(1, recipeId);
 	        psmt.setInt(1, recipeId);
 	        rs = psmt.executeQuery();
 	        while(rs.next()) {
@@ -171,6 +200,25 @@ public class CommentDAO {
 	        psmt = conn.prepareStatement(DELETE);
 	        psmt.setInt(1, commentId);
 	        psmt.setInt(2, userId);        
+	        int rows = psmt.executeUpdate();
+	        return rows;
+	        
+	    }catch(SQLException se) {
+	    	 se.printStackTrace(); // 印出完整錯誤
+		     throw new RuntimeException("用戶刪除食材失敗", se);
+	    }finally {
+	        DBUtil.close(conn, psmt, null);
+	    }
+	}
+	
+	public Integer deleteByAdmin(Integer commentId) {
+		Connection conn = null;
+	    PreparedStatement psmt = null;
+
+	    try {
+	        conn = DBUtil.getConnection();
+	        psmt = conn.prepareStatement(DELETE_BY_ADMIN);
+	        psmt.setInt(1, commentId);      
 	        int rows = psmt.executeUpdate();
 	        return rows;
 	        

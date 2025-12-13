@@ -10,7 +10,7 @@ import util.DBUtil;
 
 public class UserDAO {
 	private static final String SELECT_ALL = 
-			"SELECT * FROM USER";
+			"SELECT id, userName, email, role, createdAt, updatedAt FROM User ORDER BY id";
 	public List<User> findAll(){
 		Connection conn = null;
 		PreparedStatement psmt = null;
@@ -25,7 +25,8 @@ public class UserDAO {
 						rs.getInt("id"), 
 						rs.getString("userName"),
 						rs.getString("email"),
-						rs.getString("password"),
+						rs.getString("role"),			
+						null,
 						rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
 					    rs.getTimestamp("updatedAt") != null ? rs.getTimestamp("updatedAt").toLocalDateTime() : null
 						);
@@ -56,6 +57,7 @@ public class UserDAO {
 						rs.getInt("id"), 
 						rs.getString("userName"),
 						rs.getString("email"),
+						rs.getString("role"),
 						rs.getString("password"),
 						rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
 					    rs.getTimestamp("updatedAt") != null ? rs.getTimestamp("updatedAt").toLocalDateTime() : null
@@ -85,6 +87,7 @@ public class UserDAO {
 						rs.getInt("id"), 
 						rs.getString("userName"),
 						rs.getString("email"),
+						rs.getString("role"),
 						rs.getString("password"),
 						rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null,
 					    rs.getTimestamp("updatedAt") != null ? rs.getTimestamp("updatedAt").toLocalDateTime() : null

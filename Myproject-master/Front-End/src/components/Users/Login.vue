@@ -111,7 +111,7 @@ function togglePasswordVisibility() {
                     </div>
 
                     <!-- 記住我 + 忘記密碼 -->
-                    <div class="flex items-center justify-between py-2">
+                    <!-- <div class="flex items-center justify-between py-2">
                         <label class="flex items-center gap-2 cursor-pointer font-bold text-md">
                             <input type="checkbox" class="w-5 h-5 border-2 border-black accent-black cursor-pointer" />
                             <span>記住我</span>
@@ -123,7 +123,7 @@ function togglePasswordVisibility() {
                         >
                             忘記密碼？
                         </button>
-                    </div>
+                    </div> -->
 
                     <!-- 登入按鈕 -->
                     <button

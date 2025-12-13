@@ -77,7 +77,7 @@ export const useAdminStore = defineStore('admin', () => {
    */
 //   
 function logout() {
-    console.log('🧪 Demo 模式登出')
+    console.log('Demo 模式登出')
     
     adminUser.value = null
     isAdminLoggedIn.value = false

@@ -16,6 +16,10 @@ public class Favorite {
 	private Integer cookingTime;
 	private Integer difficulty;
 	
+	//新增：管理員用的欄位
+    private String userName;
+    private String recipeTitle;
+	
 	public Favorite() {}
 	
 	public Favorite(Integer id, Integer userId, Integer recipeId, Timestamp savedAt) {
@@ -110,6 +114,22 @@ public class Favorite {
 
 	public void setDifficulty(Integer difficulty) {
 		this.difficulty = difficulty;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getRecipeTitle() {
+		return recipeTitle;
+	}
+
+	public void setRecipeTitle(String recipeTitle) {
+		this.recipeTitle = recipeTitle;
 	}
 	
 }

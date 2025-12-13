@@ -7,17 +7,19 @@ public class User {
 	private Integer id;
 	private String userName;
 	private String email;
+	private String role;
 	private String password;
 	private transient LocalDateTime createdAt;      
     private transient LocalDateTime updatedAt;
     
     public User() {}
-	public User(Integer id, String userName, String email, String password, LocalDateTime createdAt,
+	public User(Integer id, String userName, String email, String role, String password, LocalDateTime createdAt,
 			LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.userName = userName;
 		this.email = email;
+		this.role = role;
 		this.password = password;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -57,5 +59,11 @@ public class User {
 	}
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
 	}	
 }

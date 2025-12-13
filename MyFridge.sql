@@ -4,24 +4,27 @@ USE MyFridge;
 
 -- Clear out the old table, if they existed at all.
 DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS ingredients;
-DROP TABLE IF EXISTS fridge_items;
+DROP TABLE IF EXISTS ingredient;
+DROP TABLE IF EXISTS fridgeitem;
 DROP TABLE IF EXISTS Recipe;
 DROP TABLE IF EXISTS RecipeIngredient;
-DROP TABLE IF EXISTS shopping_lists;
-DROP TABLE IF EXISTS shopping_list_items;
-DROP TABLE IF EXISTS favorites;
-DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS shoppinglistitem;
+DROP TABLE IF EXISTS favorite;
+DROP TABLE IF EXISTS comment;
 
 -- 1. User(使用者資訊) 
 CREATE TABLE User (
     id INT PRIMARY KEY AUTO_INCREMENT,
     userName VARCHAR(20) NOT NULL UNIQUE COMMENT '使用者名稱',
     email VARCHAR(40) NOT NULL UNIQUE COMMENT '電子郵件',
+	role VARCHAR(20) DEFAULT 'user',
     password VARCHAR(255) NOT NULL COMMENT '密碼（加密存儲）',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間'
 ) COMMENT='使用者帳號資訊表',ENGINE=InnoDB;
+
+INSERT INTO myfridge.User (userName, email, role, password)
+VALUES ('admin', 'admin@stockandstove.com', 'admin', '$2a$10$COx4urJUr4YVUXX.JsUkkO1poBbFNmuB2lhArJ36XwYWs.FjdxjWK');
 
 -- 2. ingredients (材料相關資訊)
 CREATE TABLE Ingredient (
@@ -257,7 +260,7 @@ INSERT INTO myfridge.Recipe (userId, title, description, imageUrl, cookingTime, 
 5. 混合收汁：將肉片和切好的青椒或洋蔥片倒入鍋中，快速大火翻炒，讓濃稠的醬汁均勻地裹在肉片和蔬菜上，撒上蔥花即可出鍋。', TRUE),
 
 -- 食譜 12: 京醬肉絲
-(NULL, '京醬肉絲', '北京風味名菜，肉絲細嫩，醬香濃郁，搭配豆腐皮和蔥絲食用。', '/Jing.webp', 20, 5,
+(NULL, '京醬肉絲', '北京風味名菜，肉絲細嫩，醬香濃郁，搭配豆腐皮和蔥絲食用。', '/TomatoEgg.webp', 20, 5,
 '1. 肉絲醃製：豬里脊肉切成均勻的細絲，加入料酒、鹽、蛋清和澱粉抓勻醃製15分鐘。
 
 2. 滑炒肉絲：鍋中放油，將肉絲倒入快速滑炒至變色，立刻盛出，保持肉絲的嫩度。

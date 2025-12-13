@@ -14,7 +14,7 @@ import util.DBUtil;
 
 public class RecipeDAO {
 	private static final String SELECT_ALL = "Select "
-			+ "id, userId, title, description,imageUrl, cookingTime, "
+			+ "id, userId, title, description, imageUrl, cookingTime, "
 			+ "difficulty, step, isPublic "
 			+ "From Recipe "
 			+ "Where isPublic = True "
@@ -40,6 +40,10 @@ public class RecipeDAO {
 			 + "Where isPublic = True "
 			 + "And (title like ? or description like ?) "
 			 + "Order By id";
+	 //刪除食譜
+	 private static final String DELETE = "DELETE FROM Recipe WHERE id = ?"; 
+	 //刪除食譜的所有食材關聯
+	 private static final String DELETE_INGREDIENTS = "DELETE FROM RecipeIngredient WHERE recipeId = ?";
 	 
 	 private Recipe buildRecipe(ResultSet rs) throws SQLException {
 		 Recipe recipe = new Recipe();
@@ -221,6 +225,54 @@ public class RecipeDAO {
 			return list;
 		}
 		
-		
+		public Integer delete(Integer recipeId) {
+			Connection conn = null;
+			PreparedStatement psmtIngredients = null;
+			PreparedStatement psmtRecipe = null;
 			
+			try {
+				conn = DBUtil.getConnection();
+				//關閉自動提交，使用交易
+				conn.setAutoCommit(false);
+				
+				//步驟1：先刪除 RecipeIngredient 中的關聯資料
+				psmtIngredients = conn.prepareStatement(DELETE_INGREDIENTS);
+				psmtIngredients.setInt(1, recipeId);
+				psmtIngredients.executeUpdate();
+				
+				//步驟2：再刪除 Recipe
+				psmtRecipe = conn.prepareStatement(DELETE);
+				psmtRecipe.setInt(1, recipeId);
+				int rows = psmtRecipe.executeUpdate();
+				
+				//提交交易
+				conn.commit();
+				
+				return rows;
+				
+			} catch(SQLException se) {
+				//發生錯誤時回滾
+				try {
+					if (conn != null) {
+						conn.rollback();
+					}
+				} catch (SQLException rollbackEx) {
+					rollbackEx.printStackTrace();
+				}
+				se.printStackTrace();
+				throw new RuntimeException("刪除食譜失敗: " + se.getMessage());
+			} finally {
+				//關閉資源
+				try {
+					if (psmtIngredients != null) psmtIngredients.close();
+					if (psmtRecipe != null) psmtRecipe.close();
+					if (conn != null) {
+						conn.setAutoCommit(true);  // 恢復自動提交
+						conn.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}		
 }
