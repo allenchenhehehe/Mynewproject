@@ -11,6 +11,14 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  server:{}
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080/myfridge',
+        changeOrigin: true,
+        // 不需要 rewrite，因為後端路徑就是 /api/...
+      }
+    }
+  }
 })
 

@@ -12,6 +12,25 @@ export const STATUS_FORGET_PASSWORD = 'forgetPassword'
 export const STATUS_ADMIN = 'admin'
 export const STATUS_ADMIN_PANEL = 'adminPanel'
 
+const initAuthStatus = () => {
+  const user = localStorage.getItem('user')
+  const adminUser = localStorage.getItem('adminUser')
+  
+  console.log('🔍 初始化認證狀態')
+  console.log('   user:', user)
+  console.log('   adminUser:', adminUser)
+  
+  if (adminUser) {
+    console.log('✅ 偵測到管理員')
+    return STATUS_ADMIN_PANEL
+  } else if (user) {
+    console.log('✅ 偵測到一般使用者')
+    return STATUS_APP
+  }
+  console.log('❌ 未登入')
+  return STATUS_LOGIN
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const initAuthStatus = () => {
     const user = localStorage.getItem('user')
