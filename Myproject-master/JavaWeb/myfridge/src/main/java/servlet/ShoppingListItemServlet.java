@@ -29,8 +29,11 @@ public class ShoppingListItemServlet extends HttpServlet {
         this.service = new ShoppingListItemService();
         this.gson = new Gson();
     }
-    private void setCrossHeader(HttpServletResponse resp) {
-		resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    private void setCrossHeader(HttpServletResponse resp, HttpServletRequest req) {
+    	String origin = req.getHeader("Origin");
+        if (origin != null && origin.startsWith("http://localhost:")) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
 		resp.setHeader("Access-Control-Allow-Credentials", "true");
 		resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
 		resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -38,21 +41,21 @@ public class ShoppingListItemServlet extends HttpServlet {
 	
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-		setCrossHeader(resp);
+		setCrossHeader(resp, req);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
   //Servlet處理完請求後，將結果回傳給前端的方法。
-    private void sendJsonResponse(HttpServletResponse resp, int statusCode, Object data)
+    private void sendJsonResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode, Object data)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	resp.setContentType("application/json; charset = UTF-8");
     	resp.setStatus(statusCode);
     	resp.getWriter().write(gson.toJson(data));
     }
     //Servlet處理完請求後如果報錯，將error回傳給前端的方法。
-    private void sendErrorResponse(HttpServletResponse resp, int statusCode,String message)
+    private void sendErrorResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode,String message)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	JsonObject error = new JsonObject();
         error.addProperty("success", false);
         error.addProperty("error", message);
@@ -83,17 +86,17 @@ public class ShoppingListItemServlet extends HttpServlet {
 			    resp.setCharacterEncoding("UTF-8");
 				HttpSession session = req.getSession(false);
 				if(session == null || session.getAttribute("id") == null){
-					 sendErrorResponse(resp, 401, "請先登入");
+					 sendErrorResponse(resp, req, 401, "請先登入");
 			         return;
 				}
 				Integer userId = (Integer)session.getAttribute("id");
 				try {
 					List<ShoppingListItem> items = service.getShoppingList(userId);
 					//回傳json
-					sendJsonResponse(resp, 200, items); 
+					sendJsonResponse(resp, req, 200, items); 
 				}catch (Exception e) {
 		            e.printStackTrace();
-		            sendErrorResponse(resp, 500, "查詢購物清單失敗: " + e.getMessage());
+		            sendErrorResponse(resp, req, 500, "查詢購物清單失敗: " + e.getMessage());
 		        }
 	}
 
@@ -104,7 +107,7 @@ public class ShoppingListItemServlet extends HttpServlet {
 			    resp.setCharacterEncoding("UTF-8");
 				HttpSession session = req.getSession(false);
 				if(session == null || session.getAttribute("id") == null){
-					 sendErrorResponse(resp, 401, "請先登入");
+					 sendErrorResponse(resp, req, 401, "請先登入");
 			         return;
 				}
 				Integer userId = (Integer) session.getAttribute("id");		        
@@ -148,13 +151,13 @@ public class ShoppingListItemServlet extends HttpServlet {
             ShoppingListItem added = service.addItem(userId, item);
             
             //使用輔助方法回傳 JSON
-            sendJsonResponse(resp, 201, added);
+            sendJsonResponse(resp, req, 201, added);
             
         } catch (IllegalArgumentException e) {
-            sendErrorResponse(resp, 400, e.getMessage());
+            sendErrorResponse(resp, req, 400, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "新增購物項目失敗: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "新增購物項目失敗: " + e.getMessage());
         }
     }
 	
@@ -171,11 +174,11 @@ public class ShoppingListItemServlet extends HttpServlet {
             result.addProperty("message", "成功加入 " + count + " 個項目到冰箱");
             
             // 使用輔助方法回傳 JSON
-            sendJsonResponse(resp, 200, result);
+            sendJsonResponse(resp, req, 200, result);
             
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "清除已購買項目失敗: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "清除已購買項目失敗: " + e.getMessage());
         }
     }
 	@Override
@@ -185,13 +188,13 @@ public class ShoppingListItemServlet extends HttpServlet {
 		    resp.setCharacterEncoding("UTF-8");
 			HttpSession session = req.getSession(false);
 			if(session == null || session.getAttribute("id") == null){
-				 sendErrorResponse(resp, 401, "請先登入");
+				 sendErrorResponse(resp, req, 401, "請先登入");
 		         return;
 			}
 			Integer userId = (Integer)session.getAttribute("id");
 			String pathInfo = req.getPathInfo();  
 	        if (pathInfo == null || pathInfo.equals("/")) {
-	        	sendErrorResponse(resp, 400, "缺少項目 ID");
+	        	sendErrorResponse(resp, req, 400, "缺少項目 ID");
 	            return;
 	        }	        
 	        try {
@@ -209,17 +212,17 @@ public class ShoppingListItemServlet extends HttpServlet {
 	        	update.setCategory(json.get("category").getAsString());
 	        	update.setIsPurchased(json.get("isPurchased").getAsBoolean());
 	        	ShoppingListItem updated = service.updateItem(userId, id, update);
-	        	sendJsonResponse(resp, 200, updated);
+	        	sendJsonResponse(resp, req, 200, updated);
 	        	
 	        }catch (NumberFormatException e) {
-	            sendErrorResponse(resp, 400, "無效的項目 ID");
+	            sendErrorResponse(resp, req, 400, "無效的項目 ID");
 	        } catch (IllegalArgumentException e) {
-	            sendErrorResponse(resp, 400, e.getMessage());
+	            sendErrorResponse(resp, req, 400, e.getMessage());
 	        } catch (RuntimeException e) {
-	            sendErrorResponse(resp, 404, e.getMessage());
+	            sendErrorResponse(resp, req, 404, e.getMessage());
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            sendErrorResponse(resp, 500, "更新購物項目失敗: " + e.getMessage());
+	            sendErrorResponse(resp, req, 500, "更新購物項目失敗: " + e.getMessage());
 	        }		
 	}
 	
@@ -242,7 +245,7 @@ public class ShoppingListItemServlet extends HttpServlet {
         // 檢查 Session
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("id") == null) {
-            sendErrorResponse(resp, 401, "請先登入");
+            sendErrorResponse(resp, req, 401, "請先登入");
             return;
         }
         
@@ -250,7 +253,7 @@ public class ShoppingListItemServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         
         if (pathInfo == null || pathInfo.equals("/")) {
-            sendErrorResponse(resp, 400, "缺少項目 ID");
+            sendErrorResponse(resp, req, 400, "缺少項目 ID");
             return;
         }
         
@@ -266,17 +269,17 @@ public class ShoppingListItemServlet extends HttpServlet {
             ShoppingListItem updated = service.togglePurchase(userId, id, isPurchased);
             
             //使用輔助方法回傳 JSON
-            sendJsonResponse(resp, 200, updated);
+            sendJsonResponse(resp, req, 200, updated);
             
         } catch (NumberFormatException e) {
-            sendErrorResponse(resp, 400, "無效的項目 ID");
+            sendErrorResponse(resp, req, 400, "無效的項目 ID");
         } catch (IllegalArgumentException e) {
-            sendErrorResponse(resp, 400, e.getMessage());
+            sendErrorResponse(resp, req, 400, e.getMessage());
         } catch (RuntimeException e) {
-            sendErrorResponse(resp, 404, e.getMessage());
+            sendErrorResponse(resp, req, 404, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "更新購買狀態失敗: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "更新購買狀態失敗: " + e.getMessage());
         }
     }
 	@Override
@@ -286,13 +289,13 @@ public class ShoppingListItemServlet extends HttpServlet {
 	    resp.setCharacterEncoding("UTF-8");
 		HttpSession session = req.getSession(false);
 		if(session == null || session.getAttribute("id") == null){
-			 sendErrorResponse(resp, 401, "請先登入");
+			 sendErrorResponse(resp, req, 401, "請先登入");
 	         return;
 		}
 		Integer userId =  (Integer)session.getAttribute("id");
 		String pathInfo = req.getPathInfo();   
         if (pathInfo == null || pathInfo.equals("/")) {
-        	sendErrorResponse(resp, 400, "缺少項目 ID");
+        	sendErrorResponse(resp, req, 400, "缺少項目 ID");
             return;
         }	        
         try {
@@ -301,15 +304,15 @@ public class ShoppingListItemServlet extends HttpServlet {
         	JsonObject result = new JsonObject();
             result.addProperty("success", true);
             result.addProperty("message", "刪除成功");
-        	sendJsonResponse(resp, 200, result);
+        	sendJsonResponse(resp, req, 200, result);
         	
         }catch (NumberFormatException e) {
-            sendErrorResponse(resp, 400, "無效的項目 ID");
+            sendErrorResponse(resp, req, 400, "無效的項目 ID");
         } catch (RuntimeException e) {
-            sendErrorResponse(resp, 404, e.getMessage());
+            sendErrorResponse(resp, req, 404, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "刪除購物項目失敗: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "刪除購物項目失敗: " + e.getMessage());
         }
 	}
 	

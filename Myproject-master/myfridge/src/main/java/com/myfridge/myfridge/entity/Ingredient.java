@@ -1,47 +1,28 @@
 package com.myfridge.myfridge.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
+@Table("ingredient")
 @Data
-@Table(name = "ingredient")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Ingredient {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Integer id;
-
-    @Column(name = "ingredientName",nullable = false, unique = true, length = 20)
+    
+    @Column("ingredientName")
     private String ingredientName;
-
-    @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    @Column(name = "shelfLifeDays")
+    
+    private String category;
+    
+    @Column("shelfLifeDays")
     private Integer shelfLifeDays;
-    public enum Category{
-        vegetable,
-        fruit, 
-        meat,     
-        dairy,      
-        seasoning,   
-        oil,       
-        seafood,  
-        egg,      
-		bean,         
-        other
-    };
 }

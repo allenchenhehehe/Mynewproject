@@ -55,15 +55,18 @@ public class FridgeItemServlet extends HttpServlet {
 	            .create();
 	}
 	//處理跨域的問題
-	private void setCrossHeader(HttpServletResponse resp) {
-		resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+	private void setCrossHeader(HttpServletResponse resp, HttpServletRequest req) {
+		String origin = req.getHeader("Origin");
+        if (origin != null && origin.startsWith("http://localhost:")) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
 		resp.setHeader("Access-Control-Allow-Credentials", "true");
 		resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 		resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
 	} 
 	//處理跨域的請求
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		setCrossHeader(resp);
+		setCrossHeader(resp, req);
 		resp.setStatus(HttpServletResponse.SC_OK);
 	}
 	//讀取 Request Body  
@@ -77,17 +80,17 @@ public class FridgeItemServlet extends HttpServlet {
 		return sb.toString();
 	}
 	//Servlet處理完請求後，將結果回傳給前端的方法。
-    private void sendJsonResponse(HttpServletResponse resp, int statusCode, Object data)
+    private void sendJsonResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode, Object data)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	resp.setContentType("application/json; charset = UTF-8");
     	resp.setStatus(statusCode);
     	resp.getWriter().write(gson.toJson(data));
     }
     //Servlet處理完請求後如果報錯，將error回傳給前端的方法。
-    private void sendErrorResponse(HttpServletResponse resp, int statusCode,String message)
+    private void sendErrorResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode,String message)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	resp.setContentType("application/json; charset = UTF-8");
     	resp.setStatus(statusCode);
     	JsonObject error = new JsonObject();
@@ -99,7 +102,7 @@ public class FridgeItemServlet extends HttpServlet {
     		throws IOException {
     	HttpSession session = req.getSession(false);
     	if(session == null|| session.getAttribute("id")==null) {
-    		sendErrorResponse(resp,401,"尚未登入!");
+    		sendErrorResponse(resp , req, 401,"尚未登入!");
     		return null;
     	}
     	return (Integer)session.getAttribute("id");
@@ -115,10 +118,10 @@ public class FridgeItemServlet extends HttpServlet {
 				return;
 			}
 			List<FridgeItem> list = fridgeItemService.getAllItems(userId);
-			sendJsonResponse(resp,200,list);
+			sendJsonResponse(resp, req, 200,list);
 		}catch(Exception e) {
 			e.printStackTrace();
-			sendErrorResponse(resp,500,"伺服器錯誤!"+e.getMessage());
+			sendErrorResponse(resp, req, 500,"伺服器錯誤!"+e.getMessage());
 		}
 	}
 
@@ -144,10 +147,10 @@ public class FridgeItemServlet extends HttpServlet {
 			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
 	                ? LocalDate.parse(expiredDateStr): null;
 			FridgeItem item = fridgeItemService.addToFridge(userId, ingredientName, category, amount, unit, purchasedDate, expiredDate);
-			sendJsonResponse(resp,200,item);
+			sendJsonResponse(resp, req, 200, item);
 		}catch(Exception e) {
 			e.printStackTrace();
-			sendErrorResponse(resp,500,"新增失敗!"+e.getMessage());
+			sendErrorResponse(resp,  req, 500,"新增失敗!"+e.getMessage());
 		}
 	}
 	
@@ -162,7 +165,7 @@ public class FridgeItemServlet extends HttpServlet {
 			}
 			String pathInfo = req.getPathInfo();
 			if(pathInfo == null || pathInfo.length()<=1) {
-				sendErrorResponse(resp,400,"缺少id!");
+				sendErrorResponse(resp, req,400,"缺少id!");
 				return;
 			}
 			
@@ -178,12 +181,12 @@ public class FridgeItemServlet extends HttpServlet {
 			LocalDate expiredDate = expiredDateStr != null && !expiredDateStr.isEmpty()
 	                ? LocalDate.parse(expiredDateStr): null;
 			FridgeItem item = fridgeItemService.updateItem(userId,id, amount, unit, purchasedDate, expiredDate);
-			sendJsonResponse(resp,200,item);
+			sendJsonResponse(resp, req,200,item);
 		}catch (NumberFormatException e) {
-            sendErrorResponse(resp, 400, "ID 格式錯誤");
+            sendErrorResponse(resp, req, 400, "ID 格式錯誤");
         }catch(Exception e) {
 			e.printStackTrace();
-			sendErrorResponse(resp,500,"更新失敗!"+e.getMessage());
+			sendErrorResponse(resp, req,500,"更新失敗!"+e.getMessage());
 		}
 	}
 	
@@ -198,7 +201,7 @@ public class FridgeItemServlet extends HttpServlet {
 			}
 			String pathInfo = req.getPathInfo();
 			if(pathInfo == null || pathInfo.length()<=1) {
-				sendErrorResponse(resp,400,"缺少id!");
+				sendErrorResponse(resp, req,400,"缺少id!");
 				return;
 			}
 			
@@ -207,15 +210,15 @@ public class FridgeItemServlet extends HttpServlet {
 			if (success) {
 			    JsonObject response = new JsonObject();
 			    response.addProperty("message", "刪除成功");
-			    sendJsonResponse(resp, 200, response);
+			    sendJsonResponse(resp, req, 200, response);
 			} else {
-			    sendErrorResponse(resp, 404, "找不到此食材");
+			    sendErrorResponse(resp, req, 404, "找不到此食材");
 			}
 		}catch (NumberFormatException e) {
-            sendErrorResponse(resp, 400, "ID 格式錯誤");
+            sendErrorResponse(resp, req, 400, "ID 格式錯誤");
         }catch(Exception e) {
 			e.printStackTrace();
-			sendErrorResponse(resp,500,"刪除失敗!"+e.getMessage());
+			sendErrorResponse(resp,  req,500,"刪除失敗!"+e.getMessage());
 		}
 	}
 	

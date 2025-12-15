@@ -1,16 +1,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
 import { useCommentStore } from '@/stores'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
-// 使用 stores
 const commentStore = useCommentStore()
 
-
-
-const sortBy = ref('recent') // recent, rating, likes
+const sortBy = ref('recent')
 const editingId = ref(null)
 const editRating = ref(0)
 const editText = ref('')
@@ -74,7 +70,6 @@ async function saveEdit(comment) {
             autoClose: 1000,
         })
         cancelEdit()
-        // 重新載入使用者評論
         await commentStore.fetchUserComments()
     } else {
         toast.error(result.error || '更新失敗', {
@@ -83,7 +78,7 @@ async function saveEdit(comment) {
     }
 }
 
-async function deleteComment(id) {
+async function deleteComment(comment) {
    if (confirm('確定要刪除這則評論嗎？')) {
         const result = await commentStore.deleteComment(comment.id, comment.recipeId)
         
@@ -91,7 +86,6 @@ async function deleteComment(id) {
             toast.success('評論刪除成功', {
                 autoClose: 1000,
             })
-            // 重新載入使用者評論
             await commentStore.fetchUserComments()
         } else {
             toast.error(result.error || '刪除失敗', {
@@ -127,7 +121,7 @@ function formatDate(dateString) {
 
         <!-- 統計卡片 -->
         <div class="border-2 border-black bg-white shadow-[4px_4px_0px_0px_black] mb-8 p-6">
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div class="border-2 border-black bg-blue-100 p-4 text-center">
                     <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">評論總數</div>
                     <div class="text-4xl font-black">{{ stats.total }}</div>
@@ -136,10 +130,7 @@ function formatDate(dateString) {
                     <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">平均評分</div>
                     <div class="text-4xl font-black">{{ stats.avgRating }}</div>
                 </div>
-                <div class="border-2 border-black bg-green-100 p-4 text-center">
-                    <div class="text-xs font-black uppercase tracking-wide text-gray-600 mb-2">總點讚</div>
-                    <div class="text-4xl font-black">{{ stats.totalLikes }}</div>
-                </div>
+                <!-- 移除 totalLikes 卡片 -->
             </div>
         </div>
 
@@ -164,8 +155,13 @@ function formatDate(dateString) {
             </div>
         </div>
 
+        <!-- Loading 狀態 -->
+        <div v-if="commentStore.loading" class="text-center py-12">
+            <p class="font-bold text-xl">載入中...</p>
+        </div>
+
         <!-- 評論列表 -->
-        <div class="space-y-4">
+        <div v-else-if="sortedComments.length > 0" class="space-y-4">
             <div
                 v-for="comment in sortedComments"
                 :key="comment.id"
@@ -175,7 +171,7 @@ function formatDate(dateString) {
                 <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-4 pb-4 border-b-2 border-dashed border-gray-300">
                     <div class="flex-1">
                         <h3 class="font-black text-2xl uppercase mb-2">{{ comment.recipeTitle }}</h3>
-                        <div class="text-xs text-gray-600 font-bold">{{ comment.createdAt }}</div>
+                        <div class="text-xs text-gray-600 font-bold">{{ formatDate(comment.createdAt) }}</div>
                     </div>
                     <div class="flex gap-4 items-center">
                         <!-- 評分 -->
@@ -195,11 +191,8 @@ function formatDate(dateString) {
                     </div>
                 </div>
 
-                
-
                 <!-- 編輯模式 -->
                 <div v-if="editingId === comment.id" class="space-y-4">
-
                     <!-- 評分選擇 -->
                     <div>
                         <label class="font-bold text-sm uppercase block mb-2">評分</label>
@@ -232,7 +225,7 @@ function formatDate(dateString) {
                 <div class="flex gap-2">
                     <button 
                         v-if="editingId === comment.id"
-                        @click="saveEdit(comment.id)"
+                        @click="saveEdit(comment)"
                         :disabled="commentStore.loading"
                         class="flex-1 bg-green-400 text-black border-2 border-black font-black py-2 px-3 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-sm"
                     >
@@ -253,7 +246,7 @@ function formatDate(dateString) {
                         取消
                     </button>
                     <button 
-                        @click="deleteComment(comment.id)"
+                        @click="deleteComment(comment)"
                         :disabled="commentStore.loading"
                         class="flex-1 bg-red-300 text-black border-2 border-black font-black py-2 px-3 uppercase tracking-wide shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] active:shadow-none transition-all text-sm"
                     >
@@ -264,7 +257,7 @@ function formatDate(dateString) {
         </div>
 
         <!-- 空狀態 -->
-        <div v-if="commentStore.userComments.length === 0" class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
+        <div v-else class="border-4 border-black bg-yellow-200 shadow-[4px_4px_0px_0px_black] p-8 text-center mt-8">
             <p class="font-black text-2xl mb-2">還沒有任何評論</p>
             <p class="text-gray-700 font-semibold">快去食譜頁面分享你的想法吧！</p>
         </div>

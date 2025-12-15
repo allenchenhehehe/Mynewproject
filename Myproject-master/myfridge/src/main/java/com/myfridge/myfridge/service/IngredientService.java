@@ -1,24 +1,41 @@
 package com.myfridge.myfridge.service;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.myfridge.myfridge.entity.Ingredient;
 import com.myfridge.myfridge.repository.IngredientRepository;
 
-@Service
-public class IngredientService {
-    @Autowired
-    private IngredientRepository ingredientRepository;
-    
-    public List<Ingredient> findAll(){
-        return ingredientRepository.findAll();
-    }
+import lombok.RequiredArgsConstructor;
 
-    public Ingredient findById(@PathVariable Integer id){
-        return ingredientRepository.findById(id).orElse(new Ingredient());
+@Service
+@RequiredArgsConstructor
+public class IngredientService {
+    
+    private final IngredientRepository ingredientRepository;
+    
+    // ✅ 對應你的 getAllIngre()
+    public List<Ingredient> getAllIngre() {
+        return StreamSupport.stream(ingredientRepository.findAll().spliterator(), false)
+                .toList();
+    }
+    
+    // ✅ 對應你的 getIngreById()
+    public Ingredient getIngreById(Integer id) {
+        return ingredientRepository.findById(id).orElse(null);
+    }
+    
+    // ✅ 對應你的 getIngreByName()
+    public Ingredient getIngreByName(String name) {
+        return ingredientRepository.findByIngredientName(name).orElse(null);
+    }
+    
+    // ✅ 對應你的 addIngre()
+    @Transactional
+    public Ingredient addIngre(Ingredient ingre) {
+        return ingredientRepository.save(ingre);
     }
 }

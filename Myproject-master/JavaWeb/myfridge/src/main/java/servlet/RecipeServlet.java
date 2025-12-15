@@ -32,8 +32,11 @@ public class RecipeServlet extends HttpServlet {
 	            .create();
 	}
 	//處理跨域的問題
-	private void setCrossHeader(HttpServletResponse resp) {
-		resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+	private void setCrossHeader(HttpServletResponse resp, HttpServletRequest req) {
+		String origin = req.getHeader("Origin");
+        if (origin != null && origin.startsWith("http://localhost:")) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
 		resp.setHeader("Access-Control-Allow-Credentials", "true");
 		resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 		resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -41,21 +44,21 @@ public class RecipeServlet extends HttpServlet {
 	
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-		setCrossHeader(resp);
+		setCrossHeader(resp, req);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 	//Servlet處理完請求後，將結果回傳給前端的方法。
-    private void sendJsonResponse(HttpServletResponse resp, int statusCode, Object data)
+    private void sendJsonResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode, Object data)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	resp.setContentType("application/json; charset = UTF-8");
     	resp.setStatus(statusCode);
     	resp.getWriter().write(gson.toJson(data));
     }
     //Servlet處理完請求後如果報錯，將error回傳給前端的方法。
-    private void sendErrorResponse(HttpServletResponse resp, int statusCode,String message)
+    private void sendErrorResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode,String message)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	resp.setContentType("application/json; charset = UTF-8");
     	resp.setStatus(statusCode);
     	JsonObject error = new JsonObject();
@@ -109,7 +112,7 @@ public class RecipeServlet extends HttpServlet {
 	    	if(pathInfo == null || pathInfo.equals("/")) {
 	    		List<Recipe> recipes = recipeService.getAllRecipes();
 	    		JsonArray jsonArray = recipesToJsonArray(recipes);
-	    		sendJsonResponse(resp, 200, jsonArray);
+	    		sendJsonResponse(resp, req, 200, jsonArray);
                 return;
 	    	}
 	    	// ========== 2. GET /api/recipes/search?keyword=xxx - 搜尋 ==========
@@ -118,11 +121,11 @@ public class RecipeServlet extends HttpServlet {
 	    		if(keyword == null || keyword.trim().isEmpty()) {
 	    			List<Recipe> recipes = recipeService.getAllRecipes();
 		    		JsonArray jsonArray = recipesToJsonArray(recipes);
-		    		sendJsonResponse(resp, 200, jsonArray); 
+		    		sendJsonResponse(resp, req, 200, jsonArray); 
 	    		}else {
 	    			List<Recipe> recipes = recipeService.searchRecipes(keyword);
 		    		JsonArray jsonArray = recipesToJsonArray(recipes);
-		    		sendJsonResponse(resp, 200, jsonArray);
+		    		sendJsonResponse(resp, req, 200, jsonArray);
 	    		}
 	    		return;
 	    	}
@@ -137,7 +140,7 @@ public class RecipeServlet extends HttpServlet {
 
     			List<Recipe> recipes = recipeService.filterRecipes(difficulty, minCookingTime, maxCookingTime);
 	    		JsonArray jsonArray = recipesToJsonArray(recipes);
-	    		sendJsonResponse(resp, 200, jsonArray); 
+	    		sendJsonResponse(resp, req, 200, jsonArray); 
 	    		return;
 	    	}
 	    	// ========== 4. GET /api/recipes/{id} - 查詢單一食譜 ==========
@@ -146,23 +149,23 @@ public class RecipeServlet extends HttpServlet {
 	            Integer recipeId = Integer.parseInt(pathInfo.substring(1));
 	            Recipe recipe = recipeService.getRecipeDetail(recipeId);
 	            if(recipe == null) {
-	            	 sendErrorResponse(resp, 404, "找不到食譜 ID: " + recipeId);
+	            	 sendErrorResponse(resp, req, 404, "找不到食譜 ID: " + recipeId);
 	            	 return;
 	            }else {
 	            	 JsonObject json = recipeToJson(recipe);
-	                 sendJsonResponse(resp, 200, json);
+	                 sendJsonResponse(resp, req, 200, json);
 	            }
 	                
 	        }catch(NumberFormatException e) {
-                sendErrorResponse(resp, 400, "無效的食譜 ID");
+                sendErrorResponse(resp, req, 400, "無效的食譜 ID");
                 return;
 	        }   
 	    }catch(IllegalArgumentException e) {
-	    	sendErrorResponse(resp, 400, e.getMessage());
+	    	sendErrorResponse(resp, req, 400, e.getMessage());
 	    }
 	    catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "伺服器錯誤: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "伺服器錯誤: " + e.getMessage());
         }
 	}
 }

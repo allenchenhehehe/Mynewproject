@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,15 +37,18 @@ public class AuthServlet extends HttpServlet {
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        setCorsHeaders(resp);
+        setCorsHeaders(resp, req);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
     
     /**
      * 設定 CORS 標頭
      */
-    private void setCorsHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    private void setCorsHeaders(HttpServletResponse resp, HttpServletRequest req) {
+    	String origin = req.getHeader("Origin");
+        if (origin != null && origin.startsWith("http://localhost:")) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
         resp.setHeader("Access-Control-Allow-Credentials", "true");
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -104,7 +108,7 @@ public class AuthServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         
-        setCorsHeaders(resp);
+        setCorsHeaders(resp, req);
         
         String pathInfo = req.getPathInfo();
         
@@ -149,7 +153,7 @@ public class AuthServlet extends HttpServlet {
             throws ServletException, IOException {
         
         // 設定 CORS
-        setCorsHeaders(resp);
+        setCorsHeaders(resp, req);
         
         // 設定編碼
         req.setCharacterEncoding("UTF-8");
@@ -194,10 +198,17 @@ public class AuthServlet extends HttpServlet {
         
         // 建立 Session
         HttpSession session = req.getSession(true);
+        session.setMaxInactiveInterval(-1);
         session.setAttribute("id", user.getId());  // ← 統一用 userId
         session.setAttribute("email", user.getEmail());
         session.setAttribute("userName", user.getUserName());
         session.setAttribute("userRole", user.getRole());
+        
+//        Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+//        sessionCookie.setPath("/");
+//        sessionCookie.setHttpOnly(true);
+//        sessionCookie.setMaxAge(-1);  // -1 = Session Cookie（關閉瀏覽器即刪除）
+//        resp.addCookie(sessionCookie);
         
         System.out.println("登入成功,Session ID: " + session.getId());
         System.out.println("   User ID: " + user.getId());

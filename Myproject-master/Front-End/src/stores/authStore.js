@@ -85,6 +85,7 @@ export const useAuthStore = defineStore('auth', () => {
     // 清除狀態
     currentUser.value = null
     localStorage.removeItem('user')
+    localStorage.removeItem('adminUser')
     authStatus.value = STATUS_LOGIN
     
     return false
@@ -179,6 +180,7 @@ export const useAuthStore = defineStore('auth', () => {
       // 無論如何都清除本地狀態
       currentUser.value = null
       localStorage.removeItem('user')
+      localStorage.removeItem('adminUser')
       authStatus.value = STATUS_LOGIN
       loading.value = false
     }

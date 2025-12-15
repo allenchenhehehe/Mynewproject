@@ -99,7 +99,7 @@ export const useFavoriteStore = defineStore('favorite', () => {
 
       return {
         success: true,
-        isFavorited: response.data.isFavorited,
+        isFavorite: response.data.isFavorite,
         message: response.data.message
       }
 

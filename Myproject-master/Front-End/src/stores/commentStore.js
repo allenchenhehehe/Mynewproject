@@ -79,8 +79,6 @@ export const useCommentStore = defineStore('comment', () => {
         recipeTitle: comment.recipeTitle
       }))
 
-      console.log('轉換後:', userComments.value)
-
       return { success: true }
 
     } catch (err) {
@@ -114,6 +112,7 @@ export const useCommentStore = defineStore('comment', () => {
 
       // 重新載入食譜評論
       await fetchCommentsByRecipe(recipeId)
+      await fetchUserComments()
 
       return { success: true, comment: response.data }
 

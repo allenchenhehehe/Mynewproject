@@ -41,6 +41,7 @@ onMounted(async () => {
     await favoriteStore.fetchFavorites()
     if (recipe.value) {
         isFavorited.value = favoriteStore.isFavorited(recipe.value.id)
+        console.log('onMounted - 收藏狀態:', isFavorited.value)
         await commentStore.fetchCommentsByRecipe(recipe.value.id)
     }
 })
@@ -54,7 +55,7 @@ async function toggleFavorite() {
     const result = await favoriteStore.toggleFavorite(recipe.value.id)
     
     if (result.success) {
-        isFavorited.value = result.isFavorited
+        isFavorited.value = result.isFavorite
         toast.success(result.message, {
             autoClose: 1000,
         })
@@ -121,6 +122,7 @@ async function submitComment() {
         commentText.value = ''
         userRating.value = 0
         await commentStore.fetchCommentsByRecipe(recipe.value.id)
+        await commentStore.fetchUserComments()
         toast.success('評論已發佈！', {
             autoClose: 1000,
         })

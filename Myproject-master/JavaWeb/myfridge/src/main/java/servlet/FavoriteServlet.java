@@ -31,8 +31,11 @@ public class FavoriteServlet extends HttpServlet {
         this.gson = new Gson();
     }
     
-    private void setCrossHeader(HttpServletResponse resp) {
-		resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    private void setCrossHeader(HttpServletResponse resp, HttpServletRequest req) {
+    	String origin = req.getHeader("Origin");
+        if (origin != null && origin.startsWith("http://localhost:")) {
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
 		resp.setHeader("Access-Control-Allow-Credentials", "true");
 		resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
 		resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -40,22 +43,22 @@ public class FavoriteServlet extends HttpServlet {
     
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-		setCrossHeader(resp);
+		setCrossHeader(resp, req);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
     
   //Servlet處理完請求後，將結果回傳給前端的方法。
-    private void sendJsonResponse(HttpServletResponse resp, int statusCode, Object data)
+    private void sendJsonResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode, Object data)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	resp.setContentType("application/json; charset = UTF-8");
     	resp.setStatus(statusCode);
     	resp.getWriter().write(gson.toJson(data));
     }
     //Servlet處理完請求後如果報錯，將error回傳給前端的方法。
-    private void sendErrorResponse(HttpServletResponse resp, int statusCode,String message)
+    private void sendErrorResponse(HttpServletResponse resp, HttpServletRequest req, int statusCode,String message)
     		throws IOException {
-    	setCrossHeader(resp);
+    	setCrossHeader(resp, req);
     	JsonObject error = new JsonObject();
         error.addProperty("success", false);
         error.addProperty("error", message);
@@ -106,7 +109,7 @@ public class FavoriteServlet extends HttpServlet {
 		try {
 			Integer userId = getUserIdFromSession(req);
 			if(userId == null) {
-				sendErrorResponse(resp, 401, "請先登入");
+				sendErrorResponse(resp, req, 401, "請先登入");
                 return;
 			}
 			
@@ -114,7 +117,7 @@ public class FavoriteServlet extends HttpServlet {
 			if(pathInfo == null || pathInfo.equals("/")) {
 				List<Favorite> favs = service.getFavorites(userId);
 				JsonArray ja = favoritesToJsonArray(favs);
-				sendJsonResponse(resp, 200, ja);
+				sendJsonResponse(resp, req, 200, ja);
                 return;//不執行之後的敘述
 			}
 			
@@ -124,17 +127,17 @@ public class FavoriteServlet extends HttpServlet {
 				Boolean isFavorite = service.isFavorited(userId, recipeId);
 				JsonObject json = new JsonObject();
 				json.addProperty("isFavorite", isFavorite);
-				sendJsonResponse(resp, 200, json);
+				sendJsonResponse(resp, req, 200, json);
 				return;
 			}
 			
-			sendErrorResponse(resp, 404, "找不到此資源");
+			sendErrorResponse(resp, req, 404, "找不到此資源");
 			
 		}catch (IllegalArgumentException e) {
-            sendErrorResponse(resp, 400, e.getMessage());
+            sendErrorResponse(resp, req, 400, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "伺服器錯誤: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "伺服器錯誤: " + e.getMessage());
         }
 	}
 
@@ -146,7 +149,7 @@ public class FavoriteServlet extends HttpServlet {
 	    try {
 			Integer userId = getUserIdFromSession(req);
 			if(userId == null) {
-				sendErrorResponse(resp, 401, "請先登入");
+				sendErrorResponse(resp, req, 401, "請先登入");
                 return;
 			}
 			// POST /api/favorites/{recipeId} - 新增收藏 
@@ -156,10 +159,10 @@ public class FavoriteServlet extends HttpServlet {
 					Integer recipeId = Integer.parseInt(pathInfo.substring(1));
 					Favorite fav = service.addFavorite(userId, recipeId);
 					JsonObject json = favoriteToJson(fav);
-					sendJsonResponse(resp, 201, json);
+					sendJsonResponse(resp, req, 201, json);
 					return;
 				}catch(NumberFormatException e) {
-					 sendErrorResponse(resp, 400, "無效的食譜 ID");
+					 sendErrorResponse(resp, req, 400, "無效的食譜 ID");
 	                 return;
 				}	
 			}
@@ -172,21 +175,21 @@ public class FavoriteServlet extends HttpServlet {
 					JsonObject json = new JsonObject();
 					json.addProperty("isFavorite", newStatus);	
 					json.addProperty("message", newStatus ? "收藏成功" : "取消收藏成功");
-					sendJsonResponse(resp, 200, json);
+					sendJsonResponse(resp, req, 200, json);
 					return;
 				}catch (NumberFormatException e) {
-                    sendErrorResponse(resp, 400, "無效的食譜 ID");
+                    sendErrorResponse(resp, req, 400, "無效的食譜 ID");
                     return;
                 }
 			}
 			
-			sendErrorResponse(resp, 404, "找不到此資源");
+			sendErrorResponse(resp, req, 404, "找不到此資源");
 			
 	    }catch (IllegalArgumentException e) {
-            sendErrorResponse(resp, 400, e.getMessage());
+            sendErrorResponse(resp, req, 400, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "伺服器錯誤: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "伺服器錯誤: " + e.getMessage());
         }
 	}
 
@@ -200,7 +203,7 @@ public class FavoriteServlet extends HttpServlet {
 	    try {
 			Integer userId = getUserIdFromSession(req);
 			if(userId == null) {
-				sendErrorResponse(resp, 401, "請先登入");
+				sendErrorResponse(resp, req, 401, "請先登入");
                 return;
 			}
 			// DELETE /api/favorites/{recipeId} - 刪除收藏 
@@ -211,21 +214,21 @@ public class FavoriteServlet extends HttpServlet {
 					service.deleteFavorite(userId, recipeId);
 					JsonObject json = new JsonObject();
 					json.addProperty("message","取消收藏成功");
-					sendJsonResponse(resp, 200, json);
+					sendJsonResponse(resp, req, 200, json);
 					return;
 				}catch(NumberFormatException e) {
-					 sendErrorResponse(resp, 400, "無效的食譜 ID");
+					 sendErrorResponse(resp, req, 400, "無效的食譜 ID");
 	                 return;
 				}	
 			}
 			
-			sendErrorResponse(resp, 404, "找不到此資源");
+			sendErrorResponse(resp, req, 404, "找不到此資源");
 			
 	    }catch (IllegalArgumentException e) {
-            sendErrorResponse(resp, 400, e.getMessage());
+            sendErrorResponse(resp, req, 400, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            sendErrorResponse(resp, 500, "伺服器錯誤: " + e.getMessage());
+            sendErrorResponse(resp, req, 500, "伺服器錯誤: " + e.getMessage());
         }
 	}
 }
