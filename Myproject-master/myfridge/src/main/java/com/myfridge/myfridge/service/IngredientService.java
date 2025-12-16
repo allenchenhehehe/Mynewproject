@@ -1,10 +1,8 @@
 package com.myfridge.myfridge.service;
 
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.myfridge.myfridge.entity.Ingredient;
 import com.myfridge.myfridge.repository.IngredientRepository;
@@ -17,25 +15,27 @@ public class IngredientService {
     
     private final IngredientRepository ingredientRepository;
     
-    // ✅ 對應你的 getAllIngre()
+    // 對應你的 getAllIngre()
     public List<Ingredient> getAllIngre() {
-        return StreamSupport.stream(ingredientRepository.findAll().spliterator(), false)
-                .toList();
+        return ingredientRepository.findAll();
     }
     
-    // ✅ 對應你的 getIngreById()
+    //對應你的 getIngreById()
     public Ingredient getIngreById(Integer id) {
-        return ingredientRepository.findById(id).orElse(null);
+        return ingredientRepository.findById(id);
     }
     
-    // ✅ 對應你的 getIngreByName()
+    //對應你的 getIngreByName()
     public Ingredient getIngreByName(String name) {
-        return ingredientRepository.findByIngredientName(name).orElse(null);
-    }
+        return ingredientRepository.findByName(name);
+    }   
     
-    // ✅ 對應你的 addIngre()
-    @Transactional
+    //對應你的 addIngre()
     public Ingredient addIngre(Ingredient ingre) {
-        return ingredientRepository.save(ingre);
+        return ingredientRepository.insert(ingre);
+    }
+
+    public Integer findOrCreate(String ingredientName, String category) {
+        return ingredientRepository.findOrCreate(ingredientName, category); 
     }
 }

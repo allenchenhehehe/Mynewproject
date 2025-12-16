@@ -127,7 +127,7 @@ public class RecipeDAO {
 				rs = psmt.executeQuery();
 				Recipe recipe = null;
 				if(rs.next()) {
-					//此食的recipe不包含ingredient)
+					//此時的recipe不包含ingredient)
 					recipe = buildRecipe(rs);
 				}
 				if(recipe == null) {
