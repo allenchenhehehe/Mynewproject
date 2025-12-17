@@ -53,8 +53,8 @@ public class FridgeItemRepository {
     private final RowMapper<FridgeItem> rowMapper = (rs, rowNum) -> {
 
 		FridgeItem fridgeItem = new FridgeItem();
-		fridgeItem.setId(rs.getInt("userId"));		
-        fridgeItem.setUserId(rs.getInt("id")); 	  
+		fridgeItem.setId(rs.getInt("id"));		
+        fridgeItem.setUserId(rs.getInt("userId")); 	  
         fridgeItem.setIngredientId(rs.getInt("ingredientId")); 	  
         fridgeItem.setAmount(rs.getDouble("amount")); 	  
         fridgeItem.setUnit(rs.getString("unit")); 	  
@@ -68,7 +68,7 @@ public class FridgeItemRepository {
 		fridgeItem.setCategory(rs.getString("category"));	 
 	 
 		return fridgeItem;
-	 };
+	};
 
     public List<FridgeItem> findByUserId(Integer userId){
         return jdbcTemplate.query(SELECT_BY_USER_ID, rowMapper, userId);
@@ -141,7 +141,7 @@ public class FridgeItemRepository {
         });
     }
 
-    public boolean delete(Integer id, Integer userId){
+    public boolean delete(Integer userId, Integer id){
         int rows = jdbcTemplate.update(DELETE_ITEM, id, userId);
         return rows>0;
     }

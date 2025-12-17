@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myfridge.myfridge.entity.FridgeItem;
 import com.myfridge.myfridge.service.FridgeItemService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FridgeItemController {
     
-    private FridgeItemService fridgeItemService;
+    private final FridgeItemService fridgeItemService;
 
     //Helper，從 Session 取得 userId
     private Integer getUserIdFromSession(HttpSession session){
@@ -159,8 +159,8 @@ public class FridgeItemController {
 
     }
 
-
-    record FridgeItemRequest(
+    //因前端傳回的資料，不一定跟Entity的欄位相同，Entity會包含很多前端顯示需求新增的屬性，但前端給的request不一定都會包含
+    public record FridgeItemRequest(
         String ingredientName,
         String category,
         Double amount,
@@ -170,7 +170,7 @@ public class FridgeItemController {
     ) {}
 
 
-    record FridgeItemUpdateRequest(
+    public record FridgeItemUpdateRequest(
         Double amount,
         String unit,
         LocalDate purchasedDate,
