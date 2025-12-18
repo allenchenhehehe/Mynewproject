@@ -57,6 +57,10 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("帳號或密碼錯誤");
         }
+
+        if ("inactive".equals(user.getStatus()) || "banned".equals(user.getStatus())) {
+            throw new RuntimeException("此帳號已被停用，請聯繫管理員");
+        }
         
         // 2. 驗證密碼
         if (!passwordEncoder.matches(password, user.getPassword())) {

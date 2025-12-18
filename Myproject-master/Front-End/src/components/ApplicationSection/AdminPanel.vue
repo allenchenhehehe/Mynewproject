@@ -5,6 +5,7 @@ import { useAuthStore, STATUS_LOGIN } from '@/stores/authStore'
 import RecipeManagement from '@/components/admin/RecipeManagement.vue'
 import CommentManagement from '@/components/admin/CommentManagement.vue'
 import FavoriteManagement from '@/components/admin/FavoriteManagement.vue'
+import UserManagement from '@/components/admin/UserManagement.vue'
 
 const adminStore = useAdminStore()
 const authStore = useAuthStore()
@@ -83,11 +84,21 @@ function handleLogout() {
         >
           收藏記錄
         </button>
+
+        <button
+          @click="activeTab = 'users'"
+          :class="activeTab === 'users' ? 'bg-black text-white' : 'bg-white text-black'"
+          class="border-2 border-black px-6 py-3 font-black uppercase shadow-[4px_4px_0px_0px_black] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black] transition-all"
+        >
+          使用者管理
+        </button>
+
       </div>
 
       <RecipeManagement v-if="activeTab === 'recipes'" />
       <CommentManagement v-if="activeTab === 'comments'" />
       <FavoriteManagement v-if="activeTab === 'favorites'" />
+      <UserManagement v-if="activeTab === 'users'" />
     </div>
   </div>
 </template>

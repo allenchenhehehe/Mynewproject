@@ -5,13 +5,16 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myfridge.myfridge.entity.Comment;
 import com.myfridge.myfridge.entity.Favorite;
 import com.myfridge.myfridge.entity.Recipe;
+import com.myfridge.myfridge.entity.User;
 import com.myfridge.myfridge.service.AdminService;
 
 import jakarta.servlet.http.HttpSession;
@@ -29,6 +32,8 @@ public class AdminController {
     
     // 成功回應
     record SuccessResponse(String message) {}
+
+    record UpdateStatusRequest(String status) {}
 
     // 從 Session 取得 userId
     private Integer getUserIdFromSession(HttpSession session) {
@@ -181,4 +186,69 @@ public class AdminController {
         }
 
     }
+
+    // GET /api/admin/users - 查詢所有使用者
+@GetMapping("/users")
+public ResponseEntity<?> getAllUsers(HttpSession session) {
+    ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+    if (permissionCheck != null) return permissionCheck;
+    
+    try {
+        List<User> users = adminService.getAllUsers();
+        return ResponseEntity.ok(users);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500)
+            .body(new ErrorResponse("載入使用者失敗: " + e.getMessage()));
+    }
+}
+
+// PATCH /api/admin/users/{userId}/status - 更新使用者狀態
+@PatchMapping("/users/{userId}/status")
+public ResponseEntity<?> updateUserStatus(
+    @PathVariable Integer userId,
+    @RequestBody UpdateStatusRequest request,
+    HttpSession session
+) {
+    ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+    if (permissionCheck != null) return permissionCheck;
+    
+    try {
+        adminService.updateUserStatus(userId, request.status());
+        return ResponseEntity.ok(new SuccessResponse("使用者狀態更新成功"));
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest()
+            .body(new ErrorResponse(e.getMessage()));
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(404)
+            .body(new ErrorResponse(e.getMessage()));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500)
+            .body(new ErrorResponse("更新失敗: " + e.getMessage()));
+    }
+}
+
+// DELETE /api/admin/users/{userId} - 刪除使用者
+@DeleteMapping("/users/{userId}")
+public ResponseEntity<?> deleteUser(
+    @PathVariable Integer userId,
+    HttpSession session
+) {
+    ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+    if (permissionCheck != null) return permissionCheck;
+    
+    try {
+        adminService.deleteUser(userId);
+        return ResponseEntity.ok(new SuccessResponse("使用者刪除成功"));
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(404)
+            .body(new ErrorResponse(e.getMessage()));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500)
+            .body(new ErrorResponse("刪除失敗: " + e.getMessage()));
+    }
+}
+
 }

@@ -54,14 +54,7 @@ public class ConmmentController {
     public record SuccessResponse(String message) {}
 
     @GetMapping("/recipe/{recipeId}")
-    public ResponseEntity<?> getCommentsFromRecipe(@PathVariable Integer recipeId,HttpSession session){
-
-        Integer userId = getUserIdFromSession(session);
-
-        if(userId == null){
-            return ResponseEntity.status(401)
-                .body(new ErrorResponse("尚未登入")); 
-        }
+    public ResponseEntity<?> getCommentsFromRecipe(@PathVariable Integer recipeId){
 
         try {
 

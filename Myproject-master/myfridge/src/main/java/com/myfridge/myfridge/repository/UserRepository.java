@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.myfridge.myfridge.entity.User;
 
@@ -22,7 +23,7 @@ public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String SELECT_ALL = 
-			"SELECT id, userName, email, role, createdAt, updatedAt FROM User ORDER BY id";
+			"SELECT id, userName, email, role, status, createdAt, updatedAt FROM User ORDER BY id";
 
     private static final String SELECT_BY_ID = 
 			"SELECT * FROM USER WHERE ID = ?";
@@ -31,7 +32,13 @@ public class UserRepository {
 			"SELECT * FROM USER  WHERE EMAIL = ?";
 
     private static final String INSERT_USER= 
-			"INSERT INTO USER (USERNAME,EMAIL,PASSWORD) VALUES (?,?,?)";
+			"INSERT INTO USER (USERNAME,EMAIL,PASSWORD, STATUS) VALUES (?,?,?,?)";
+
+    private static final String UPDATE_STATUS = 
+    "UPDATE User SET status = ? WHERE id = ?";
+
+    private static final String DELETE = 
+        "DELETE FROM User WHERE id = ?";
 
     private final RowMapper<User> fullRowMapper = (rs, rowNum) -> {
 
@@ -42,6 +49,7 @@ public class UserRepository {
         user.setEmail(rs.getString("email"));
         user.setRole(rs.getString("role"));
         user.setPassword(rs.getString("password"));
+        user.setStatus(rs.getString("status"));
 
         Timestamp createdAt = rs.getTimestamp("createdAt");
         user.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
@@ -60,6 +68,7 @@ public class UserRepository {
         user.setUserName(rs.getString("userName"));
         user.setEmail(rs.getString("email"));
         user.setRole(rs.getString("role"));
+        user.setStatus(rs.getString("status"));
 
         Timestamp createdAt = rs.getTimestamp("createdAt");
         user.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
@@ -97,6 +106,7 @@ public class UserRepository {
             ps.setString(1, user.getUserName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword());
+            ps.setString(4, user.getStatus() != null ? user.getStatus() : "active");
 
             //回傳 PreparedStatement 給 Spring 執行
             return ps;
@@ -107,5 +117,15 @@ public class UserRepository {
         //回傳帶有 ID 的物件
         return findById(user.getId());
 
+    }
+
+    @Transactional
+    public int updateStatus(Integer userId, String status) {
+        return jdbcTemplate.update(UPDATE_STATUS, status, userId);
+    }
+
+    @Transactional
+    public int delete(Integer userId) {
+        return jdbcTemplate.update(DELETE, userId);
     }
 }

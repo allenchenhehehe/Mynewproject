@@ -22,6 +22,8 @@ public class User {
 	// 密碼：只能寫入，不能讀取（安全性）
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
+	
+	private String status;
 
 	// 時間戳記
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
