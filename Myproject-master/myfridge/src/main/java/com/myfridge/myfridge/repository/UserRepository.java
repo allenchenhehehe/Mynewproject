@@ -105,7 +105,7 @@ public class UserRepository {
         //從 keyHolder 取出 ID，設定回物件
         user.setId(keyHolder.getKey().intValue());
         //回傳帶有 ID 的物件
-        return user;
+        return findById(user.getId());
 
     }
 }

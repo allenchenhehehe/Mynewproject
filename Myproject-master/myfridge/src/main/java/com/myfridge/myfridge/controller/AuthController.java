@@ -61,7 +61,7 @@ public class AuthController {
             User user = userService.login(request.email(), request.password());
 
             //建立 Session
-            session.setMaxInactiveInterval(-1);
+            session.setMaxInactiveInterval(600);
             session.setAttribute("id", user.getId());  // ← 統一用 userId
             session.setAttribute("email", user.getEmail());
             session.setAttribute("userName", user.getUserName());

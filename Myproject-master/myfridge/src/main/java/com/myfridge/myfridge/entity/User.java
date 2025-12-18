@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 	private String userName;
 	private String email;
