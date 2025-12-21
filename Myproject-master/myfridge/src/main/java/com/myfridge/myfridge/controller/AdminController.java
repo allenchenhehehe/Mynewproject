@@ -1,12 +1,14 @@
 package com.myfridge.myfridge.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,9 @@ import com.myfridge.myfridge.entity.Favorite;
 import com.myfridge.myfridge.entity.Recipe;
 import com.myfridge.myfridge.entity.User;
 import com.myfridge.myfridge.service.AdminService;
+import com.myfridge.myfridge.service.RecipeAIService;
+import com.myfridge.myfridge.service.RecipeImportService;
+import com.myfridge.myfridge.service.RecipeService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +31,9 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 
     private final AdminService adminService;
+    private final RecipeService recipeService;  //新增
+    private final RecipeAIService recipeAIService;  //新增
+    private final RecipeImportService recipeImportService;
 
     // 錯誤回應
     record ErrorResponse(String error) {}
@@ -34,6 +42,14 @@ public class AdminController {
     record SuccessResponse(String message) {}
 
     record UpdateStatusRequest(String status) {}
+
+    record RecipeRequest(
+        String title,
+        String description,
+        String imageUrl,
+        Integer cookingTime,
+        Integer difficulty
+    ) {}
 
     // 從 Session 取得 userId
     private Integer getUserIdFromSession(HttpSession session) {
@@ -142,113 +158,157 @@ public class AdminController {
 
      }
 
-     @GetMapping("/recipes")
-     public ResponseEntity<?> gellAllRecipes(HttpSession session){
-
+    // ==================== 食譜管理 ====================
+    
+    // GET /api/admin/recipes - 查詢所有食譜
+    @GetMapping("/recipes")
+    public ResponseEntity<?> getAllRecipes(HttpSession session) {
         ResponseEntity<?> permissionCheck = checkAdminPermission(session);
-        if (permissionCheck != null) {
-            return permissionCheck;  // 權限不足，直接回傳
-        }
-
+        if (permissionCheck != null) return permissionCheck;
+        
         try {
-
-            List<Recipe> recipes = adminService.getAllRecipes();
+            // ✅ 使用 RecipeService 的 getAllRecipes（會 JOIN 食材）
+            var recipes = recipeService.getAllRecipes();
             return ResponseEntity.ok(recipes);
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500)
                 .body(new ErrorResponse("載入食譜失敗: " + e.getMessage()));
         }
-
-     }
-
-     @DeleteMapping("/recipes/{recipeId}")
-    public ResponseEntity<?> deleteRecipes(@PathVariable Integer recipeId, HttpSession session){
-
+    }
+    
+    // GET /api/admin/recipes/generate-random - 隨機生成食譜
+    @GetMapping("/recipes/generate-random")
+    public ResponseEntity<?> generateRandomRecipe(HttpSession session) {
         ResponseEntity<?> permissionCheck = checkAdminPermission(session);
-        if (permissionCheck != null) {
-            return permissionCheck;  // 權限不足，直接回傳
-        }
-
+        if (permissionCheck != null) return permissionCheck;
+        
         try {
-
-           adminService.deleteRecipes(recipeId);
-           return ResponseEntity.ok(new SuccessResponse("食譜刪除成功"));
+            Map<String, Object> recipe = recipeAIService.generateRecipe(null);
+            return ResponseEntity.ok(recipe);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("生成失敗: " + e.getMessage()));
+        }
+    }
+    
+    // POST /api/admin/recipes - 新增食譜（✅ 使用 RecipeImportService）
+    @PostMapping("/recipes")
+    public ResponseEntity<?> createRecipe(
+        @RequestBody Map<String, Object> request,
+        HttpSession session
+    ) {
+        ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+        if (permissionCheck != null) return permissionCheck;
+        
+        try {
+            // ✅ 使用 RecipeImportService 處理食材關聯
+            Recipe created = recipeImportService.importRecipeFromAI(request);
             
+            // ✅ 重新查詢完整資料（包含食材）
+            Recipe fullRecipe = recipeService.getRecipeById(created.getId());
+            
+            return ResponseEntity.status(201).body(fullRecipe);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("新增失敗: " + e.getMessage()));
+        }
+    }
+    
+    // DELETE /api/admin/recipes/{recipeId} - 刪除食譜
+    @DeleteMapping("/recipes/{recipeId}")
+    public ResponseEntity<?> deleteRecipe(
+        @PathVariable Integer recipeId,
+        HttpSession session
+    ) {
+        ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+        if (permissionCheck != null) return permissionCheck;
+        
+        try {
+            recipeService.deleteRecipe(recipeId);
+            return ResponseEntity.ok(new SuccessResponse("食譜刪除成功"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("刪除失敗: " + e.getMessage()));
+        }
+    }
+
+    // GET /api/admin/users - 查詢所有使用者
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers(HttpSession session) {
+        ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+        if (permissionCheck != null) return permissionCheck;
+        
+        try {
+            List<User> users = adminService.getAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("載入使用者失敗: " + e.getMessage()));
+        }
+    }
+
+    // PATCH /api/admin/users/{userId}/status - 更新使用者狀態
+    @PatchMapping("/users/{userId}/status")
+    public ResponseEntity<?> updateUserStatus(
+        @PathVariable Integer userId,
+        @RequestBody UpdateStatusRequest request,
+        HttpSession session
+    ) {
+        ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+        if (permissionCheck != null) return permissionCheck;
+        
+        try {
+            adminService.updateUserStatus(userId, request.status());
+            return ResponseEntity.ok(new SuccessResponse("使用者狀態更新成功"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(new ErrorResponse(e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404)
                 .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500)
-                .body(new ErrorResponse("刪除食譜失敗: " + e.getMessage()));
+                .body(new ErrorResponse("更新失敗: " + e.getMessage()));
         }
-
     }
 
-    // GET /api/admin/users - 查詢所有使用者
-@GetMapping("/users")
-public ResponseEntity<?> getAllUsers(HttpSession session) {
-    ResponseEntity<?> permissionCheck = checkAdminPermission(session);
-    if (permissionCheck != null) return permissionCheck;
+    // DELETE /api/admin/users/{userId} - 刪除使用者
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<?> deleteUser(
+        @PathVariable Integer userId,
+        HttpSession session
+    ) {
+        ResponseEntity<?> permissionCheck = checkAdminPermission(session);
+        if (permissionCheck != null) return permissionCheck;
+        
+        try {
+            adminService.deleteUser(userId);
+            return ResponseEntity.ok(new SuccessResponse("使用者刪除成功"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404)
+                .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(new ErrorResponse("刪除失敗: " + e.getMessage()));
+        }
+    }
+
     
-    try {
-        List<User> users = adminService.getAllUsers();
-        return ResponseEntity.ok(users);
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(500)
-            .body(new ErrorResponse("載入使用者失敗: " + e.getMessage()));
-    }
 }
 
-// PATCH /api/admin/users/{userId}/status - 更新使用者狀態
-@PatchMapping("/users/{userId}/status")
-public ResponseEntity<?> updateUserStatus(
-    @PathVariable Integer userId,
-    @RequestBody UpdateStatusRequest request,
-    HttpSession session
-) {
-    ResponseEntity<?> permissionCheck = checkAdminPermission(session);
-    if (permissionCheck != null) return permissionCheck;
-    
-    try {
-        adminService.updateUserStatus(userId, request.status());
-        return ResponseEntity.ok(new SuccessResponse("使用者狀態更新成功"));
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest()
-            .body(new ErrorResponse(e.getMessage()));
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(404)
-            .body(new ErrorResponse(e.getMessage()));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(500)
-            .body(new ErrorResponse("更新失敗: " + e.getMessage()));
-    }
-}
 
-// DELETE /api/admin/users/{userId} - 刪除使用者
-@DeleteMapping("/users/{userId}")
-public ResponseEntity<?> deleteUser(
-    @PathVariable Integer userId,
-    HttpSession session
-) {
-    ResponseEntity<?> permissionCheck = checkAdminPermission(session);
-    if (permissionCheck != null) return permissionCheck;
-    
-    try {
-        adminService.deleteUser(userId);
-        return ResponseEntity.ok(new SuccessResponse("使用者刪除成功"));
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(404)
-            .body(new ErrorResponse(e.getMessage()));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(500)
-            .body(new ErrorResponse("刪除失敗: " + e.getMessage()));
-    }
-}
 
-}
+

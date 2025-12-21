@@ -1,10 +1,17 @@
 package com.myfridge.myfridge.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +26,8 @@ public class RecipeRepository {
     
     private final JdbcTemplate jdbcTemplate;
     
-    // SQL 語句
+    // ==================== SQL 語句 ====================
+    
     private static final String SELECT_ALL = 
         "SELECT id, userId, title, description, imageUrl, cookingTime, " +
         "difficulty, step, isPublic " +
@@ -40,6 +48,31 @@ public class RecipeRepository {
         "JOIN ingredient i ON ri.ingredientId = i.id " +
         "WHERE ri.recipeId = ?";
     
+    // ✅ 新增：查詢所有食譜（包含食材）- 使用 JOIN 一次查詢
+    private static final String SELECT_ALL_WITH_INGREDIENTS = 
+        "SELECT " +
+        "r.id, r.userId, r.title, r.description, r.imageUrl, r.cookingTime, " +
+        "r.difficulty, r.step, r.isPublic, " +
+        "ri.ingredientId, ri.amount, ri.unit, " +
+        "i.ingredientName, i.category " +
+        "FROM recipe r " +
+        "LEFT JOIN recipeingredient ri ON r.id = ri.recipeId " +
+        "LEFT JOIN ingredient i ON ri.ingredientId = i.id " +
+        "WHERE r.isPublic = true " +
+        "ORDER BY r.id";
+    
+    // ✅ 新增：查詢單一食譜（包含食材）- 使用 JOIN
+    private static final String SELECT_BY_ID_WITH_INGREDIENTS = 
+        "SELECT " +
+        "r.id, r.userId, r.title, r.description, r.imageUrl, r.cookingTime, " +
+        "r.difficulty, r.step, r.isPublic, " +
+        "ri.ingredientId, ri.amount, ri.unit, " +
+        "i.ingredientName, i.category " +
+        "FROM recipe r " +
+        "LEFT JOIN recipeingredient ri ON r.id = ri.recipeId " +
+        "LEFT JOIN ingredient i ON ri.ingredientId = i.id " +
+        "WHERE r.id = ?";
+    
     private static final String SEARCH_BY_KEYWORD = 
         "SELECT id, userId, title, description, imageUrl, cookingTime, " +
         "difficulty, step, isPublic " +
@@ -49,10 +82,15 @@ public class RecipeRepository {
         "ORDER BY id";
     
     private static final String DELETE_RECIPE = "DELETE FROM recipe WHERE id = ?";
-
     private static final String DELETE_INGREDIENTS = "DELETE FROM RecipeIngredient WHERE recipeId = ?";
     
-    // RowMapper for Recipe
+    // ✅ 修改：INSERT 加上 step 欄位
+    private static final String INSERT = 
+        "INSERT INTO Recipe (title, description, imageUrl, cookingTime, difficulty, step) " +
+        "VALUES (?, ?, ?, ?, ?, ?)";
+    
+    // ==================== RowMapper ====================
+    
     private final RowMapper<Recipe> recipeRowMapper = (rs, rowNum) -> {
         Recipe recipe = new Recipe();
         recipe.setId(rs.getInt("id"));
@@ -64,10 +102,10 @@ public class RecipeRepository {
         recipe.setDifficulty(rs.getInt("difficulty"));
         recipe.setStep(rs.getString("step"));
         recipe.setIsPublic(rs.getBoolean("isPublic"));
+        // ✅ 移除 createdAt
         return recipe;
     };
     
-    // RowMapper for RecipeIngredient
     private final RowMapper<RecipeIngredient> ingredientRowMapper = (rs, rowNum) -> {
         RecipeIngredient ingredient = new RecipeIngredient();
         ingredient.setId(rs.getInt("id"));
@@ -80,50 +118,138 @@ public class RecipeRepository {
         return ingredient;
     };
     
-    //載入食材
+    // ==================== Helper 方法 ====================
+    
     private List<RecipeIngredient> getIngredientsByRecipeId(Integer recipeId) {
         return jdbcTemplate.query(SELECT_INGREDIENTS_BY_RECIPE_ID, ingredientRowMapper, recipeId);
     }
     
-    //查詢所有公開食譜（含食材）
+    // ==================== 查詢方法 ====================
+    
+    /**
+     * ✅ 查詢所有公開食譜（包含食材）- 使用 JOIN 優化
+     */
+    public List<Recipe> findAllWithIngredients() {
+    return jdbcTemplate.query(SELECT_ALL_WITH_INGREDIENTS, rs -> {
+        Map<Integer, Recipe> recipeMap = new LinkedHashMap<>();
+        
+        try {
+            while (rs.next()) {
+                Integer recipeId = rs.getInt("id");
+                
+                // 如果這個食譜還沒加入 Map，建立新的 Recipe
+                Recipe recipe = recipeMap.computeIfAbsent(recipeId, id -> {
+                    try {
+                        Recipe r = new Recipe();
+                        r.setId(recipeId);
+                        r.setUserId(rs.getInt("userId"));
+                        r.setTitle(rs.getString("title"));
+                        r.setDescription(rs.getString("description"));
+                        r.setImageUrl(rs.getString("imageUrl"));
+                        r.setCookingTime(rs.getInt("cookingTime"));
+                        r.setDifficulty(rs.getInt("difficulty"));
+                        r.setStep(rs.getString("step"));
+                        r.setIsPublic(rs.getBoolean("isPublic"));
+                        
+                        r.setIngredients(new ArrayList<>());
+                        return r;
+                    } catch (Exception e) {
+                        throw new RuntimeException("解析食譜資料失敗", e);
+                    }
+                });
+                
+                // 如果有食材，加入到 ingredients 列表
+                Integer ingredientId = (Integer) rs.getObject("ingredientId");
+                if (ingredientId != null) {
+                    RecipeIngredient ing = new RecipeIngredient();
+                    ing.setIngredientId(ingredientId);
+                    ing.setIngredientName(rs.getString("ingredientName"));
+                    ing.setAmount(rs.getDouble("amount"));
+                    ing.setUnit(rs.getString("unit"));
+                    ing.setCategory(rs.getString("category"));
+                    
+                    recipe.getIngredients().add(ing);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("查詢食譜失敗", e);
+        }
+        
+        return new ArrayList<>(recipeMap.values());
+    });
+}
+    
+    /**
+     * ✅ 查詢單一食譜（包含食材）- 使用 JOIN 優化
+     */
+    public Recipe findByIdWithIngredients(Integer id) {
+        List<Recipe> recipes = jdbcTemplate.query(SELECT_BY_ID_WITH_INGREDIENTS, rs -> {
+            Recipe recipe = null;
+            List<RecipeIngredient> ingredients = new ArrayList<>();
+            
+            while (rs.next()) {
+                if (recipe == null) {
+                    recipe = new Recipe();
+                    recipe.setId(rs.getInt("id"));
+                    recipe.setUserId(rs.getInt("userId"));
+                    recipe.setTitle(rs.getString("title"));
+                    recipe.setDescription(rs.getString("description"));
+                    recipe.setImageUrl(rs.getString("imageUrl"));
+                    recipe.setCookingTime(rs.getInt("cookingTime"));
+                    recipe.setDifficulty(rs.getInt("difficulty"));
+                    recipe.setStep(rs.getString("step"));
+                    recipe.setIsPublic(rs.getBoolean("isPublic"));
+                    // ✅ 移除 createdAt
+                }
+                
+                Integer ingredientId = (Integer) rs.getObject("ingredientId");
+                if (ingredientId != null) {
+                    RecipeIngredient ing = new RecipeIngredient();
+                    ing.setIngredientId(ingredientId);
+                    ing.setIngredientName(rs.getString("ingredientName"));
+                    ing.setAmount(rs.getDouble("amount"));
+                    ing.setUnit(rs.getString("unit"));
+                    ing.setCategory(rs.getString("category"));
+                    
+                    ingredients.add(ing);
+                }
+            }
+            
+            if (recipe != null) {
+                recipe.setIngredients(ingredients);
+                return Collections.singletonList(recipe);
+            }
+            return Collections.emptyList();
+        }, id);
+        
+        return recipes.isEmpty() ? null : recipes.get(0);
+    }
+    
+    // ✅ 保留舊方法（相容性）
     public List<Recipe> findAll() {
         List<Recipe> recipes = jdbcTemplate.query(SELECT_ALL, recipeRowMapper);
-        //為每個食譜加入所需食材
         recipes.forEach(recipe -> recipe.setIngredients(getIngredientsByRecipeId(recipe.getId())));
         return recipes;
     }
     
-    //根據 ID 查詢（含食材）
     public Recipe findById(Integer id) {
         List<Recipe> recipes = jdbcTemplate.query(SELECT_BY_ID, recipeRowMapper, id);
         if (recipes.isEmpty()) {
             return null;
         }
-        //從List抓第一個食譜
         Recipe recipe = recipes.get(0);
-        //為單個食譜加入所需食材
         recipe.setIngredients(getIngredientsByRecipeId(id));
         return recipe;
     }
     
-    //關鍵字搜尋（含食材）
     public List<Recipe> findByKeyword(String keyword) {
-
-        //建立模糊搜尋的模式，% 是SQL的萬用字元（wildcard），%番茄%代表「前後可以有任意字元」
         String pattern = "%" + keyword + "%";
-
-        //執行 SQL 查詢，因為QueryString有兩個?，所以傳兩個pattern
         List<Recipe> recipes = jdbcTemplate.query(SEARCH_BY_KEYWORD, recipeRowMapper, pattern, pattern);
-
-        //為每個食譜載入食材
         recipes.forEach(recipe -> recipe.setIngredients(getIngredientsByRecipeId(recipe.getId())));
         return recipes;
     }
     
-    //動態過濾查詢（含食材）
     public List<Recipe> filter(Integer difficulty, Integer minCookingTime, Integer maxCookingTime) {
-
-        //建立基礎 SQL（用 StringBuilder 動態組合）
         StringBuilder sql = new StringBuilder(
             "SELECT id, userId, title, description, imageUrl, cookingTime, " +
             "difficulty, step, isPublic " +
@@ -131,10 +257,8 @@ public class RecipeRepository {
             "WHERE isPublic = true "
         );
 
-        //建立參數列表，存放所有的?
         List<Object> params = new ArrayList<>();
         
-        //根據有無傳入參數，動態新增 SQL 條件
         if (difficulty != null) {
             sql.append("AND difficulty = ? ");
             params.add(difficulty);
@@ -150,20 +274,39 @@ public class RecipeRepository {
             params.add(maxCookingTime);
         }
         
-        //加上排序
         sql.append("ORDER BY id");
         
-        //執行查詢，把StringBuilder轉成String，把List<Object>轉成Object[]
-        //因為query(String sql, RowMapper<T> rowMapper, Object... args)最後是Object，params是List，轉成Obj陣列
         List<Recipe> recipes = jdbcTemplate.query(sql.toString(), recipeRowMapper, params.toArray());
         recipes.forEach(recipe -> recipe.setIngredients(getIngredientsByRecipeId(recipe.getId())));
         return recipes;
     }
     
-    //刪除食譜（資料庫會級聯刪除 RecipeIngredient）
+    // ==================== 修改/刪除方法 ====================
+    
     @Transactional
     public int delete(Integer recipeId) {
         jdbcTemplate.update(DELETE_INGREDIENTS, recipeId);
         return jdbcTemplate.update(DELETE_RECIPE, recipeId);
+    }
+
+    /**
+     * ✅ 插入食譜（加上 step 欄位）
+     */
+    public Recipe insert(Recipe recipe) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, recipe.getTitle());
+            ps.setString(2, recipe.getDescription());
+            ps.setString(3, recipe.getImageUrl());
+            ps.setInt(4, recipe.getCookingTime());
+            ps.setInt(5, recipe.getDifficulty());
+            ps.setString(6, recipe.getStep());  // ✅ 新增 step
+            return ps;
+        }, keyHolder);
+        
+        recipe.setId(keyHolder.getKey().intValue());
+        return findById(recipe.getId());
     }
 }

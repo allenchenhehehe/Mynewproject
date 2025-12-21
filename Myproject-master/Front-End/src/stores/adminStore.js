@@ -237,6 +237,48 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  async function generateRandomRecipe(cuisine = '') {
+  loading.value = true
+  error.value = null
+  
+  try {
+    const params = cuisine ? `?cuisine=${encodeURIComponent(cuisine)}` : ''
+    const response = await axios.get(
+      `${API_BASE_URL}/admin/recipes/generate-random${params}`,
+      { withCredentials: true }
+    )
+    
+    return { success: true, data: response.data }
+  } catch (err) {
+    console.error('生成食譜失敗:', err)
+    error.value = err.response?.data?.error || '生成食譜失敗'
+    return { success: false, error: error.value }
+  } finally {
+    loading.value = false
+  }
+}
+
+async function createRecipe(recipeData) {
+  loading.value = true
+  error.value = null
+  
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/admin/recipes`,
+      recipeData,
+      { withCredentials: true }
+    )
+    
+    return { success: true, data: response.data }
+  } catch (err) {
+    console.error('新增食譜失敗:', err)
+    error.value = err.response?.data?.error || '新增食譜失敗'
+    return { success: false, error: error.value }
+  } finally {
+    loading.value = false
+  }
+}
+
   // ==================== 評論管理 ====================
   
   async function fetchComments() {
@@ -325,8 +367,10 @@ export const useAdminStore = defineStore('admin', () => {
     fetchComments,
     deleteComment,
     fetchFavorites,
-    fetchUsers,  // ✅ 新增
-    updateUserStatus,  // ✅ 新增
-    deleteUser  // ✅ 新增
+    fetchUsers,  // 新增
+    updateUserStatus,  //新增
+    deleteUser,  //新增
+    generateRandomRecipe,  //新增
+    createRecipe
   }
 })

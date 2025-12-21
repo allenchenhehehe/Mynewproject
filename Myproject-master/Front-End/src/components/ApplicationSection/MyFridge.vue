@@ -15,6 +15,7 @@ const categories = [
     { key: 'meat', name: '肉類', color: 'bg-red-200' },
     { key: 'egg', name: '蛋類', color: 'bg-yellow-100' },
     { key: 'bean', name: '豆類', color: 'bg-purple-100' },
+    { key: 'dairy', name: '乳製品', color: 'bg-olivine-100' },
     { key: 'seasoning', name: '調味料', color: 'bg-gray-100' },
     { key: 'oil', name: '油類', color: 'bg-orange-100' },
     { key: 'seafood', name: '海鮮', color: 'bg-blue-100' },
@@ -27,6 +28,7 @@ const expandedCategories = ref({
     meat: false,
     egg: false,
     bean: false,
+    dairy: false,
     seasoning: false,
     oil: false,
     seafood: false,
@@ -172,6 +174,7 @@ function calculateDaysLeft(expiredDate) {
 function isExpired(expiredDate) {
     return calculateDaysLeft(expiredDate) < 0
 }
+
 </script>
 
 <template>
