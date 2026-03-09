@@ -12,14 +12,6 @@ const authStore = useAuthStore()
 
 const activeTab = ref('recipes')
 
-// onMounted(async () => {
-//   // 檢查登入狀態
-//   const isAuth = await adminStore.checkAuth()
-//   if (!isAuth) {
-//     authStore.setAuthStatus(STATUS_LOGIN)
-//   }
-// })
-
 onMounted(() => {
   if (!adminStore.isAuthenticated) {
     // 如果沒有登入，跳回登入頁

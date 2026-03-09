@@ -14,7 +14,6 @@ const navigateTo = (pageName) => {
     navStore.goToPage(pageName)
 }
 
-// --- 統計邏輯 ---
 
 // 統計資料
 const stats = computed(() => {

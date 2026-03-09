@@ -118,5 +118,6 @@ const handleAccountMenuNavigate = (page) => {
             @click="isMenuOpen = false"
             style="top: 70px"
         ></div>
+        
     </header>
 </template>

@@ -242,7 +242,7 @@ export const useAdminStore = defineStore('admin', () => {
   error.value = null
   
   try {
-    // ✅ 把排除清單也傳給後端
+    // 把排除清單也傳給後端
     const params = new URLSearchParams()
     if (cuisine) params.append('cuisine', cuisine)
     if (excludeTitles.length > 0) {
