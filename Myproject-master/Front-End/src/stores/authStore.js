@@ -181,6 +181,7 @@ export const useAuthStore = defineStore('auth', () => {
       currentUser.value = null
       localStorage.removeItem('user')
       localStorage.removeItem('adminUser')
+      localStorage.removeItem('lastPage')
       authStatus.value = STATUS_LOGIN
       loading.value = false
     }

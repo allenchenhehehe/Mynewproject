@@ -3,9 +3,10 @@ import { ref } from 'vue'
 
 export const useNavigationStore = defineStore('navigation', () => {
   // State
-  const view = localStorage.getItem('lastPage')||'Home'
+  const view = localStorage.getItem('lastPage') || 'Home'
+  const savedRecipe = localStorage.getItem('selectedRecipe')
   const currentPage = ref(view)
-  const selectedRecipe = ref(null)
+  const selectedRecipe = ref(savedRecipe ? JSON.parse(savedRecipe) : null)
 
   // Actions
   function goToPage(pageName) {
@@ -16,12 +17,14 @@ export const useNavigationStore = defineStore('navigation', () => {
 
   function goToRecipeDetail(recipe) {
     selectedRecipe.value = recipe
+    localStorage.setItem('selectedRecipe',JSON.stringify(recipe))
     goToPage('RecipeDetail')
   }
 
   function goBackToRecipes() {
-    goToPage('Recipes')
     selectedRecipe.value = null
+    localStorage.removeItem('selectedRecipe')
+    goToPage('Recipes')
   }
 
   function goHome() {
