@@ -35,15 +35,12 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
     
     try {
-      console.log('開始管理員登入...')
-      
+
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       )
-      
-      console.log('登入回應:', response.data)
       
       const user = response.data
       
@@ -62,7 +59,6 @@ export const useAdminStore = defineStore('admin', () => {
       
       localStorage.setItem('adminUser', JSON.stringify(adminUser.value))
       
-      console.log('管理員登入成功:', adminUser.value)
       return { success: true }
       
     } catch (err) {

@@ -170,7 +170,7 @@ public class AdminController {
         if (permissionCheck != null) return permissionCheck;
         
         try {
-            // ✅ 使用 RecipeService 的 getAllRecipes（會 JOIN 食材）
+            //使用 RecipeService 的 getAllRecipes（會 JOIN 食材）
             var recipes = recipeService.getAllRecipes();
             return ResponseEntity.ok(recipes);
         } catch (Exception e) {
@@ -203,7 +203,7 @@ public class AdminController {
         }
     }
     
-    // POST /api/admin/recipes - 新增食譜（✅ 使用 RecipeImportService）
+    // POST /api/admin/recipes - 新增食譜（使用 RecipeImportService）
     @PostMapping("/recipes")
     public ResponseEntity<?> createRecipe(
         @RequestBody Map<String, Object> request,
@@ -213,10 +213,10 @@ public class AdminController {
         if (permissionCheck != null) return permissionCheck;
         
         try {
-            // ✅ 使用 RecipeImportService 處理食材關聯
+            //使用 RecipeImportService 處理食材關聯
             Recipe created = recipeImportService.importRecipeFromAI(request);
             
-            // ✅ 重新查詢完整資料（包含食材）
+            //重新查詢完整資料（包含食材）
             Recipe fullRecipe = recipeService.getRecipeById(created.getId());
             
             return ResponseEntity.status(201).body(fullRecipe);

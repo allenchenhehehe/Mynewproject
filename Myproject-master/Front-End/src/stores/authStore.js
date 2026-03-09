@@ -16,18 +16,18 @@ const initAuthStatus = () => {
   const user = localStorage.getItem('user')
   const adminUser = localStorage.getItem('adminUser')
   
-  console.log('🔍 初始化認證狀態')
-  console.log('   user:', user)
-  console.log('   adminUser:', adminUser)
+  console.log('初始化認證狀態')
+  console.log('user:', user)
+  console.log('adminUser:', adminUser)
   
   if (adminUser) {
-    console.log('✅ 偵測到管理員')
+    console.log('偵測到管理員')
     return STATUS_ADMIN_PANEL
   } else if (user) {
-    console.log('✅ 偵測到一般使用者')
+    console.log('偵測到一般使用者')
     return STATUS_APP
   }
-  console.log('❌ 未登入')
+  console.log('未登入')
   return STATUS_LOGIN
 }
 
@@ -102,7 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
           password: password
         },
         {
-          withCredentials: true,  // 重要!允許帶 Cookie
+          withCredentials: true,  //允許帶 Cookie
           headers: {
             'Content-Type': 'application/json'
           }
@@ -204,7 +204,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function forceLogoutUser() {
   clearUserLocalState()
-  // ⭕ 注意：這裡不設定 authStatus，讓呼叫者決定下一個狀態
+  //這裡不設定 authStatus，讓呼叫者決定下一個狀態
 }
 
   return {

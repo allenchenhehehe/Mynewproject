@@ -55,7 +55,7 @@ public class AuthServlet extends HttpServlet {
     }
     
     /**
-     * 讀取請求 Body
+     * 讀取請求 Body(Json)
      */
     private String getRequestBody(HttpServletRequest req) throws IOException {
         BufferedReader br = req.getReader();

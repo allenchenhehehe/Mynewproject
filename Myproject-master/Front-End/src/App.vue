@@ -43,6 +43,7 @@ const gotoSignup = () => authStore.setAuthStatus(STATUS_SIGNUP)
 const gotoLogin = () => authStore.setAuthStatus(STATUS_LOGIN)
 const gotoApp = () => authStore.setAuthStatus(STATUS_APP)
 const gotoForget = () => authStore.setAuthStatus(STATUS_FORGET_PASSWORD)
+
 const goToAdminLogin = () => {
   // 先登出使用者
   //authStore.logout()
@@ -50,6 +51,7 @@ const goToAdminLogin = () => {
   // 設定為管理員登入狀態
   authStore.setAuthStatus(STATUS_ADMIN)
 }
+
 onMounted(async () => {
   
   // 如果 localStorage 有 user,驗證 Session 是否還有效
@@ -111,9 +113,9 @@ onMounted(async () => {
       v-show="navStore.currentPage === 'MyComments'"
     />
   </div>
-  <!--  新增:管理員登入 -->
+  <!-- 管理員登入 -->
   <AdminLogin v-if="authStore.authStatus === STATUS_ADMIN" />
   
-  <!--  新增:管理員後台 -->
+  <!-- 管理員後台 -->
   <AdminPanel v-if="authStore.authStatus === STATUS_ADMIN_PANEL" />
 </template>

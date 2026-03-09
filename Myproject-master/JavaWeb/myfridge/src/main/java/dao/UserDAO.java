@@ -116,6 +116,7 @@ public class UserDAO {
 	        
 	        int rows = psmt.executeUpdate();     
 	        rs = psmt.getGeneratedKeys();
+	        
 	        if(rs.next()) {
 	            int newId = rs.getInt(1);
 	            System.out.println("新增的 ID: " + newId);
