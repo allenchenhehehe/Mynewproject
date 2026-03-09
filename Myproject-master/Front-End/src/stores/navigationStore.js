@@ -3,51 +3,53 @@ import { ref } from 'vue'
 
 export const useNavigationStore = defineStore('navigation', () => {
   // State
-  const currentPage = ref('Home')
+  const view = localStorage.getItem('lastPage')||'Home'
+  const currentPage = ref(view)
   const selectedRecipe = ref(null)
 
   // Actions
   function goToPage(pageName) {
     currentPage.value = pageName
+    localStorage.setItem('lastPage',pageName)
     window.scrollTo(0, 0)
   }
 
   function goToRecipeDetail(recipe) {
     selectedRecipe.value = recipe
-    currentPage.value = 'RecipeDetail'
+    goToPage('RecipeDetail')
   }
 
   function goBackToRecipes() {
-    currentPage.value = 'Recipes'
+    goToPage('Recipes')
     selectedRecipe.value = null
   }
 
   function goHome() {
-    currentPage.value = 'Home'
+   goToPage('Home')
   }
 
   function goToMyFridge() {
-    currentPage.value = 'MyFridge'
+    goToPage('MyFridge')
   }
 
   function goToShoppingList() {
-    currentPage.value = 'ShoppingList'
+    goToPage('ShoppingList')
   }
 
   function goToFavorites() {
-    currentPage.value = 'Favorites'
+    goToPage('Favorites')
   }
 
   function goToMyComments() {
-    currentPage.value = 'MyComments'
+    goToPage('MyComments')
   }
 
   function goToAdminLogin() {
-    currentPage.value = 'AdminLogin'
+    goToPage('AdminLogin')
   }
 
   function goToAdminPanel() {
-    currentPage.value = 'AdminPanel'
+    goToPage('AdminPanel')
   }
 
 
