@@ -28,6 +28,8 @@ const cuisines = [
   "素食料理"
 ]
 
+const generatedTitles = ref([])
+
 const activeTab = ref('list')
 const searchKeyword = ref('')
 
@@ -76,9 +78,23 @@ async function generateRandomRecipe() {
   isGenerating.value = true
   
   try {
-    const result = await adminStore.generateRandomRecipe(selectedCuisine.value)
+    //傳入已生成的標題列表
+    const result = await adminStore.generateRandomRecipe(
+      selectedCuisine.value,
+      generatedTitles.value  // 傳入排除清單
+    )
+    
     if (result.success) {
       generatedRecipe.value = result.data
+      
+      //記錄新生成的標題
+      generatedTitles.value.push(result.data.title)
+      
+      //只保留最近 10 個（避免清單太長）
+      if (generatedTitles.value.length > 10) {
+        generatedTitles.value.shift()
+      }
+      
       toast.success('食譜生成成功！', { autoClose: 1000 })
     } else {
       toast.error(result.error || '生成失敗', { autoClose: 2000 })
@@ -89,6 +105,7 @@ async function generateRandomRecipe() {
     isGenerating.value = false
   }
 }
+
 
 //修改：直接使用 AI 生成的食譜（包含 step 和 ingredients）
 async function useGeneratedRecipe() {
@@ -356,7 +373,7 @@ async function createRecipe() {
             :disabled="adminStore.loading"
             class="flex-1 bg-green-400 border-2 border-black px-6 py-3 font-bold shadow-[2px_2px_0px_0px_black] hover:shadow-[4px_4px_0px_0px_black] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            ✅ ADD RECIPE
+            ADD RECIPE
           </button>
           <button
             @click="activeTab = 'list'"

@@ -49,7 +49,7 @@ const isAddModalOpen = ref(false)
 
 // 監聽 store 中的 fridgeItems 變化
 watch(() => fridgeStore.fridgeItems, (newItems) => {
-    console.log('MyFridge 數據更新:', newItems)
+    //console.log('MyFridge 數據更新:', newItems)
     ingredients.value = categorizeIngredients(newItems || [])
 }, { deep: true })
 

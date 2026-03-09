@@ -1,5 +1,7 @@
 package com.myfridge.myfridge.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myfridge.myfridge.entity.Comment;
@@ -179,13 +182,20 @@ public class AdminController {
     
     // GET /api/admin/recipes/generate-random - 隨機生成食譜
     @GetMapping("/recipes/generate-random")
-    public ResponseEntity<?> generateRandomRecipe(HttpSession session) {
+    public ResponseEntity<?> generateRandomRecipe(@RequestParam(required = false) String cuisine,
+    @RequestParam(required = false) String exclude, HttpSession session) {
         ResponseEntity<?> permissionCheck = checkAdminPermission(session);
         if (permissionCheck != null) return permissionCheck;
         
         try {
-            Map<String, Object> recipe = recipeAIService.generateRecipe(null);
+
+            List<String> excludeTitles = new ArrayList<>();
+            if (exclude != null && !exclude.isEmpty()) {
+                excludeTitles = Arrays.asList(exclude.split(","));
+            }
+            Map<String, Object> recipe = recipeAIService.generateRecipe(cuisine, excludeTitles);
             return ResponseEntity.ok(recipe);
+            
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500)

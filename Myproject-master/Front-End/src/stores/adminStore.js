@@ -237,14 +237,22 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function generateRandomRecipe(cuisine = '') {
+  async function generateRandomRecipe(cuisine = '', excludeTitles = []) {
   loading.value = true
   error.value = null
   
   try {
-    const params = cuisine ? `?cuisine=${encodeURIComponent(cuisine)}` : ''
+    // ✅ 把排除清單也傳給後端
+    const params = new URLSearchParams()
+    if (cuisine) params.append('cuisine', cuisine)
+    if (excludeTitles.length > 0) {
+      params.append('exclude', excludeTitles.join(','))
+    }
+    
+    const queryString = params.toString() ? `?${params.toString()}` : ''
+    
     const response = await axios.get(
-      `${API_BASE_URL}/admin/recipes/generate-random${params}`,
+      `${API_BASE_URL}/admin/recipes/generate-random${queryString}`,
       { withCredentials: true }
     )
     

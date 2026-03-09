@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class RecipeAIService {
 
-    private static final String API_KEY = System.getenv("OPENROUTER_API_KEY");
+    private static final String API_KEY = "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";
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
     private static final String MODEL = "openai/gpt-4o-mini";
     // private static final String MODEL = "google/gemini-2.0-flash-exp:free";
@@ -29,7 +29,7 @@ public class RecipeAIService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Random random = new Random();
     
-    // ✅ 預設的菜系列表（當沒有指定時隨機選）
+    // 預設的菜系列表（當沒有指定時隨機選）
     private static final List<String> CUISINE_OPTIONS = Arrays.asList(
         "台灣小吃",
         "台式熱炒",
@@ -51,9 +51,9 @@ public class RecipeAIService {
         "素食料理"
     );
     
-    public Map<String, Object> generateRecipe(String cuisine) {
+    public Map<String, Object> generateRecipe(String cuisine, List<String> excludeTitles) {
         try {
-            String prompt = buildPrompt(cuisine);
+            String prompt = buildPrompt(cuisine, excludeTitles);
             String requestBody = buildRequest(prompt);
             
             HttpHeaders headers = new HttpHeaders();
@@ -74,9 +74,14 @@ public class RecipeAIService {
             throw new RuntimeException("AI 生成失敗: " + e.getMessage(), e);
         }
     }
+
+    //舊方法：保持相容性
+    public Map<String, Object> generateRecipe(String cuisine) {
+        return generateRecipe(cuisine, new ArrayList<>());
+    }
     
-    private String buildPrompt(String cuisine) {
-        //如果沒有傳入 cuisine，隨機選一個
+    private String buildPrompt(String cuisine, List<String> excludeTitles ) {
+
         String cuisineText;
         if (cuisine != null && !cuisine.isEmpty()) {
             cuisineText = cuisine;
@@ -84,119 +89,75 @@ public class RecipeAIService {
             cuisineText = CUISINE_OPTIONS.get(random.nextInt(CUISINE_OPTIONS.size()));
         }
         
-        //加上隨機數字，讓每次都不同
         int randomNumber = random.nextInt(10000);
+        
+        //建立排除清單
+        String excludeText = "";
+        if (!excludeTitles.isEmpty()) {
+            excludeText = "\n 禁止生成以下已出現的菜名：\n" + 
+                          String.join("、", excludeTitles) + 
+                          "\n你必須生成完全不同的菜色，不可重複上述菜名或類似變體。\n";
+        }
             
         return String.format("""
-            請生成一個「%s」的食譜，並用以下 JSON 格式回傳：
+            重要限制：你必須生成一道「%s」的道地料理，絕對不可以使用其他菜系的食材或調味料。
+            %s
             
+            請生成一個「%s」的食譜，並用以下 JSON 格式回傳：
             {
-              "title": "具體的菜名（非料理種類名稱）",
+              "title": "具體的菜名",
               "description": "口味特色描述",
               "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-              "cookingTime": 數字,
-              "difficulty": 1~5,
-              "step": "1. 第一步\\n2. 第二步\\n3. 第三步",
+              "cookingTime": 30,
+              "difficulty": 3,
+              "step": "1. 準備食材：洗淨所有蔬菜，將肉類切塊備用。\\n\\n2. 醃製：將肉類加入醬油、料酒醃製10分鐘。\\n\\n3. 爆香：熱鍋下油，爆香蔥薑蒜。"
               "ingredients": [
-                {
-                  "name": "番茄",
-                  "category": "vegetable",
-                  "amount": 2.0,
-                  "unit": "顆"
-                },
-                {
-                  "name": "雞蛋",
-                  "category": "egg",
-                  "amount": 3.0,
-                  "unit": "顆"
-                }
+                {"name": "番茄", "category": "vegetable", "amount": 2.0, "unit": "顆"}
               ]
             }
             
             規則：
-            1. 只回傳 JSON，不要任何 Markdown 或額外文字
-            2. title 要吸引人，10 字內
-            3. description 包含口味、特色
+            1. 只回傳 JSON，不要 Markdown
+            2. title 必須是「%s」的道地菜名，10 字內
+            3. description 強調「%s」的傳統風味
             4. cookingTime 是分鐘數（5-120）
-            5. difficulty 難度等級（1-5），根據以下標準判斷：
-           - 1（入門）：
-             * 烹飪時間 ≤ 20 分鐘
-             * 食材 ≤ 5 種
-             * 只需要基本烹飪技巧（切、炒、煮）
-             * 不需要特殊調味或醬料
-             * 例如：炒蛋、水煮青菜、泡麵
-           
-           - 2（基礎）：
-             * 烹飪時間 20-30 分鐘
-             * 食材 5-7 種
-             * 需要基本調味（鹽、醬油、糖等）
-             * 簡單的烹飪技巧組合（炒 + 調味）
-             * 例如：番茄炒蛋、青椒炒肉絲、蒜蓉空心菜
-           
-           - 3（進階）：
-             * 烹飪時間 30-45 分鐘
-             * 食材 7-10 種
-             * 需要多種調味料
-             * 需要掌握火候、時間控制
-             * 可能需要醃製、預處理
-             * 例如：宮保雞丁、糖醋排骨、三杯雞
-           
-           - 4（功夫）：
-             * 烹飪時間 45-90 分鐘
-             * 食材 > 10 種
-             * 需要複雜的烹飪技巧（煎、炸、燉、滷）
-             * 需要特殊醬料或高湯
-             * 需要精確的時間和溫度控制
-             * 例如：紅燒獅子頭、佛跳牆、東坡肉
-           
-           - 5（專業）：
-             * 烹飪時間 > 90 分鐘
-             * 食材 > 12 種
-             * 需要專業技巧（雕花、拉麵、刀工）
-             * 需要多階段烹飪（醃製 → 滷製 → 燉煮）
-             * 需要特殊器具或專業知識
-             * 例如：北京烤鴨、佛跳牆、手工拉麵、法式舒芙蕾
-            6. step 用 \\n 分隔，3-8 個步驟，第一步要包含食材準備
-            7. ingredients 必須 5-10 個
-            8. ⚠️ category 必須是以下英文之一（非常重要）：
-               - vegetable（蔬菜）
-               - fruit（水果）
-               - meat（肉類）
-               - seafood（海鮮）
-               - egg（蛋類）
-               - dairy（乳製品）
-               - seasoning（調味料）
-               - other（其他）
-            9. name 用中文
-            10. amount 用小數（2.0, 0.5 等）
-            11. unit 用中文常見單位：顆、克、毫升、大匙、小匙、片、條、根
-            12.請生成完全不同、有創意的食譜，避免重複（編號：%d）
-            13.菜名必須具體，不要只說「%s料理」，要有具體的菜名
-            14.必須嚴格符合菜系的傳統風味與調味邏輯。
-            """, cuisineText, randomNumber, cuisineText);
+            5. difficulty 等級（1=入門、2=基礎、3=進階、4=功夫、5=專業）
+            6. step 格式必須遵守以下格式：
+            - 每個步驟之間用「\\n\\n」分隔（兩個換行）
+            - 總共 3-8 個步驟
+            - 每個步驟包含：步驟編號 + 名稱 + 冒號 + 說明
+            - 請完全按照 JSON 範例中 step 的格式，不要重複「步驟 X」
+            7. ingredients 必須 5-10 個，且符合「%s」傳統食材
+            8. category：vegetable、fruit、meat、seafood、egg、bean、oil、dairy、seasoning、other
+            9. name 用中文，amount 用小數，unit 用中文單位
+            10. 請生成完全不同的食譜（編號：%d）
+            11. 這必須是純正的「%s」料理，不可混搭
+            """, 
+            cuisineText, excludeText, cuisineText,
+            cuisineText, cuisineText, cuisineText,
+            randomNumber, cuisineText
+        );
     }
     
     private String buildRequest(String prompt) throws Exception {
-        Map<String, Object> request = new HashMap<>();
-        request.put("model", MODEL);
-        
-        // ✅ 提高 temperature 到 1.0（最大變化）
-        request.put("temperature", 0.5);
-        request.put("max_tokens", 1000);
-        
-        Map<String, String> systemMsg = new HashMap<>();
-        systemMsg.put("role", "system");
-        systemMsg.put("content", "你是一位專精於全球各國道地美食的主廚。" + 
-        "你的強項在於保持各國料理的純正血統。你拒絕任何不合理的混搭（Fusion），" +
-        "當被要求法式時，你只會用法式香料與技法；當被要求義式時，你絕對不會用到亞洲調味料。");
-        
-        Map<String, String> userMsg = new HashMap<>();
-        userMsg.put("role", "user");
-        userMsg.put("content", prompt);
-        
-        request.put("messages", Arrays.asList(systemMsg, userMsg));
-        
-        return objectMapper.writeValueAsString(request);
+
+      Map<String, Object> request = new HashMap<>();
+      request.put("model", MODEL);
+      request.put("temperature", 0.3);  //降低，提高穩定性
+      request.put("max_tokens", 1000);
+      
+      Map<String, String> systemMsg = new HashMap<>();
+      systemMsg.put("role", "system");
+      systemMsg.put("content", "你是專精全球道地美食的主廚。你堅持各國料理的純正血統，絕不混搭。你必須嚴格遵守用戶指定的菜系限制。");
+      
+      Map<String, String> userMsg = new HashMap<>();
+      userMsg.put("role", "user");
+      userMsg.put("content", prompt);
+      
+      request.put("messages", Arrays.asList(systemMsg, userMsg));
+      
+      return objectMapper.writeValueAsString(request);
+      
     }
     
     private Map<String, Object> parseResponse(String responseBody) throws Exception {
@@ -219,7 +180,9 @@ public class RecipeAIService {
         recipe.put("imageUrl", recipeJson.get("imageUrl").asText());
         recipe.put("cookingTime", recipeJson.get("cookingTime").asInt());
         recipe.put("difficulty", recipeJson.get("difficulty").asInt());
-        recipe.put("step", recipeJson.get("step").asText());
+        String step = recipeJson.get("step").asText();
+        step = cleanDuplicateStepTitles(step);
+        recipe.put("step", step);
         
         // 解析食材陣列
         List<Map<String, Object>> ingredients = new ArrayList<>();
@@ -254,7 +217,17 @@ public class RecipeAIService {
             case "egg", "eggs", "蛋類" -> "egg";
             case "dairy", "milk", "乳製品" -> "dairy";
             case "seasoning", "seasonings", "spice", "spices", "condiment", "調味料" -> "seasoning";
+            case "beans", "bean", "legume", "legumes", "tofu", "豆類", "豆", "豆腐", "豆製品" -> "bean";
+            case "oil", "oils", "fat", "fats", "油", "油類", "食用油" -> "oil";
             default -> "other";
         };
+    }
+
+    private String cleanDuplicateStepTitles(String step) {
+      // 移除連續重複的「步驟 X」
+      // 例如：「步驟 1\n步驟 1\n1. ...」 → 「步驟 1\n1. ...」
+      step = step.replaceAll("(步驟 \\d+)\\n\\1", "$1");
+      
+      return step;
     }
 }

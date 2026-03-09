@@ -1,17 +1,19 @@
 package com.myfridge.myfridge.service;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.myfridge.myfridge.entity.Ingredient;
 import com.myfridge.myfridge.entity.Recipe;
 import com.myfridge.myfridge.entity.RecipeIngredient;
 import com.myfridge.myfridge.repository.IngredientRepository;
-import com.myfridge.myfridge.repository.RecipeRepository;
 import com.myfridge.myfridge.repository.RecipeIngredientRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.myfridge.myfridge.repository.RecipeRepository;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -104,6 +106,8 @@ public class RecipeImportService {
             case "肉類" -> 3;
             case "海鮮" -> 2;
             case "蛋類" -> 14;
+            case "豆類" -> 10;      
+            case "油類" -> 180;
             case "乳製品" -> 7;
             case "調味料" -> 365;
             default -> 7;

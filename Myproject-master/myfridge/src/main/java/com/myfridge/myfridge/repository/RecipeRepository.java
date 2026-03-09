@@ -48,7 +48,7 @@ public class RecipeRepository {
         "JOIN ingredient i ON ri.ingredientId = i.id " +
         "WHERE ri.recipeId = ?";
     
-    // ✅ 新增：查詢所有食譜（包含食材）- 使用 JOIN 一次查詢
+    //  新增：查詢所有食譜（包含食材）- 使用 JOIN 一次查詢
     private static final String SELECT_ALL_WITH_INGREDIENTS = 
         "SELECT " +
         "r.id, r.userId, r.title, r.description, r.imageUrl, r.cookingTime, " +
@@ -61,7 +61,7 @@ public class RecipeRepository {
         "WHERE r.isPublic = true " +
         "ORDER BY r.id";
     
-    // ✅ 新增：查詢單一食譜（包含食材）- 使用 JOIN
+    //  新增：查詢單一食譜（包含食材）- 使用 JOIN
     private static final String SELECT_BY_ID_WITH_INGREDIENTS = 
         "SELECT " +
         "r.id, r.userId, r.title, r.description, r.imageUrl, r.cookingTime, " +
@@ -84,7 +84,7 @@ public class RecipeRepository {
     private static final String DELETE_RECIPE = "DELETE FROM recipe WHERE id = ?";
     private static final String DELETE_INGREDIENTS = "DELETE FROM RecipeIngredient WHERE recipeId = ?";
     
-    // ✅ 修改：INSERT 加上 step 欄位
+    //  修改：INSERT 加上 step 欄位
     private static final String INSERT = 
         "INSERT INTO Recipe (title, description, imageUrl, cookingTime, difficulty, step) " +
         "VALUES (?, ?, ?, ?, ?, ?)";
@@ -102,7 +102,6 @@ public class RecipeRepository {
         recipe.setDifficulty(rs.getInt("difficulty"));
         recipe.setStep(rs.getString("step"));
         recipe.setIsPublic(rs.getBoolean("isPublic"));
-        // ✅ 移除 createdAt
         return recipe;
     };
     
@@ -126,9 +125,8 @@ public class RecipeRepository {
     
     // ==================== 查詢方法 ====================
     
-    /**
-     * ✅ 查詢所有公開食譜（包含食材）- 使用 JOIN 優化
-     */
+    //查詢所有公開食譜（包含食材）- 使用 JOIN 優化
+
     public List<Recipe> findAllWithIngredients() {
     return jdbcTemplate.query(SELECT_ALL_WITH_INGREDIENTS, rs -> {
         Map<Integer, Recipe> recipeMap = new LinkedHashMap<>();
@@ -179,9 +177,8 @@ public class RecipeRepository {
     });
 }
     
-    /**
-     * ✅ 查詢單一食譜（包含食材）- 使用 JOIN 優化
-     */
+    //查詢單一食譜（包含食材）- 使用 JOIN 優化
+
     public Recipe findByIdWithIngredients(Integer id) {
         List<Recipe> recipes = jdbcTemplate.query(SELECT_BY_ID_WITH_INGREDIENTS, rs -> {
             Recipe recipe = null;
@@ -199,7 +196,6 @@ public class RecipeRepository {
                     recipe.setDifficulty(rs.getInt("difficulty"));
                     recipe.setStep(rs.getString("step"));
                     recipe.setIsPublic(rs.getBoolean("isPublic"));
-                    // ✅ 移除 createdAt
                 }
                 
                 Integer ingredientId = (Integer) rs.getObject("ingredientId");
@@ -225,7 +221,7 @@ public class RecipeRepository {
         return recipes.isEmpty() ? null : recipes.get(0);
     }
     
-    // ✅ 保留舊方法（相容性）
+    // 保留舊方法（相容性）
     public List<Recipe> findAll() {
         List<Recipe> recipes = jdbcTemplate.query(SELECT_ALL, recipeRowMapper);
         recipes.forEach(recipe -> recipe.setIngredients(getIngredientsByRecipeId(recipe.getId())));
@@ -289,9 +285,7 @@ public class RecipeRepository {
         return jdbcTemplate.update(DELETE_RECIPE, recipeId);
     }
 
-    /**
-     * ✅ 插入食譜（加上 step 欄位）
-     */
+    //插入食譜（加上 step 欄位）
     public Recipe insert(Recipe recipe) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         
@@ -302,7 +296,7 @@ public class RecipeRepository {
             ps.setString(3, recipe.getImageUrl());
             ps.setInt(4, recipe.getCookingTime());
             ps.setInt(5, recipe.getDifficulty());
-            ps.setString(6, recipe.getStep());  // ✅ 新增 step
+            ps.setString(6, recipe.getStep());  // 新增 step
             return ps;
         }, keyHolder);
         
