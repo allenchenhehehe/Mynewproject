@@ -23,9 +23,7 @@ public class RecipeImportService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     
-    /**
-     * 從 AI 生成的資料匯入食譜（包含食材關聯）
-     */
+    // 從 AI 生成的資料匯入食譜（包含食材關聯）
     @Transactional
     public Recipe importRecipeFromAI(Map<String, Object> aiData) {
         try {
@@ -60,9 +58,8 @@ public class RecipeImportService {
         }
     }
     
-    /**
-     * 處理單個食材
-     */
+    // 處理單個食材
+ 
     private void processIngredient(Integer recipeId, Map<String, Object> ingData) {
         String name = (String) ingData.get("name");
         String category = (String) ingData.get("category");

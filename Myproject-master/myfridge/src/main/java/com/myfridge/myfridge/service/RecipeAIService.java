@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class RecipeAIService {
 
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "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";
     private static final String API_URL = "https://openrouter.ai/api/v1/chat/completions";
     private static final String MODEL = "openai/gpt-4o-mini";
     // private static final String MODEL = "google/gemini-2.0-flash-exp:free";
@@ -203,9 +203,8 @@ public class RecipeAIService {
         return recipe;
     }
     
-    /**
-     * 驗證並標準化 category
-     */
+    //驗證並標準化 category
+
     private String validateCategory(String category) {
         category = category.trim().toLowerCase();
         

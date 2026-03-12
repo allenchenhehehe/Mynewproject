@@ -3,10 +3,10 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from './authStore'
 
-//加上這一行（如果還沒有）
 const API_BASE_URL = 'http://localhost:8080/myfridge/api'
 
 export const useAdminStore = defineStore('admin', () => {
+  
   const adminUser = ref(null)
   const loading = ref(false)
   const error = ref(null)

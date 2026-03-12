@@ -93,7 +93,10 @@ export const useAuthStore = defineStore('auth', () => {
 }
   // Actions
   async function login(email, password) {
-    // TODO: 這裡應該呼叫後端 API
+
+    loading.value = true;
+
+    // 呼叫後端 API
     try{
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
@@ -140,7 +143,6 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
     
     try {
-  
       const response = await axios.post(
         `${API_BASE_URL}/auth/register`,
         userData,

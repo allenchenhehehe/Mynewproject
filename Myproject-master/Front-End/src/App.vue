@@ -53,7 +53,6 @@ const goToAdminLogin = () => {
 }
 
 onMounted(async () => {
-  
   // 如果 localStorage 有 user,驗證 Session 是否還有效
   if (authStore.authStatus === STATUS_APP) {
     const isValid = await authStore.checkAuth()
