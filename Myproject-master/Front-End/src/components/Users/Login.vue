@@ -143,12 +143,14 @@ function togglePasswordVisibility() {
                         @click.prevent="$emit('admin')"
                         class="text-xs text-gray-500 hover:text-black font-bold uppercase tracking-wide transition-colors"
                     >
-                        🔧 管理員登入
+                        管理員登入
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <button>test</button>
     
 </template>
 

@@ -23,6 +23,6 @@ public class FridgeItem {
 	private LocalDate purchasedDate;  
 	@JsonFormat(pattern = "yyyy-MM-dd")    
     private LocalDate expiredDate;
-    private String ingredientName;  // 從 ingredients 表 JOIN 來的
-    private String category; // 從 ingredients 表 JOIN 來的
+    private String ingredientName;  //從ingredients表join來的
+    private String category; // 從ingredients表join來的
 }

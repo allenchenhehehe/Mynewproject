@@ -35,10 +35,10 @@ public class UserRepository {
 			"INSERT INTO USER (USERNAME,EMAIL,PASSWORD, STATUS) VALUES (?,?,?,?)";
 
     private static final String UPDATE_STATUS = 
-    "UPDATE User SET status = ? WHERE id = ?";
+            "UPDATE User SET status = ? WHERE id = ?";
 
     private static final String DELETE = 
-        "DELETE FROM User WHERE id = ?";
+            "DELETE FROM User WHERE id = ?";
 
     private final RowMapper<User> fullRowMapper = (rs, rowNum) -> {
 

@@ -48,7 +48,7 @@ public class RecipeRepository {
         "JOIN ingredient i ON ri.ingredientId = i.id " +
         "WHERE ri.recipeId = ?";
     
-    //  新增：查詢所有食譜（包含食材）- 使用 JOIN 一次查詢
+    // 查詢所有食譜（包含食材)
     private static final String SELECT_ALL_WITH_INGREDIENTS = 
         "SELECT " +
         "r.id, r.userId, r.title, r.description, r.imageUrl, r.cookingTime, " +
@@ -61,7 +61,7 @@ public class RecipeRepository {
         "WHERE r.isPublic = true " +
         "ORDER BY r.id";
     
-    //  新增：查詢單一食譜（包含食材）- 使用 JOIN
+    // 查詢單一食譜（包含食材)
     private static final String SELECT_BY_ID_WITH_INGREDIENTS = 
         "SELECT " +
         "r.id, r.userId, r.title, r.description, r.imageUrl, r.cookingTime, " +
@@ -84,7 +84,7 @@ public class RecipeRepository {
     private static final String DELETE_RECIPE = "DELETE FROM recipe WHERE id = ?";
     private static final String DELETE_INGREDIENTS = "DELETE FROM RecipeIngredient WHERE recipeId = ?";
     
-    //  修改：INSERT 加上 step 欄位
+    // INSERT 加上 step 欄位
     private static final String INSERT = 
         "INSERT INTO Recipe (title, description, imageUrl, cookingTime, difficulty, step) " +
         "VALUES (?, ?, ?, ?, ?, ?)";
@@ -125,7 +125,7 @@ public class RecipeRepository {
     
     // ==================== 查詢方法 ====================
     
-    //查詢所有公開食譜（包含食材）- 使用 JOIN 優化
+    //查詢所有公開食譜（包含食材）
 
     public List<Recipe> findAllWithIngredients() {
     return jdbcTemplate.query(SELECT_ALL_WITH_INGREDIENTS, rs -> {
@@ -177,7 +177,7 @@ public class RecipeRepository {
     });
 }
     
-    //查詢單一食譜（包含食材）- 使用 JOIN 優化
+    //查詢單一食譜（包含食材）使用 JOIN 優化
 
     public Recipe findByIdWithIngredients(Integer id) {
         List<Recipe> recipes = jdbcTemplate.query(SELECT_BY_ID_WITH_INGREDIENTS, rs -> {

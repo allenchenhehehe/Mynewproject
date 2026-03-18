@@ -47,23 +47,23 @@ public class ShoppingListItemRepository {
 	        "WHERE id = ? AND userId = ?";
 	    
     private static final String UPDATE_PURCHASED_STATUS = 
-        "UPDATE ShoppingListItem " +
-        "SET isPurchased = ? " +
-        "WHERE id = ? AND userId = ?";
+            "UPDATE ShoppingListItem " +
+            "SET isPurchased = ? " +
+            "WHERE id = ? AND userId = ?";
     
     private static final String DELETE_ITEM = 
-        "DELETE FROM ShoppingListItem " +
-        "WHERE id = ? AND userId = ?";
+            "DELETE FROM ShoppingListItem " +
+            "WHERE id = ? AND userId = ?";
     
     private static final String SELECT_PURCHASED_ITEMS = 
-        "SELECT id, userId, recipeId, recipeName, ingredientId, ingredientName, " +
-        "amount, unit, category, isPurchased, createdAt " +
-        "FROM ShoppingListItem " +
-        "WHERE userId = ? AND isPurchased = TRUE";
+            "SELECT id, userId, recipeId, recipeName, ingredientId, ingredientName, " +
+            "amount, unit, category, isPurchased, createdAt " +
+            "FROM ShoppingListItem " +
+            "WHERE userId = ? AND isPurchased = TRUE";
     
     private static final String DELETE_PURCHASED_ITEMS = 
-        "DELETE FROM ShoppingListItem " +
-        "WHERE userId = ? AND isPurchased = TRUE";
+            "DELETE FROM ShoppingListItem " +
+            "WHERE userId = ? AND isPurchased = TRUE";
 
 
     private final RowMapper<ShoppingListItem> rowMapper = (rs, rowNum) -> {

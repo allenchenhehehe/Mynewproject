@@ -26,9 +26,7 @@ public class RecipeIngredientRepository {
     
     // ==================== CRUD 方法 ====================
     
-    /**
-     * 插入食譜食材關聯
-     */
+    // 插入食譜食材關聯
     public void insert(RecipeIngredient recipeIngredient) {
         jdbcTemplate.update(INSERT,
             recipeIngredient.getRecipeId(),
@@ -38,18 +36,12 @@ public class RecipeIngredientRepository {
         );
     }
     
-    /**
-     * 刪除某個食譜的所有食材關聯
-     * （用於刪除食譜時的級聯刪除）
-     */
+    // 刪除某個食譜的所有食材關聯（用於刪除食譜時的級聯刪除）
     public int deleteByRecipeId(Integer recipeId) {
         return jdbcTemplate.update(DELETE_BY_RECIPE_ID, recipeId);
     }
     
-    /**
-     * 刪除某個食材的所有關聯
-     * （用於刪除食材時的級聯刪除）
-     */
+    // 刪除某個食材的所有關聯用於刪除食材時的級聯刪除）
     public int deleteByIngredientId(Integer ingredientId) {
         return jdbcTemplate.update(DELETE_BY_INGREDIENT_ID, ingredientId);
     }

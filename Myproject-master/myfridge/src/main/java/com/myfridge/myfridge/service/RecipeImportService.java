@@ -93,9 +93,7 @@ public class RecipeImportService {
         recipeIngredientRepository.insert(recipeIngredient);
     }
     
-    /**
-     * 根據分類推測保存天數
-     */
+    // 根據分類推測保存天數
     private Integer guessShelfLife(String category) {
         return switch (category) {
             case "蔬菜" -> 7;

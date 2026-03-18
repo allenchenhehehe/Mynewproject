@@ -20,7 +20,7 @@ public class RecipeIngredient {
     private String unit;
     private String category;
     
-    // 如果需要自訂建構子，Lombok 無法自動生成多個建構子，需要手動加上你的 5 參數建構子
+    // Lombok無法自動生成多個建構子，需要手動加上5參數建構子
     public RecipeIngredient(Integer id, Integer recipeId, Integer ingredientId,
                             Double amount, String unit, String string, String string2) {
         this.id = id;
